@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<project>
+  <fileVersion>2</fileVersion>
+  <fileChecksum>2081067936</fileChecksum>
+  <configuration>
+    <name>Debug</name>
+    <outputs>
+      <file>$PROJ_DIR$\main.cpp</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_leuart.h</file>
+      <file>$TOOLKIT_DIR$\lib\m7M_tl.a</file>
+      <file>$TOOLKIT_DIR$\lib\dlpp7M_tl_ne.a</file>
+      <file>$PROJ_DIR$\Debug\Obj\sensor.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\system_efm32tg.o</file>
+      <file>$TOOLKIT_DIR$\lib\rt7M_tl.a</file>
+      <file>$PROJ_DIR$\Debug\Obj\temperaturesensor.pbi</file>
+      <file>$TOOLKIT_DIR$\config\linker\EnergyMicro\EFM32TG840F32.icf</file>
+      <file>$PROJ_DIR$\..\common\emlib\inc\em_assert.h</file>
+      <file>$PROJ_DIR$\..\common\emlib\inc\em_rtc.h</file>
+      <file>$PROJ_DIR$\..\common\emlib\inc\em_msc.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\tmp006.pbd</file>
+      <file>$PROJ_DIR$\..\common\CMSIS\Include\core_cmInstr.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\cmsis_iar.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_lesense_st.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_letimer.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_pcnt.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_emu.pbi</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_adc.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_dac.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_acmp.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\xtgmath.h</file>
+      <file>$PROJ_DIR$\..\common\emlib\inc\em_cmu.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_lesense.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_rmu.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\startup_efm32tg.o</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_cmu.o</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_rtc.pbi</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_cmu.h</file>
+      <file>$PROJ_DIR$\..\common\drivers\rtc.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\ysizet.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\stddef.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Threads.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\xencoding_limits.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Product.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Config_Normal.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Defaults.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\yvals.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_af_ports.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg840f32.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\system_efm32tg.h</file>
+      <file>$PROJ_DIR$\..\common\CMSIS\Include\core_cm3.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_prs_signals.h</file>
+      <file>$PROJ_DIR$\temperaturesensor.h</file>
+      <file>$PROJ_DIR$\sensor.cpp</file>
+      <file>$PROJ_DIR$\debug_output_control.h</file>
+      <file>$PROJ_DIR$\..\common\bsp\trace.c</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_lesense_ch.h</file>
+      <file>$PROJ_DIR$\Debug\Exe\tmp006.out</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_emu.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_emu.o</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_gpio.o</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_assert.o</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_rtc.o</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_af_pins.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_i2c.o</file>
+      <file>$TOOLKIT_DIR$\lib\dl7M_tln.a</file>
+      <file>$TOOLKIT_DIR$\inc\c\stdlib.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_i2c.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_cmu.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_gpio.pbi</file>
+      <file>$TOOLKIT_DIR$\inc\c\intrinsics.h</file>
+      <file>$PROJ_DIR$\Debug\Exe\tmp006.bin</file>
+      <file>$TOOLKIT_DIR$\inc\c\math.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\ymath.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_devinfo.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_romtable.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_dmareq.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_calibrate.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_dmactrl.h</file>
+      <file>$PROJ_DIR$\..\common\emlib\inc\em_chip.h</file>
+      <file>$PROJ_DIR$\..\common\emlib\inc\em_part.h</file>
+      <file>$PROJ_DIR$\..\common\emlib\inc\em_system.h</file>
+      <file>$PROJ_DIR$\..\common\emlib\inc\em_emu.h</file>
+      <file>$PROJ_DIR$\..\common\emlib\inc\em_bitband.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_vcmp.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_lcd.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_rtc.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_wdog.h</file>
+      <file>$PROJ_DIR$\..\common\emlib\inc\em_gpio.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_dma_descriptor.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\system_efm32tg.pbi</file>
+      <file>$PROJ_DIR$\..\common\emlib\inc\em_i2c.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\sensor.o</file>
+      <file>$PROJ_DIR$\sensor.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_lesense_buf.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_system.pbi</file>
+      <file>$PROJ_DIR$\Debug\List\tmp006.map</file>
+      <file>$PROJ_DIR$\Debug\Obj\trace.o</file>
+      <file>$PROJ_DIR$\Debug\Obj\trace.pbi</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\main.pbi</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_timer.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_usart.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_i2c.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_timer_cc.h</file>
+      <file>$PROJ_DIR$\temperaturesensor.cpp</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Source\startup_efm32tg.s</file>
+      <file>$PROJ_DIR$\Debug\Obj\temperaturesensor.o</file>
+      <file>$TOOLKIT_DIR$\lib\shb_l.a</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_system.o</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_msc.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_gpio_p.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_gpio.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_prs_ch.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_prs.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_dma_ch.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_dma.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\stdio.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\rtc.o</file>
+      <file>$PROJ_DIR$\Debug\Obj\rtc.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_assert.pbi</file>
+      <file>$TOOLKIT_DIR$\inc\c\ystdio.h</file>
+      <file>$PROJ_DIR$\..\common\CMSIS\Include\core_cmFunc.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_aes.h</file>
+      <file>$PROJ_DIR$\..\common\bsp\trace.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Source\system_efm32tg.c</file>
+      <file>$PROJ_DIR$\..\common\drivers\rtc.c</file>
+      <file>$PROJ_DIR$\..\common\emlib\src\em_assert.c</file>
+      <file>$PROJ_DIR$\..\common\emlib\src\em_cmu.c</file>
+      <file>$PROJ_DIR$\..\common\emlib\src\em_emu.c</file>
+      <file>$PROJ_DIR$\..\common\emlib\src\em_gpio.c</file>
+      <file>$PROJ_DIR$\..\common\emlib\src\em_i2c.c</file>
+      <file>$PROJ_DIR$\..\common\emlib\src\em_rtc.c</file>
+      <file>$PROJ_DIR$\..\common\emlib\src\em_system.c</file>
+      <file>$TOOLKIT_DIR$\inc\c\stdint.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\ycheck.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\stdbool.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\main.o</file>
+    </outputs>
+    <file>
+      <name>$PROJ_DIR$\main.cpp</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 129</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 92</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 58 127 38 37 36 35 34 33 31 109 113 91 40 42 126 13 14 62 114 41 55 39 43 102 50 25 29 115 15 86 48 24 103 104 105 106 107 108 96 93 94 1 16 17 95 19 20 21 76 77 78 79 81 66 67 69 68 70 71 72 73 128 74 75 30 23 44 85</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 58 127 38 37 36 35 34 33 31 109 113 91 40 42 126 13 14 62 114 41 55 39 43 102 50 25 29 115 15 86 48 24 103 104 105 106 107 108 96 93 94 1 16 17 95 19 20 21 76 77 78 79 81 66 67 69 68 70 71 72 73 128 74 75 30 23 44 85</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>[ROOT_NODE]</name>
+      <outputs>
+        <tool>
+          <name>ILINK</name>
+          <file> 49 88</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\sensor.cpp</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 84</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 4</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 85 126 127 38 37 36 35 34 33 128</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 85 126 127 38 37 36 35 34 33 128</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\common\bsp\trace.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 89</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 90</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 128 91 40 42 126 127 38 37 36 35 34 33 13 14 62 114 41 55 39 43 102 50 25 29 115 15 86 48 24 103 104 105 106 107 108 96 93 94 1 16 17 95 19 20 21 76 77 78 79 81 66 67 69 68 70 116 11 72 75</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 128 91 40 42 126 127 38 37 36 35 34 33 13 14 62 114 41 55 39 43 102 50 25 29 115 15 86 48 24 103 104 105 106 107 108 96 93 94 1 16 17 95 19 20 21 76 77 78 79 81 66 67 69 68 70 116 11 72 75</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Debug\Exe\tmp006.out</name>
+      <outputs>
+        <tool>
+          <name>ILINK</name>
+          <file> 88</file>
+        </tool>
+        <tool>
+          <name>OBJCOPY</name>
+          <file> 63</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ILINK</name>
+          <file> 8 53 27 51 52 56 54 101 129 110 84 26 5 99 89 100 6 3 2 57</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\temperaturesensor.cpp</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 99</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 7</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 64 127 65 38 37 36 35 34 33 22 109 31 113 83 128 72 91 40 42 126 13 14 62 114 41 55 39 43 102 50 25 29 115 15 86 48 24 103 104 105 106 107 108 96 93 94 1 16 17 95 19 20 21 76 77 78 79 81 66 67 69 68 70 23 75 74 80 9 44 85 46</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 64 127 65 38 37 36 35 34 33 22 109 31 113 83 128 72 91 40 42 126 13 14 62 114 41 55 39 43 102 50 25 29 115 15 86 48 24 103 104 105 106 107 108 96 93 94 1 16 17 95 19 20 21 76 77 78 79 81 66 67 69 68 70 23 75 74 80 9 44 85 46</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\common\EFM32TG\Source\startup_efm32tg.s</name>
+      <outputs>
+        <tool>
+          <name>AARM</name>
+          <file> 26</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\common\EFM32TG\Source\system_efm32tg.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 5</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 82</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 126 127 38 37 36 35 34 33 91 40 42 13 14 62 114 41 55 39 43 102 50 25 29 115 15 86 48 24 103 104 105 106 107 108 96 93 94 1 16 17 95 19 20 21 76 77 78 79 81 66 67 69 68 70</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 126 127 38 37 36 35 34 33 91 40 42 13 14 62 114 41 55 39 43 102 50 25 29 115 15 86 48 24 103 104 105 106 107 108 96 93 94 1 16 17 95 19 20 21 76 77 78 79 81 66 67 69 68 70</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\common\drivers\rtc.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 110</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 111</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 32 127 38 37 36 35 34 33 31 91 40 42 126 13 14 62 114 41 55 39 43 102 50 25 29 115 15 86 48 24 103 104 105 106 107 108 96 93 94 1 16 17 95 19 20 21 76 77 78 79 81 66 67 69 68 70 10 128 72 23 75 30</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 32 127 38 37 36 35 34 33 31 91 40 42 126 13 14 62 114 41 55 39 43 102 50 25 29 115 15 86 48 24 103 104 105 106 107 108 96 93 94 1 16 17 95 19 20 21 76 77 78 79 81 66 67 69 68 70 10 128 72 23 75 30</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\common\emlib\src\em_assert.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 53</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 112</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 9</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 9</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\common\emlib\src\em_cmu.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 27</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 60</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 72 91 40 42 126 127 38 37 36 35 34 33 13 14 62 114 41 55 39 43 102 50 25 29 115 15 86 48 24 103 104 105 106 107 108 96 93 94 1 16 17 95 19 20 21 76 77 78 79 81 66 67 69 68 70 23 128 75 9 74</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 72 91 40 42 126 127 38 37 36 35 34 33 13 14 62 114 41 55 39 43 102 50 25 29 115 15 86 48 24 103 104 105 106 107 108 96 93 94 1 16 17 95 19 20 21 76 77 78 79 81 66 67 69 68 70 23 128 75 9 74</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\common\emlib\src\em_emu.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 51</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 18</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 74 128 72 91 40 42 126 127 38 37 36 35 34 33 13 14 62 114 41 55 39 43 102 50 25 29 115 15 86 48 24 103 104 105 106 107 108 96 93 94 1 16 17 95 19 20 21 76 77 78 79 81 66 67 69 68 70 75 23 9</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 74 128 72 91 40 42 126 127 38 37 36 35 34 33 13 14 62 114 41 55 39 43 102 50 25 29 115 15 86 48 24 103 104 105 106 107 108 96 93 94 1 16 17 95 19 20 21 76 77 78 79 81 66 67 69 68 70 75 23 9</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\common\emlib\src\em_gpio.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 52</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 61</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 80 128 72 91 40 42 126 127 38 37 36 35 34 33 13 14 62 114 41 55 39 43 102 50 25 29 115 15 86 48 24 103 104 105 106 107 108 96 93 94 1 16 17 95 19 20 21 76 77 78 79 81 66 67 69 68 70 75 9</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 80 128 72 91 40 42 126 127 38 37 36 35 34 33 13 14 62 114 41 55 39 43 102 50 25 29 115 15 86 48 24 103 104 105 106 107 108 96 93 94 1 16 17 95 19 20 21 76 77 78 79 81 66 67 69 68 70 75 9</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\common\emlib\src\em_i2c.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 56</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 59</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 72 91 40 42 126 127 38 37 36 35 34 33 13 14 62 114 41 55 39 43 102 50 25 29 115 15 86 48 24 103 104 105 106 107 108 96 93 94 1 16 17 95 19 20 21 76 77 78 79 81 66 67 69 68 70 83 128 23 75 9</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 72 91 40 42 126 127 38 37 36 35 34 33 13 14 62 114 41 55 39 43 102 50 25 29 115 15 86 48 24 103 104 105 106 107 108 96 93 94 1 16 17 95 19 20 21 76 77 78 79 81 66 67 69 68 70 83 128 23 75 9</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\common\emlib\src\em_rtc.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 54</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 28</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 10 128 72 91 40 42 126 127 38 37 36 35 34 33 13 14 62 114 41 55 39 43 102 50 25 29 115 15 86 48 24 103 104 105 106 107 108 96 93 94 1 16 17 95 19 20 21 76 77 78 79 81 66 67 69 68 70 9 75</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\common\emlib\src\em_system.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 101</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 87</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 72 91 40 42 126 127 38 37 36 35 34 33 13 14 62 114 41 55 39 43 102 50 25 29 115 15 86 48 24 103 104 105 106 107 108 96 93 94 1 16 17 95 19 20 21 76 77 78 79 81 66 67 69 68 70 73 128 9</file>
+        </tool>
+      </inputs>
+    </file>
+  </configuration>
+  <configuration>
+    <name>Release</name>
+    <outputs/>
+    <forcedrebuild>
+      <name>[MULTI_TOOL]</name>
+      <tool>ILINK</tool>
+    </forcedrebuild>
+  </configuration>
+</project>
+
+
