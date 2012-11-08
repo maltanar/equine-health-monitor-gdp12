@@ -19,11 +19,12 @@ public:
   // virtual functions which can be overridden if the sensor supports
   // the functionality
   char setSleepState(bool sleepState);
+  void setPeriod(SensorPeriod ms);
   
   // pure virtual functions representing common functionality, which need to be 
   // overridden for all sensors
-  char readSensor(void *dataBuffer);
-  void setPeriod(SensorPeriod ms);
+  void sampleSensorData();
+  const void* readSensorData();
   
   // TMP0006 specific functions
   // read sensor data, make calculations and return Tobj

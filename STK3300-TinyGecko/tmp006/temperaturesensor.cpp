@@ -136,12 +136,6 @@ void TemperatureSensor::setPeriod(SensorPeriod ms)
   writeRegister(TMP006_P_WRITE_REG, settings);
 }
 
-char TemperatureSensor::readSensor(void *dataBuffer)
-{
-  // TODO get data from the temperature sensor
-  return 0;
-}
-
 // Manufacturer ID should return 0x5449
 uint16_t TemperatureSensor::getManufacturerID()
 {
@@ -255,27 +249,39 @@ bool TemperatureSensor::isMeasurementReady()
     return false;
 }
 
+void TemperatureSensor::sampleSensorData()
+{
+  double vObjcorr = 0, tDieKelvin = 0;
+  int vObj = 0, tDie = 0;
+  
+  // set reading to a special invalid value if the sensor is not yet ready
+  if(!isMeasurementReady())
+  {
+    m_temp = INVALID_TEMPERATURE;
+    return;
+  }
+
+  // Read the object voltage. Assuming that the data is ready.
+  vObj = readRegister(TMP006_P_VOBJ);
+  // Read the ambient temperature
+  tDie = readRegister(TMP006_P_TABT);
+
+  // Convert latest tDie measurement to Kelvin
+  tDieKelvin = (((double)(tDie >> 2)) * .03125) + 273.15;
+  vObjcorr = ((double)(vObj)) * .00000015625;
+
+  // call helper function to make the final Tobj calculation
+  m_temp = calculateTemp(&tDieKelvin, &vObjcorr);
+}
+
+const void* TemperatureSensor::readSensorData()
+{
+  return (const void*) &m_temp;
+}
+
 double TemperatureSensor::getTemperatureReading()
 {
-    double vObjcorr = 0, tDieKelvin = 0;
-    int vObj = 0, tDie = 0;
-    
-    // return a special invalid value if the sensor is not yet ready
-    if(!isMeasurementReady())
-      return INVALID_TEMPERATURE;
-
-    // Read the object voltage. Assuming that the data is ready.
-    vObj = readRegister(TMP006_P_VOBJ);
-    // Read the ambient temperature
-    tDie = readRegister(TMP006_P_TABT);
-
-    // Convert latest tDie measurement to Kelvin
-    tDieKelvin = (((double)(tDie >> 2)) * .03125) + 273.15;
-    vObjcorr = ((double)(vObj)) * .00000015625;
-
-    // call helper function to make the final Tobj calculation
-    m_temp = calculateTemp(&tDieKelvin, &vObjcorr);
-    return m_temp;
+  return m_temp;
 }
 
 char TemperatureSensor::setSleepState(bool sleepState)

@@ -39,7 +39,8 @@ public:
   
   // pure virtual functions representing common functionality, which need to be 
   // overridden for all sensors
-  virtual char readSensor(void *dataBuffer) = 0;
+  virtual void sampleSensorData() = 0;
+  virtual const void* readSensorData() = 0;
   
 protected:
   SensorType m_sensorType;

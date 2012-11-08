@@ -1,6 +1,6 @@
 // University of Southampton, 2012
 // EMECS Group Design Project
-// Example application setting up and polling the TMP006 over I2C
+// Example application setting up and polling the TMP006 over I2C periodically
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -9,20 +9,35 @@
 #include "em_emu.h"
 #include "rtc.h"
 #include "temperaturesensor.h"
+#include "alarm.h"
 
-#define TEMP_SENSOR_PERIOD_MS   4000
+#define TEMP_SENSOR_PERIOD_MS   1000
 
 void setupSWO(void);
+
+void SensorTimeoutHandler(int id)
+{
+  switch(id)
+  {
+  case sensorTypeTemperature:
+    //ts.sampleSensorData();
+    break;
+  default:
+    printf("Alarm event with id %d \n", id);
+  }
+}
 
 void main(void)
 {
   CHIP_Init();
   setupSWO();
-  
+  //Alarm_InitializeSystem();
   TemperatureSensor ts(TEMP_SENSOR_PERIOD_MS);
   
   while (1)
   {
+    ts.sampleSensorData();
+    
     RTC_Trigger(ts.getPeriod(), NULL);
     EMU_EnterEM2(true);
     

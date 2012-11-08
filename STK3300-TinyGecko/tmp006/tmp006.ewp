@@ -1847,6 +1847,12 @@
   <group>
     <name>Application</name>
     <file>
+      <name>$PROJ_DIR$\alarm.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\alarm.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\debug_output_control.h</name>
     </file>
     <file>
@@ -1910,6 +1916,9 @@
       </file>
       <file>
         <name>$PROJ_DIR$\..\common\emlib\src\em_system.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\common\emlib\src\em_timer.c</name>
       </file>
     </group>
   </group>
