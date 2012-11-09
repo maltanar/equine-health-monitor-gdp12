@@ -358,7 +358,7 @@
         </option>
         <option>
           <name>IccLang</name>
-          <state>2</state>
+          <state>1</state>
         </option>
         <option>
           <name>IccCDialect</name>
@@ -1916,9 +1916,6 @@
       </file>
       <file>
         <name>$PROJ_DIR$\..\common\emlib\src\em_system.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\common\emlib\src\em_timer.c</name>
       </file>
     </group>
   </group>

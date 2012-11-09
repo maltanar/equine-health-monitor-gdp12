@@ -7,41 +7,44 @@
 #include "efm32.h"
 #include "em_chip.h"
 #include "em_emu.h"
-#include "rtc.h"
 #include "temperaturesensor.h"
 #include "alarm.h"
 
-#define TEMP_SENSOR_PERIOD_MS   1000
+#define TEMP_SENSOR_PERIOD_MS   2000
+#define ALARM_TICK_MS           2000
+
+TemperatureSensor * ts;
 
 void setupSWO(void);
 
-void SensorTimeoutHandler(int id)
+void TempSensorTimeout(int id)
 {
-  switch(id)
-  {
-  case sensorTypeTemperature:
-    //ts.sampleSensorData();
-    break;
-  default:
-    printf("Alarm event with id %d \n", id);
-  }
+  printf("Temperature reading: %f \n", ts->getTemperatureReading());
 }
 
 void main(void)
 {
   CHIP_Init();
   setupSWO();
-  //Alarm_InitializeSystem();
-  TemperatureSensor ts(TEMP_SENSOR_PERIOD_MS);
+
+  ts = new TemperatureSensor(TEMP_SENSOR_PERIOD_MS);
+  Alarm_InitializeSystem();
+  
+  Alarm_Create(ts->getPeriod()/ALARM_TICK_MS, false, &TempSensorTimeout);
   
   while (1)
   {
-    ts.sampleSensorData();
+    // important: the sampleSensorData call has to be here and not in the
+    // TempSensorTimeout call, since the latter executes inside the ISR
+    // for RTC and lots of peripherals are disabled during that time
+    // general principle: don't sample pins/do fancy stuff in ISRs except
+    // moving around memory
+    // one idea is to create a "deferred execution" / "pending task queue"
+    // model and add a call request for the function there
+    // and when we get back to this main loop, we execute it in here instead
+    ts->sampleSensorData();
     
-    RTC_Trigger(ts.getPeriod(), NULL);
     EMU_EnterEM2(true);
-    
-    printf("Temperature reading: %f \n", ts.getTemperatureReading());
   }
   
 }

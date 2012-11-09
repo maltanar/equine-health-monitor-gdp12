@@ -254,10 +254,9 @@ void TemperatureSensor::sampleSensorData()
   double vObjcorr = 0, tDieKelvin = 0;
   int vObj = 0, tDie = 0;
   
-  // set reading to a special invalid value if the sensor is not yet ready
+  // do not modify previous sample is new data is not ready
   if(!isMeasurementReady())
   {
-    m_temp = INVALID_TEMPERATURE;
     return;
   }
 
@@ -274,8 +273,9 @@ void TemperatureSensor::sampleSensorData()
   m_temp = calculateTemp(&tDieKelvin, &vObjcorr);
 }
 
-const void* TemperatureSensor::readSensorData()
+const void* TemperatureSensor::readSensorData(uint16_t *actualSize)
 {
+  *actualSize = sizeof(m_temp);
   return (const void*) &m_temp;
 }
 

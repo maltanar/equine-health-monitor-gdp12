@@ -12,7 +12,7 @@
           
           
           
-        <Column0>166</Column0><Column1>27</Column1><Column2>27</Column2><Column3>27</Column3></ColumnWidths>
+        <Column0>264</Column0><Column1>27</Column1><Column2>27</Column2><Column3>27</Column3></ColumnWidths>
       </Workspace>
       <Build>
         <PreferedWindows>
@@ -27,7 +27,7 @@
         
       <ColumnWidth0>20</ColumnWidth0><ColumnWidth1>1395</ColumnWidth1><ColumnWidth2>372</ColumnWidth2><ColumnWidth3>93</ColumnWidth3></Build>
       <TerminalIO/>
-    </Static>
+    <Tool-Output><PreferedWindows><Position>3</Position><ScreenPosX>0</ScreenPosX><ScreenPosY>0</ScreenPosY><Windows><Window><Factory>Build</Factory></Window></Windows></PreferedWindows></Tool-Output></Static>
     <Windows>
       
       
@@ -39,24 +39,24 @@
             <Factory>Workspace</Factory>
             <Session>
               
-            <NodeDict><ExpandedNode>tmp006</ExpandedNode><ExpandedNode>tmp006/Application</ExpandedNode><ExpandedNode>tmp006/EM framework</ExpandedNode><ExpandedNode>tmp006/EM framework/emlib</ExpandedNode></NodeDict></Session>
+            <NodeDict><ExpandedNode>tmp006</ExpandedNode><ExpandedNode>tmp006/Application</ExpandedNode><ExpandedNode>tmp006/EM framework</ExpandedNode><ExpandedNode>tmp006/EM framework/Drivers</ExpandedNode><ExpandedNode>tmp006/EM framework/emlib</ExpandedNode></NodeDict></Session>
           </Tab>
         </Tabs>
         
-      <SelectedTab>0</SelectedTab></Wnd0></Windows>
+      <SelectedTab>0</SelectedTab></Wnd0><Wnd2><Tabs><Tab><Identity>TabID-27987-28290</Identity><TabName>Build</TabName><Factory>Build</Factory><Session/></Tab></Tabs><SelectedTab>0</SelectedTab></Wnd2></Windows>
     <Editor>
       
       
       
       
-    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\main.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>17</YPos2><SelStart2>731</SelStart2><SelEnd2>732</SelEnd2></Tab><ActiveTab>0</ActiveTab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\sensor.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>1183</SelStart2><SelEnd2>1183</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\sensor.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>671</SelStart2><SelEnd2>671</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\temperaturesensor.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>115</YPos2><SelStart2>5056</SelStart2><SelEnd2>5056</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\temperaturesensor.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>788</SelStart2><SelEnd2>788</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\alarm.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>503</SelStart2><SelEnd2>503</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\alarm.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>132</YPos2><SelStart2>4656</SelStart2><SelEnd2>4656</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\debug_output_control.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>35</YPos2><SelStart2>2109</SelStart2><SelEnd2>2109</SelEnd2></Tab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
+    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\main.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>6</YPos2><SelStart2>1049</SelStart2><SelEnd2>1049</SelEnd2></Tab><ActiveTab>0</ActiveTab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\sensor.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>1219</SelStart2><SelEnd2>1267</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\sensor.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>671</SelStart2><SelEnd2>671</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\temperaturesensor.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>223</YPos2><SelStart2>8192</SelStart2><SelEnd2>8192</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\temperaturesensor.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>860</SelStart2><SelEnd2>860</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\alarm.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>433</SelStart2><SelEnd2>433</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\alarm.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>18</YPos2><SelStart2>1778</SelStart2><SelEnd2>1778</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\debug_output_control.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>11</YPos2><SelStart2>994</SelStart2><SelEnd2>994</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\common\drivers\rtc.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>93</YPos2><SelStart2>2248</SelStart2><SelEnd2>2248</SelEnd2></Tab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
     <Positions>
       
       
       
       
       
-    <Top><Row0><Sizes><Toolbar-013756a0><key>iaridepm.enu1</key></Toolbar-013756a0></Sizes></Row0><Row1><Sizes/></Row1></Top><Left><Row0><Sizes><Wnd0><Rect><Top>-2</Top><Left>-2</Left><Bottom>648</Bottom><Right>240</Right><x>-2</x><y>-2</y><xscreen>142</xscreen><yscreen>128</yscreen><sizeHorzCX>103953</sizeHorzCX><sizeHorzCY>184971</sizeHorzCY><sizeVertCX>177160</sizeVertCX><sizeVertCY>939306</sizeVertCY></Rect></Wnd0></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes/></Row0></Bottom><Float><Sizes/></Float></Positions>
+    <Top><Row0><Sizes><Toolbar-013756a8><key>iaridepm.enu1</key></Toolbar-013756a8></Sizes></Row0><Row1><Sizes/></Row1></Top><Left><Row0><Sizes><Wnd0><Rect><Top>-2</Top><Left>-2</Left><Bottom>836</Bottom><Right>338</Right><x>-2</x><y>-2</y><xscreen>200</xscreen><yscreen>199</yscreen><sizeHorzCX>104167</sizeHorzCX><sizeHorzCY>184601</sizeHorzCY><sizeVertCX>177083</sizeVertCX><sizeVertCY>777365</sizeVertCY></Rect></Wnd0></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd2><Rect><Top>-2</Top><Left>-2</Left><Bottom>198</Bottom><Right>1922</Right><x>-2</x><y>-2</y><xscreen>1924</xscreen><yscreen>200</yscreen><sizeHorzCX>1002083</sizeHorzCX><sizeHorzCY>185529</sizeHorzCY><sizeVertCX>104167</sizeVertCX><sizeVertCY>185529</sizeVertCY></Rect></Wnd2></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
   </Desktop>
 </Workspace>
 
