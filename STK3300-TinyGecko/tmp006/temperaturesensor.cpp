@@ -3,11 +3,10 @@
 
 #include <math.h>
 #include <stdio.h>
-#include "em_i2c.h"
 #include "em_cmu.h"
 #include "em_emu.h"
-#include "em_gpio.h"
 #include "temperaturesensor.h"
+#include "i2cbus.h"
 #include "debug_output_control.h"
 
 // TMP006 Internal Pointer Register Addresses
@@ -36,58 +35,13 @@
 // which are always 0 for the breakout board 
 #define TMP006_I2C_ADDR     0x80
 
-
-// TODO move the code below to I2C module ------------------------------
-I2C_TransferReturn_TypeDef I2C_Status; 
-void I2C0_IRQHandler(void)
-{
-  /* Just run the I2C_Transfer function that checks interrupts flags and returns */
-  /* the appropriate status */
-  I2C_Status = I2C_Transfer(I2C0);
-}
-// TODO move the code above to I2C module ------------------------------
-
 TemperatureSensor::TemperatureSensor(SensorPeriod period) 
  : Sensor(sensorTypeTemperature, 8, period)
 {
   m_temp = 0;
   m_rate = 0;
   
-  // initialize I2C driver
-  I2C_Init_TypeDef i2cInit = I2C_INIT_DEFAULT;
-
-  CMU_ClockEnable(cmuClock_HFPER, true);
-  CMU_ClockEnable(cmuClock_I2C0, true);
-
-  /* Use location 3: SDA - Pin D6, SCL - Pin D7 */
-  /* Output value must be set to 1 to not drive lines low... We set */
-  /* SCL first, to ensure it is high before changing SDA. */
-  GPIO_PinModeSet(gpioPortD, 7, gpioModeWiredAnd, 1);
-  GPIO_PinModeSet(gpioPortD, 6, gpioModeWiredAnd, 1);
-
-  /* In some situations (after a reset during an I2C transfer), the slave */
-  /* device may be left in an unknown state. Send 9 clock pulses just in case. */
-  for (int i = 0; i < 9; i++)
-  {
-    /*
-     * TBD: Seems to be clocking at appr 80kHz-120kHz depending on compiler
-     * optimization when running at 14MHz. A bit high for standard mode devices,
-     * but DVK only has fast mode devices. Need however to add some time
-     * measurement in order to not be dependable on frequency and code executed.
-     */
-    GPIO_PinModeSet(gpioPortD, 7, gpioModeWiredAnd, 0);
-    GPIO_PinModeSet(gpioPortD, 7, gpioModeWiredAnd, 1);
-  }
-
-  /* Enable pins at location 1 */
-  I2C0->ROUTE = I2C_ROUTE_SDAPEN |
-                I2C_ROUTE_SCLPEN |
-                (1 << _I2C_ROUTE_LOCATION_SHIFT);
-
-  I2C_Init(I2C0, & i2cInit);
-  
-  NVIC_ClearPendingIRQ(I2C0_IRQn);
-  NVIC_EnableIRQ(I2C0_IRQn);
+  // TODO initialize I2C driver here
 
   // Reset TMP006
   writeRegister(TMP006_P_WRITE_REG, TMP006_RST);
@@ -124,7 +78,7 @@ void TemperatureSensor::setPeriod(SensorPeriod ms)
   else if(ms >= 4000)
      m_rate = TMP006_CR_0_25;
   else
-    module_debug_temp("Unknown period: %x \n", ms);
+    module_debug_temp("Unknown period: %x", ms);
   
   module_debug_temp("period: %d rate bits %x", ms, m_rate);
 
@@ -150,71 +104,24 @@ uint16_t TemperatureSensor::getDeviceID(void)
 
 int16_t TemperatureSensor::readRegister(unsigned char reg)
 {
-  // TODO move I2C specific code into own module?
-  I2C_TransferSeq_TypeDef seq;
-  uint8_t data[2], addr_data[1];
+  uint16_t val;
   
   module_debug_temp("read %x", reg);
-
-  seq.addr = TMP006_I2C_ADDR;
-  seq.flags = I2C_FLAG_WRITE_READ;
-  /* Select register to be read */
-  addr_data[0] = (uint8_t) reg;
-  seq.buf[0].data = addr_data;
-  seq.buf[0].len = 1;
-  /* Select location/length to place register */  
-  seq.buf[1].data = data;
-  seq.buf[1].len = 2;
-
-  /* Do a polled transfer */
-  I2C_Status = I2C_TransferInit(I2C0, &seq);
-  while (I2C_Status == i2cTransferInProgress)
-  {
-    /* Enter EM1 while waiting for I2C interrupt */
-    // TODO energy saving!
-    EMU_EnterEM1();
-    /* Could do a timeout function here? */
-  }
   
-  if (I2C_Status != i2cTransferDone)
-  {
-    module_debug_temp("error reading, status %x", I2C_Status);
+  if(I2CBus::getInstance().readRegister16Bit(TMP006_I2C_ADDR, reg, &val))
+    return val;
+  else {
+    module_debug_temp("failed to get register %x", reg);
     return -1;
   }
-
-  return (((uint16_t)(data[0])) << 8) | data[1];
 }
 
 void TemperatureSensor::writeRegister(unsigned char reg, unsigned int val)
 {
-  I2C_TransferSeq_TypeDef seq;
-  uint8_t data[3];
+  module_debug_temp("write %x to %x", val, reg);
   
-  module_debug_temp("write to reg %x val %x \n", reg, val);
-
-  seq.addr = TMP006_I2C_ADDR;
-  seq.flags = I2C_FLAG_WRITE;
-  /* Select register to be written */
-  data[0] = ((uint8_t)reg);
-  seq.buf[0].data = data;
-  data[1] = (uint8_t)(val >> 8);
-  data[2] = (uint8_t)val;
-  seq.buf[0].len = 3;
-
-  /* Do a polled transfer */
-  I2C_Status = I2C_TransferInit(I2C0, &seq);
-  while (I2C_Status == i2cTransferInProgress)
-  {
-    /* Enter EM1 while waiting for I2C interrupt */
-    // TODO energy saving!
-    EMU_EnterEM1();
-    /* Could do a timeout function here. */
-  }
-  
-  if (I2C_Status != i2cTransferDone)
-  {
-    module_debug_temp("error writing, status %x", I2C_Status);
-  }
+  if(!I2CBus::getInstance().writeRegister16Bit(TMP006_I2C_ADDR, reg, val))
+    module_debug_temp("failed to write register %x", reg);
 }
 
 double TemperatureSensor::calculateTemp(double * tDie, double * vObj)

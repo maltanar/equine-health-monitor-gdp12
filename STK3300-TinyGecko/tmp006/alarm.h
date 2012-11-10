@@ -4,6 +4,8 @@
 #ifndef ALARM_H
 #define ALARM_H
 
+#define ALARM_TICK_MS           1000
+
 // type definition for functions that will handle the alarm timeout
 typedef void(*AlarmEventHandler)(int id);
 

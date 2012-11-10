@@ -304,6 +304,7 @@
           <state>$PROJ_DIR$\..\common\emlib\inc</state>
           <state>$PROJ_DIR$\..\common\drivers</state>
           <state>$PROJ_DIR$\..\common\bsp</state>
+          <state>$PROJ_DIR$</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -1890,6 +1891,12 @@
     </group>
     <group>
       <name>Drivers</name>
+      <file>
+        <name>$PROJ_DIR$\..\common\drivers\i2cbus.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\common\drivers\i2cbus.h</name>
+      </file>
       <file>
         <name>$PROJ_DIR$\..\common\drivers\rtc.c</name>
       </file>

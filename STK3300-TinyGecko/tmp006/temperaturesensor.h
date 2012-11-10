@@ -6,6 +6,7 @@
 
 #include "sensor.h"
 
+
 // define an "invalid temperature" value of sub-zero kelvins
 // this is the value provided when the sensor is not yet ready
 #define INVALID_TEMPERATURE     -274

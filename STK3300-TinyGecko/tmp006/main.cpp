@@ -9,9 +9,9 @@
 #include "em_emu.h"
 #include "temperaturesensor.h"
 #include "alarm.h"
+#include "i2cbus.h"
 
-#define TEMP_SENSOR_PERIOD_MS   2000
-#define ALARM_TICK_MS           2000
+#define TEMP_SENSOR_PERIOD_MS   1000
 
 TemperatureSensor * ts;
 

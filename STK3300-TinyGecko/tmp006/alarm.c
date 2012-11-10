@@ -42,7 +42,7 @@ void _Alarm_CheckStartStopNeeded()
   {
     module_debug_alarm("Starting alarm timer");
     
-    RTC_Trigger(500, &_Alarm_RTCCallback);
+    RTC_Trigger(ALARM_TICK_MS, &_Alarm_RTCCallback);
     
     alarmTimerActive = 1;
     

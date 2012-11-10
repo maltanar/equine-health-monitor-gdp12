@@ -25,11 +25,12 @@
 
 #ifndef DISABLE_ALL_DEBUG_OUTPUTS
 
-#define ENABLE_DEBUG_OUTPUT_ALARM
+#define nENABLE_DEBUG_OUTPUT_ALARM
 #define nENABLE_DEBUG_OUTPUT_ANTIF
 #define nENABLE_DEBUG_OUTPUT_UART
 #define nENABLE_DEBUG_OUTPUT_HRMRX
-#define ENABLE_DEBUG_OUTPUT_TEMP
+#define nENABLE_DEBUG_OUTPUT_TEMP
+#define nENABLE_DEBUG_OUTPUT_I2C
 
 #endif
 
@@ -68,5 +69,10 @@
 #define module_debug_temp(fmt, ...)   
 #endif
 
+#ifdef ENABLE_DEBUG_OUTPUT_I2C
+#define module_debug_i2c(fmt, ...)   printf("I2C: "fmt"\n", ##__VA_ARGS__)
+#else
+#define module_debug_i2c(fmt, ...)   
+#endif
 
 #endif // DEBUGOUTPUTCONTROL_H
