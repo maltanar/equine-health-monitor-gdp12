@@ -40,7 +40,7 @@ void main(void)
     // general principle: don't sample pins/do fancy stuff in ISRs except
     // moving around memory
     // one idea is to create a "deferred execution" / "pending task queue"
-    // model and add a call request for the function there
+    // model and add a sensor sampling call request from the ISR
     // and when we get back to this main loop, we execute it in here instead
     ts->sampleSensorData();
     

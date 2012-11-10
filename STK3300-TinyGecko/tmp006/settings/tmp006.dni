@@ -8,24 +8,12 @@ UseTrigger=1
 TriggerName=main
 LimitSize=0
 ByteLimit=50
-[Interrupts]
-Enabled=1
-[MemoryMap]
-Enabled=0
-Base=0
-UseAuto=0
-TypeViolation=1
-UnspecRange=1
-ActionState=1
-[Trace1]
-Enabled=0
-ShowSource=1
 [JLinkDriver]
 WatchCond=_ 0
 Watch0=_ 0 "" 0 "" 0 "" 0 "" 0 0 0 0
 Watch1=_ 0 "" 0 "" 0 "" 0 "" 0 0 0 0
 [DebugChecksum]
-Checksum=946610166
+Checksum=-1602249032
 [Exceptions]
 StopOnUncaught=_ 0
 StopOnThrow=_ 0
@@ -50,6 +38,18 @@ ITMportsEnable=1
 ITMportsTermIO=1
 ITMportsLogFile=0
 ITMlogFile=$PROJ_DIR$\ITM.log
+[Interrupts]
+Enabled=1
+[MemoryMap]
+Enabled=0
+Base=0
+UseAuto=0
+TypeViolation=1
+UnspecRange=1
+ActionState=1
+[Trace1]
+Enabled=0
+ShowSource=1
 [DataLog]
 LogEnabled=0
 SumEnabled=0
