@@ -1,0 +1,2 @@
+/usr/bin/ar cr libgbee-linux-x86.a  CMakeFiles/gbee-linux-x86.dir/src/gbee.c.o CMakeFiles/gbee-linux-x86.dir/src/gbee-util.c.o CMakeFiles/gbee-linux-x86.dir/src/port/linux/gbee-linux.c.o
+/usr/bin/ranlib libgbee-linux-x86.a

@@ -1,0 +1,44 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/oan/documents/code/libgbee/0.3.1/libgbee/src/gbee-port-interface.h
+stdint.h
+-
+gbee-port.h
+/home/oan/documents/code/libgbee/0.3.1/libgbee/src/gbee-port.h
+
+/home/oan/documents/code/libgbee/0.3.1/libgbee/src/gbee-util.c
+gbee-util.h
+/home/oan/documents/code/libgbee/0.3.1/libgbee/src/gbee-util.h
+
+/home/oan/documents/code/libgbee/0.3.1/libgbee/src/gbee-util.h
+gbee.h
+/home/oan/documents/code/libgbee/0.3.1/libgbee/src/gbee.h
+
+/home/oan/documents/code/libgbee/0.3.1/libgbee/src/gbee.h
+stdbool.h
+-
+stdint.h
+-
+gbee-port-interface.h
+/home/oan/documents/code/libgbee/0.3.1/libgbee/src/gbee-port-interface.h
+
+/home/oan/documents/code/libgbee/0.3.1/libgbee/src/port/linux/gbee-linux.h
+stdlib.h
+-
+string.h
+-
+stdio.h
+-
+stdint.h
+-
+
+/home/oan/documents/code/libgbee/0.3.1/libgbee/src/port/linux/x86/gbee-port.h
+gbee-linux.h
+/home/oan/documents/code/libgbee/0.3.1/libgbee/src/port/linux/x86/gbee-linux.h
+
