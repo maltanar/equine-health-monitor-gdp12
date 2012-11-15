@@ -304,6 +304,7 @@
           <state>$PROJ_DIR$\..\common\emlib\inc</state>
           <state>$PROJ_DIR$\..\common\drivers</state>
           <state>$PROJ_DIR$\..\common\bsp</state>
+          <state>$PROJ_DIR$</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -1847,7 +1848,19 @@
   <group>
     <name>Application</name>
     <file>
+      <name>$PROJ_DIR$\debug_output_control.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\gpssensor.cpp</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\main.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\sensor.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\sensor.h</name>
     </file>
   </group>
   <group>
@@ -1870,10 +1883,13 @@
     <group>
       <name>Drivers</name>
       <file>
-        <name>$PROJ_DIR$\..\common\drivers\retargetserial.c</name>
+        <name>$PROJ_DIR$\..\common\drivers\rtc.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\common\drivers\rtc.c</name>
+        <name>$PROJ_DIR$\..\common\drivers\uartport.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\common\drivers\uartport.h</name>
       </file>
     </group>
     <group>
@@ -1889,6 +1905,9 @@
       </file>
       <file>
         <name>$PROJ_DIR$\..\common\emlib\src\em_gpio.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\common\emlib\src\em_int.c</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\common\emlib\src\em_leuart.c</name>
