@@ -5,7 +5,8 @@
 #include "em_leuart.h"
 #include "em_emu.h"
 #include "em_gpio.h"
-#include "uartport.h"
+#include "uartmanager.h"
+
 #include "gpssensor.h"
 
 extern "C" {
@@ -23,16 +24,11 @@ int main()
 {
   CHIP_Init();
   TRACE_SWOSetup();  
-  
-  UARTPort::getInstance()->setSignalFrameHook(&frameHandler);
+  UARTManager::getInstance()->getPort(UARTManagerPortLEUART0)->setSignalFrameHook(&frameHandler);
   gps = GPSSensor::getInstance();
   
   while(1)
   {
-    /*gps->receiveNMEAString(typ, msg, 80, &len);
-    printf("%s \n", msg);*/
-    //gps->queryFirmwareVersion();
-    //printf("Fixrate: %d \n", gps->getFixRate());
     EMU_EnterEM2(true);
   }
 }

@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "em_emu.h"
+#include "uartmanager.h"
 #include "gpssensor.h"
 #include "debug_output_control.h"
 
@@ -11,7 +12,7 @@ GPSSensor::GPSSensor() :
   Sensor(sensorTypeGPS, 8, 5000)
 {
   // initialize UART
-  m_port = UARTPort::getInstance();
+  m_port= UARTManager::getInstance()->getPort(UARTManagerPortLEUART0);
   
   m_port->initialize(m_msgBuffer, GPS_MSGBUFFER_SIZE, 
                      UARTPort::uartPortBaudRate9600, 
