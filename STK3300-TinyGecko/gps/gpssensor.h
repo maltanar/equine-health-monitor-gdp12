@@ -17,7 +17,8 @@
 
 // TODO maybe this should be defined in a more global header file?
 // the DMA channel used to receive data from the UART for the GPS
-#define GPS_DMA_CHANNEL         0
+#define USE_GPS_DMA
+#define DMA_CHANNEL_GPS         0
 
 class GPSSensor : public Sensor {
 public:
@@ -39,13 +40,14 @@ public:
   const void* readSensorData(uint16_t *actualSize);
   
   // GPS module control commands
+  void hotRestart();
   void queryFirmwareVersion();
   void queryFixRate();
   void setFixRate(int fixRateMs);
   void configureWantedNMEASentences();  // set the config flags on the device 
                                         // so that we don't get NMEA sentences
                                         // which we have no use for
-  void hotRestart();
+  
   
 private:
   // ------ start of singleton pattern specific section ------

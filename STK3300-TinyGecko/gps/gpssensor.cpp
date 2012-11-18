@@ -19,11 +19,16 @@ GPSSensor::GPSSensor() :
                      UARTPort::uartPortDataBits8, UARTPort::uartPortParityNone, 
                      UARTPort::uartPortStopBits1);
   
-  // TODO perform sanity check?
-  // configure DMA -  TODO maybe make this optional?
-  m_port->setupDMA(GPS_DMA_CHANNEL, '\n');
+  // TODO should we perform a sanity check on the GPS module here?
   
+#ifdef USE_GPS_DMA
+  // configure DMA 
+  m_port->setupDMA(DMA_CHANNEL_GPS, '\n');
+#endif
   
+  // TODO GPS is responding weirdly to these control msgs, but why?
+  // the setPeriod is causing a restart and not keeping the new period..
+  // unless sent in a loop
   // send NMEA message to restrict rate and wanted message types, as we
   // are not interested in satellites in view etc. notifications
   //setPeriod(5000);
@@ -132,7 +137,7 @@ void GPSSensor::hotRestart()
 // process a buffer as an NMEA message
 void GPSSensor::processNMEAMessage(uint8_t * buffer)
 {
-  // TODO implement message parsing
+  // TODO implement detailed message parsing?
   // TODO maybe implement checksum control
   // TODO handle corrupt or incorrect messages, don't loop forever
   int i = 0, c = 0;
@@ -159,9 +164,6 @@ void GPSSensor::processNMEAMessage(uint8_t * buffer)
   module_debug_gps("num of fields %d", c);
   for(i = 0; i < c; i++)
     module_debug_gps("field %d is %s", i, &buffer[fieldPos[i]]);
-  
-  
-  module_debug_gps("%s", buffer);
 }
 
 void GPSSensor::sendNMEAString(char *data)

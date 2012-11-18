@@ -20,11 +20,18 @@ void frameHandler(uint8_t *buf)
   GPSSensor::getInstance()->sampleSensorData();
 }
 
+void rxHook(int c)
+{
+  if(c == '\n')
+    GPSSensor::getInstance()->sampleSensorData();
+}
+
 int main()
 {
   CHIP_Init();
   TRACE_SWOSetup();  
   UARTManager::getInstance()->getPort(UARTManagerPortLEUART0)->setSignalFrameHook(&frameHandler);
+  UARTManager::getInstance()->getPort(UARTManagerPortLEUART0)->setRxHook(&rxHook);
   gps = GPSSensor::getInstance();
   
   while(1)
