@@ -4,70 +4,22 @@
 #include "em_gpio.h"
 #include "uartport.h"
 #include "dmamanager.h"
+#include "em_usart.h"
+#include "em_leuart.h"
 
 #include "debug_output_control.h"
 
-#if defined(RETARGET_USART)
-#include "em_usart.h"
-#endif
-
-#if defined(RETARGET_LEUART)
-#include "em_leuart.h"
-#endif
-
-void RETARGET_IRQ_NAME(void)
-{
-  uint32_t leuartif = LEUART_IntGet(LEUART0);
-  LEUART_IntClear(LEUART0, leuartif);
+#define UARTPORT_TX(x,y)        (m_portConfig->lowEnergy ? LEUART_Tx((LEUART_TypeDef *) x, y) : USART_Tx(x, y))
+#define UARTPORT_RX(x)          (m_portConfig->lowEnergy ? LEUART_Rx((LEUART_TypeDef *) x) : USART_Rx(x))
+#define UARTPORT_INTGET(x)      (m_portConfig->lowEnergy ? LEUART_IntGet((LEUART_TypeDef *) x ) : USART_IntGet(x))
+#define UARTPORT_INTCLR(x,y)    (m_portConfig->lowEnergy ? LEUART_IntClear((LEUART_TypeDef *) x,y) : USART_IntClear(x,y))  
   
-  if (leuartif & LEUART_IF_RXDATAV)
-    UARTPort::getInstance()->handleRxInterrupt();
-  else if (leuartif & LEUART_IF_SIGF)
-    UARTPort::getInstance()->handleSigFrameInterrupt();
-}
-
-UARTPort::UARTPort()
+UARTPort::UARTPort(const UARTPortConfig *cfg)
 {
+  m_portConfig = cfg;
   m_initialized = false;
   m_sfHook = 0;
   m_rxHook = 0;
-}
-
-void UARTPort::handleSigFrameInterrupt()
-{
-  module_debug_uart("signal frame!");
-  
-  // call the signal frame hook if set
-  if(m_sfHook)
-    m_sfHook(m_rxBuffer);
-  
-  // reactivate DMA
-  DMAManager::getInstance()->activateBasic(m_dmaChannel, NULL, NULL, 
-                                           m_rxBufferSize - 1);
-}
-
-void UARTPort::handleRxInterrupt()
-{
-  int c = RETARGET_RX(RETARGET_UART);
-  module_debug_uart("rx interrupt!");
-  
-  // execute rx hook if defined
-  if(m_rxHook)
-    m_rxHook(c);
-
-  // Store Data 
-  m_rxBuffer[m_rxWriteIndex] = c;
-  m_rxWriteIndex++;
-  m_rxCount++;
-  if (m_rxWriteIndex == m_rxBufferSize)
-  {
-    m_rxWriteIndex = 0;
-  }
-  // Check for overflow - flush buffer
-  if (m_rxCount > m_rxBufferSize)
-  {
-    flushRxBuffer();
-  }
 }
 
 bool UARTPort::initialize(uint8_t *rxBuffer, uint8_t rxBufferSize, 
@@ -87,89 +39,155 @@ bool UARTPort::initialize(uint8_t *rxBuffer, uint8_t rxBufferSize,
     module_debug_uart("cannot work without rx buffer!");
     return false;
   }
+
   // Configure GPIO pins 
   CMU_ClockEnable(cmuClock_GPIO, true);
   
   // To avoid false start, configure output as high 
-  GPIO_PinModeSet(RETARGET_TXPORT, RETARGET_TXPIN, gpioModePushPull, 1);
-  GPIO_PinModeSet(RETARGET_RXPORT, RETARGET_RXPIN, gpioModeInput, 0);
+  GPIO_PinModeSet(m_portConfig->txPort, m_portConfig->txPin, gpioModePushPull, 1);
+  GPIO_PinModeSet(m_portConfig->rxPort, m_portConfig->rxPin, gpioModeInput, 0);
+  
+  if(m_portConfig->lowEnergy)
+  {
+    // LEUART configuration
+    LEUART_TypeDef      *leuart = (LEUART_TypeDef *) m_portConfig->usartBase;
+    LEUART_Init_TypeDef init    = LEUART_INIT_DEFAULT;
 
-#if defined(RETARGET_USART)
-  USART_TypeDef           *usart = RETARGET_UART;
-  USART_InitAsync_TypeDef init   = USART_INITASYNC_DEFAULT;
+    // Enable CORE LE clock in order to access LE modules 
+    CMU_ClockEnable(cmuClock_CORELE, true);
 
-  // Enable peripheral clocks 
-  CMU_ClockEnable(cmuClock_HFPER, true);
-  CMU_ClockEnable(RETARGET_CLK, true);
+    // Start LFXO, and use LFXO for low-energy modules
+    CMU_ClockSelectSet(cmuClock_LFA, cmuSelect_LFXO);
+    CMU_ClockSelectSet(cmuClock_LFB, cmuSelect_LFXO);
 
-  // Configure USART for basic async operation 
-  init.enable = usartDisable;
-  init.baudrate = baudRate;
-  USART_InitAsync(usart, &init);
+    CMU_ClockEnable(m_portConfig->clockPoint, true);
 
-  // Enable pins at UART1 location #2 
-  usart->ROUTE = USART_ROUTE_RXPEN | USART_ROUTE_TXPEN | RETARGET_LOCATION;
+    // Do not prescale clock 
+    CMU_ClockDivSet(m_portConfig->clockPoint, cmuClkDiv_1);
 
-  // Clear previous RX interrupts 
-  USART_IntClear(RETARGET_UART, USART_IF_RXDATAV);
-  NVIC_ClearPendingIRQ(RETARGET_IRQn);
+    // Configure LEUART 
+    init.enable = leuartDisable;
+    init.baudrate = baudRate;
+    LEUART_Init(leuart, &init);
+    // Enable pins at default location 
+    leuart->ROUTE = LEUART_ROUTE_RXPEN | LEUART_ROUTE_TXPEN 
+                    | m_portConfig->routeLocation;
 
-  // Enable RX interrupts 
-  USART_IntEnable(RETARGET_UART, USART_IF_RXDATAV);
-  NVIC_EnableIRQ(RETARGET_IRQn);
+    // Clear previous RX interrupts
+    LEUART_IntClear(leuart, LEUART_IF_RXDATAV);
+    NVIC_ClearPendingIRQ(m_portConfig->irqNumber);
 
-  // Finally enable it 
-  USART_Enable(usart, usartEnable);
+    // Enable RX interrupts
+    LEUART_IntEnable(leuart, LEUART_IF_RXDATAV);
+    NVIC_EnableIRQ(m_portConfig->irqNumber);
 
-#else
-  LEUART_TypeDef      *leuart = RETARGET_UART;
-  LEUART_Init_TypeDef init    = LEUART_INIT_DEFAULT;
+    // Finally enable it
+    LEUART_Enable(leuart, leuartEnable);  
+  }
+  else
+  {
+    // regular UART configuration
+    USART_TypeDef *usart = m_portConfig->usartBase;
+    USART_InitAsync_TypeDef init   = USART_INITASYNC_DEFAULT;
 
-  // Enable CORE LE clock in order to access LE modules 
-  CMU_ClockEnable(cmuClock_CORELE, true);
+    // Enable peripheral clocks 
+    CMU_ClockEnable(cmuClock_HFPER, true);
+    CMU_ClockEnable(m_portConfig->clockPoint, true);
 
-  // Start LFXO, and use LFXO for low-energy modules
-  CMU_ClockSelectSet(cmuClock_LFA, cmuSelect_LFXO);
-  CMU_ClockSelectSet(cmuClock_LFB, cmuSelect_LFXO);
+    // Configure USART for basic async operation 
+    init.enable = usartDisable;
+    init.baudrate = baudRate;
+    USART_InitAsync(usart, &init);
 
-  CMU_ClockEnable(RETARGET_CLK, true);
+    // Enable pins at desired UART location
+    usart->ROUTE = USART_ROUTE_RXPEN | USART_ROUTE_TXPEN | 
+                   m_portConfig->routeLocation;
 
-  // Do not prescale clock 
-  CMU_ClockDivSet(RETARGET_CLK, cmuClkDiv_1);
+    // Clear previous RX interrupts 
+    USART_IntClear(usart, USART_IF_RXDATAV);
+    NVIC_ClearPendingIRQ(m_portConfig->irqNumber);
 
-  // Configure LEUART 
-  init.enable = leuartDisable;
-  init.baudrate = baudRate;
-  LEUART_Init(leuart, &init);
-  // Enable pins at default location 
-  leuart->ROUTE = LEUART_ROUTE_RXPEN | LEUART_ROUTE_TXPEN | RETARGET_LOCATION;
+    // Enable RX interrupts 
+    USART_IntEnable(usart, USART_IF_RXDATAV);
+    NVIC_EnableIRQ(m_portConfig->irqNumber);
 
-  // Clear previous RX interrupts
-  LEUART_IntClear(RETARGET_UART, LEUART_IF_RXDATAV);
-  NVIC_ClearPendingIRQ(RETARGET_IRQn);
-
-  // Enable RX interrupts
-  LEUART_IntEnable(RETARGET_UART, LEUART_IF_RXDATAV);
-  NVIC_EnableIRQ(RETARGET_IRQn);
-
-  // Finally enable it
-  LEUART_Enable(leuart, leuartEnable);
-#endif
-
-#if !defined(__CROSSWORKS_ARM) && defined(__GNUC__)
-  setvbuf(stdout, NULL, _IONBF, 0);   //Set unbuffered mode for stdout (newlib)
-#endif
+    // Finally enable it 
+    USART_Enable(usart, usartEnable);
+  }
   
   m_initialized = true;
+  
   return true;
 }
 
+void UARTPort::setRxHook(RxHook h)
+{
+  m_rxHook = h;
+}
+
+void UARTPort::setSignalFrameHook(SigFrameHook h)
+{
+  m_sfHook = h;
+}
+
+void UARTPort::handleInterrupt()
+{
+  uint32_t uartif = UARTPORT_INTGET(m_portConfig->usartBase);
+  UARTPORT_INTCLR(m_portConfig->usartBase, uartif);
+  
+  if (uartif & LEUART_IF_RXDATAV)
+  {
+    int c = UARTPORT_RX(m_portConfig->usartBase);
+    module_debug_uart("rx interrupt!");
+    
+    // execute rx hook if defined
+    if(m_rxHook)
+      m_rxHook(c);
+
+    // store data 
+    m_rxBuffer[m_rxWriteIndex] = c;
+    m_rxWriteIndex++;
+    m_rxCount++;
+    if (m_rxWriteIndex == m_rxBufferSize)
+    {
+      m_rxWriteIndex = 0;
+    }
+    // Check for overflow - flush buffer
+    if (m_rxCount > m_rxBufferSize)
+    {
+      module_debug_uart("overflow, buffer flush!");
+      flushRxBuffer();
+    }
+  }
+  
+  if (uartif & LEUART_IF_SIGF)
+  {
+    module_debug_uart("signal frame!");
+  
+    // call the signal frame hook if set
+    if(m_sfHook)
+      m_sfHook(m_rxBuffer);
+    
+    // reactivate DMA
+    DMAManager::getInstance()->activateBasic(m_dmaChannel, NULL, NULL, 
+                                             m_rxBufferSize - 1);
+  }
+}
 
 void UARTPort::setupDMA(uint8_t dmaChannel, uint8_t signalFrameChar)
 {
+  // TODO add support for non-LE UART
+  if(!m_portConfig->lowEnergy)
+  {
+    module_debug_uart("DMA for non-LE UART not yet supported!");
+    return;
+  }
+  
   // require normal initialization first
   if(!m_initialized)
     return;
+  
+  // TODO this is hardcoded for LEUART0, modify this to support others
   
   m_dmaChannel = dmaChannel;
   // TODO is there anything we cannot accept as the signal frame char?
@@ -194,7 +212,7 @@ void UARTPort::setupDMA(uint8_t dmaChannel, uint8_t signalFrameChar)
   // enable LEUART signal frame interrupt
   LEUART_IntEnable(LEUART0, LEUART_IEN_SIGF);
   // disable LEUART receive interrupt
-  LEUART_IntDisable(RETARGET_UART, LEUART_IF_RXDATAV);
+  LEUART_IntDisable((LEUART_TypeDef *) m_portConfig->usartBase, LEUART_IF_RXDATAV);
   
   // Make sure the LEUART wakes up the DMA on RX data
   LEUART0->CTRL = LEUART_CTRL_RXDMAWU;
@@ -204,7 +222,8 @@ int UARTPort::readChar(void)
 {
   int c = -1;
 
-  NVIC_DisableIRQ(RETARGET_IRQn);
+  NVIC_DisableIRQ(m_portConfig->irqNumber);
+  
   if (m_rxCount > 0)
   {
     c = m_rxBuffer[m_rxReadIndex];
@@ -215,7 +234,7 @@ int UARTPort::readChar(void)
     }
     m_rxCount--;
   }
-  NVIC_EnableIRQ(RETARGET_IRQn);
+  NVIC_EnableIRQ(m_portConfig->irqNumber);
 
   return c;
 }
@@ -229,17 +248,7 @@ void UARTPort::flushRxBuffer()
 
 int UARTPort::writeChar(char c)
 {
-  RETARGET_TX(RETARGET_UART, c);
+  UARTPORT_TX(m_portConfig->usartBase, c);
 
   return c;
-}
-
-void UARTPort::setRxHook(RxHook h)
-{
-  m_rxHook = h;
-}
-
-void UARTPort::setSignalFrameHook(SigFrameHook h)
-{
-  m_sfHook = h;
 }
