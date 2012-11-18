@@ -2,9 +2,6 @@
 #include "efm32.h"
 #include "em_chip.h"
 
-
-#define DMA_CHANNEL    0
-
 // DMA control block, must be aligned to 256
 // definition block taken from Energy Micro's LEUART application note
 #if defined (__ICCARM__)
@@ -15,7 +12,7 @@ DMA_DESCRIPTOR_TypeDef dmaControlBlock[DMA_CHAN_COUNT * 2] __attribute__ ((align
 #elif defined (__GNUC__)
 DMA_DESCRIPTOR_TypeDef dmaControlBlock[DMA_CHAN_COUNT * 2] __attribute__ ((aligned(256)));
 #else
-#error Undefined toolkit, need to define alignment
+#error Undefined toolkit, need to define alignment for DMA control block
 #endif
 
 DMAManager::DMAManager()
