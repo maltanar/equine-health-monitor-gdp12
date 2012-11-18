@@ -14,31 +14,23 @@ void TRACE_SWOSetup();
 
 GPSSensor * gps;
 
-void rxHook(int c)
+void frameHandler(uint8_t *buf)
 {
-  /*if(c == '$')
-  {
-    UARTPort::getInstance()->flushRxBuffer();
-    gps->sampleSensorData();
-  }*/
-  printf("%c",c);
+  GPSSensor::getInstance()->sampleSensorData();
 }
 
 int main()
 {
   CHIP_Init();
-  TRACE_SWOSetup();
+  TRACE_SWOSetup();  
   
-  char typ[10], msg[80];
-  uint8_t len;
+  UARTPort::getInstance()->setSignalFrameHook(&frameHandler);
+  gps = GPSSensor::getInstance();
   
-  UARTPort::getInstance()->setRxHook(&rxHook);
-  gps = new GPSSensor(2000);
-
   while(1)
   {
-    //gps->receiveNMEAString(typ, msg, 80, &len);
-    //printf("%s \n", msg);
+    /*gps->receiveNMEAString(typ, msg, 80, &len);
+    printf("%s \n", msg);*/
     //gps->queryFirmwareVersion();
     //printf("Fixrate: %d \n", gps->getFixRate());
     EMU_EnterEM2(true);
