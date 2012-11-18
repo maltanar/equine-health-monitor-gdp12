@@ -47,6 +47,7 @@
 #endif
 
 typedef void(*RxHook)(int c);
+typedef void(*SigFrameHook)(uint8_t *buf);
 
 class UARTPort {
 public:
@@ -81,23 +82,30 @@ public:
   bool initialize(uint8_t *rxBuffer, uint8_t rxBufferSize, BaudRate baudRate, 
                   DataBits dataBits, Parity parity, StopBits stopBits);
   
+  void setupDMA(uint8_t dmaChannel, uint8_t signalFrameChar);
+  
   void setRxHook(RxHook h);
+  void setSignalFrameHook(SigFrameHook h);
+  
   int writeChar(char c);
   int readChar();
   void flushRxBuffer();
   
   // declare ISR for UART as friend function, since it will need access to the
-  // protected function handleUARTInterrupt()
+  // protected functions to handle interrupts
   friend void RETARGET_IRQ_NAME();
   
-protected: 
+private: 
   volatile int m_rxReadIndex;
   volatile int m_rxWriteIndex;
   volatile int m_rxCount;
   uint8_t *m_rxBuffer;
   uint8_t m_rxBufferSize;
+  uint8_t m_dmaChannel;
+  uint8_t m_signalFrameChar;
   bool m_initialized;
-  RxHook m_hook;
+  RxHook m_rxHook;
+  SigFrameHook m_sfHook;
 
   // ------ start of singleton pattern specific section ------
   UARTPort();  
@@ -105,7 +113,8 @@ protected:
   void operator=(UARTPort const&);        // do not implement
   // ------ end of singleton pattern specific section --------
   
-  void handleUARTInterrupt();
+  void handleRxInterrupt();
+  void handleSigFrameInterrupt();
 };
 
 #endif  // UART_H

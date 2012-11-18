@@ -3,6 +3,7 @@
 #include "em_cmu.h"
 #include "em_gpio.h"
 #include "uartport.h"
+#include "dmamanager.h"
 
 #include "debug_output_control.h"
 
@@ -16,45 +17,59 @@
 
 void RETARGET_IRQ_NAME(void)
 {
-  UARTPort::getInstance()->handleUARTInterrupt();
+  uint32_t leuartif = LEUART_IntGet(LEUART0);
+  LEUART_IntClear(LEUART0, leuartif);
+  
+  if (leuartif & LEUART_IF_RXDATAV)
+    UARTPort::getInstance()->handleRxInterrupt();
+  else if (leuartif & LEUART_IF_SIGF)
+    UARTPort::getInstance()->handleSigFrameInterrupt();
 }
 
 UARTPort::UARTPort()
 {
   m_initialized = false;
-  m_hook = 0;
+  m_sfHook = 0;
+  m_rxHook = 0;
 }
 
-void UARTPort::handleUARTInterrupt()
+void UARTPort::handleSigFrameInterrupt()
 {
-#if defined(RETARGET_USART)
-  if (RETARGET_UART->STATUS & USART_STATUS_RXDATAV)
-  {
-#else
-  if (RETARGET_UART->IF & LEUART_IF_RXDATAV)
-  {
-#endif
-    int c = RETARGET_RX(RETARGET_UART);
-    
-    // execute rx hook if defined
-    if(m_hook)
-      m_hook(c);
+  module_debug_uart("signal frame!");
+  
+  // call the signal frame hook if set
+  if(m_sfHook)
+    m_sfHook(m_rxBuffer);
+  
+  // reactivate DMA
+  DMAManager::getInstance()->activateBasic(m_dmaChannel, NULL, NULL, 
+                                           m_rxBufferSize - 1);
+}
 
-    // Store Data 
-    m_rxBuffer[m_rxWriteIndex] = c;
-    m_rxWriteIndex++;
-    m_rxCount++;
-    if (m_rxWriteIndex == m_rxBufferSize)
-    {
-      m_rxWriteIndex = 0;
-    }
-    // Check for overflow - flush buffer
-    if (m_rxCount > m_rxBufferSize)
-    {
-      flushRxBuffer();
-    }
+void UARTPort::handleRxInterrupt()
+{
+  int c = RETARGET_RX(RETARGET_UART);
+  module_debug_uart("rx interrupt!");
+  
+  // execute rx hook if defined
+  if(m_rxHook)
+    m_rxHook(c);
+
+  // Store Data 
+  m_rxBuffer[m_rxWriteIndex] = c;
+  m_rxWriteIndex++;
+  m_rxCount++;
+  if (m_rxWriteIndex == m_rxBufferSize)
+  {
+    m_rxWriteIndex = 0;
+  }
+  // Check for overflow - flush buffer
+  if (m_rxCount > m_rxBufferSize)
+  {
+    flushRxBuffer();
   }
 }
+
 bool UARTPort::initialize(uint8_t *rxBuffer, uint8_t rxBufferSize, 
                           BaudRate baudRate = uartPortBaudRate9600, 
                           DataBits dataBits = uartPortDataBits8, 
@@ -72,7 +87,6 @@ bool UARTPort::initialize(uint8_t *rxBuffer, uint8_t rxBufferSize,
     module_debug_uart("cannot work without rx buffer!");
     return false;
   }
-  
   // Configure GPIO pins 
   CMU_ClockEnable(cmuClock_GPIO, true);
   
@@ -114,7 +128,8 @@ bool UARTPort::initialize(uint8_t *rxBuffer, uint8_t rxBufferSize,
   // Enable CORE LE clock in order to access LE modules 
   CMU_ClockEnable(cmuClock_CORELE, true);
 
-  // Select LFXO for LEUARTs (and wait for it to stabilize) 
+  // Start LFXO, and use LFXO for low-energy modules
+  CMU_ClockSelectSet(cmuClock_LFA, cmuSelect_LFXO);
   CMU_ClockSelectSet(cmuClock_LFB, cmuSelect_LFXO);
 
   CMU_ClockEnable(RETARGET_CLK, true);
@@ -147,6 +162,42 @@ bool UARTPort::initialize(uint8_t *rxBuffer, uint8_t rxBufferSize,
   
   m_initialized = true;
   return true;
+}
+
+
+void UARTPort::setupDMA(uint8_t dmaChannel, uint8_t signalFrameChar)
+{
+  // require normal initialization first
+  if(!m_initialized)
+    return;
+  
+  m_dmaChannel = dmaChannel;
+  // TODO is there anything we cannot accept as the signal frame char?
+  m_signalFrameChar = signalFrameChar;
+  
+  // config LEUART DMA, interrupts and DMAManager
+  DMAManager * dmaMgr = DMAManager::getInstance();
+  
+  // configure the DMA channel and descriptor for LEUART0
+  // TODO make this customizable
+  dmaMgr->configureChannel(m_dmaChannel, false, DMAREQ_LEUART0_RXDATAV);
+  dmaMgr->configureDescriptor(m_dmaChannel, dmaDataInc1, dmaDataIncNone, 
+                              dmaDataSize1, dmaArbitrate1);
+  // activate DMA transfer
+  dmaMgr->activateBasic(m_dmaChannel, (void *) &LEUART0->RXDATA,
+                        (void *) m_rxBuffer, m_rxBufferSize - 1);
+  
+  // configure signal frame - interrupt to be generated upon encountering
+  // this character
+  LEUART0->SIGFRAME = m_signalFrameChar;
+  
+  // enable LEUART signal frame interrupt
+  LEUART_IntEnable(LEUART0, LEUART_IEN_SIGF);
+  // disable LEUART receive interrupt
+  LEUART_IntDisable(RETARGET_UART, LEUART_IF_RXDATAV);
+  
+  // Make sure the LEUART wakes up the DMA on RX data
+  LEUART0->CTRL = LEUART_CTRL_RXDMAWU;
 }
 
 int UARTPort::readChar(void)
@@ -185,5 +236,10 @@ int UARTPort::writeChar(char c)
 
 void UARTPort::setRxHook(RxHook h)
 {
-  m_hook = h;
+  m_rxHook = h;
+}
+
+void UARTPort::setSignalFrameHook(SigFrameHook h)
+{
+  m_sfHook = h;
 }
