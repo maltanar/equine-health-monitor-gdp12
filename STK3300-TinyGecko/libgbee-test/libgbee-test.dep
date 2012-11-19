@@ -1,0 +1,857 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<project>
+  <fileVersion>2</fileVersion>
+  <fileChecksum>3887192537</fileChecksum>
+  <configuration>
+    <name>Debug</name>
+    <outputs>
+      <file>$PROJ_DIR$\Debug\Obj\gbee-util.o</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_prs.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_rtc.o</file>
+      <file>$PROJ_DIR$\Debug\Obj\trace.pbi</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_dmactrl.h</file>
+      <file>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\port\energymicro\tg\gbee-usart.c</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_i2c.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\ysizet.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\stdio.h</file>
+      <file>$PROJ_DIR$\..\common\drivers\uartport.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\libgbee-test.pbd</file>
+      <file>$PROJ_DIR$\Debug\Obj\sensor.o</file>
+      <file>$TOOLKIT_DIR$\inc\c\intrinsics.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_pcnt.h</file>
+      <file>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\gbee-util.h</file>
+      <file>$TOOLKIT_DIR$\lib\shb_l.a</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_system.o</file>
+      <file>$PROJ_DIR$\Debug\Obj\gbee-usart.pbi</file>
+      <file>$PROJ_DIR$\ANT\hrm_rx.c</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_emu.pbi</file>
+      <file>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\port\energymicro\tg\gbee-usart.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_af_pins.h</file>
+      <file>$PROJ_DIR$\Debug\Exe\libgbee-test.out</file>
+      <file>$PROJ_DIR$\Debug\Obj\hrm_rx.pbi</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_devinfo.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_cmu.pbi</file>
+      <file>$TOOLKIT_DIR$\lib\rt7M_tl.a</file>
+      <file>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\port\energymicro\tg\gbee-port.c</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_vcmp.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Source\startup_efm32tg.s</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_prs_ch.h</file>
+      <file>$TOOLKIT_DIR$\config\linker\EnergyMicro\EFM32TG840F32.icf</file>
+      <file>$TOOLKIT_DIR$\inc\c\cmsis_iar.h</file>
+      <file>$PROJ_DIR$\..\common\emlib\inc\em_usart.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\gbee-port.pbi</file>
+      <file>$PROJ_DIR$\..\common\drivers\retargetserial.h</file>
+      <file>$PROJ_DIR$\..\common\emlib\src\em_cmu.c</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_lesense.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_prs_signals.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_romtable.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\uartmanager.o</file>
+      <file>$TOOLKIT_DIR$\lib\dl7M_tln.a</file>
+      <file>$TOOLKIT_DIR$\lib\dlpp7M_tl_ne.a</file>
+      <file>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\gbee.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Product_string.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\startup_efm32tg.o</file>
+      <file>$PROJ_DIR$\..\common\CMSIS\Include\core_cmInstr.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_letimer.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_assert.o</file>
+      <file>$PROJ_DIR$\Debug\Obj\main.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_leuart.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_system.pbi</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_gpio_p.h</file>
+      <file>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\port\energymicro\tg\gbee-tick.h</file>
+      <file>$PROJ_DIR$\..\common\emlib\inc\em_assert.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\string.h</file>
+      <file>$PROJ_DIR$\..\common\emlib\inc\em_leuart.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_lesense_buf.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\main.o</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_dma.o</file>
+      <file>$PROJ_DIR$\..\common\bsp\trace.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_dma.pbi</file>
+      <file>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\port\energymicro\tg\gbee-tick.c</file>
+      <file>$PROJ_DIR$\..\common\emlib\inc\em_chip.h</file>
+      <file>$PROJ_DIR$\..\common\drivers\uartmanager.cpp</file>
+      <file>$PROJ_DIR$\Debug\Obj\uartport.pbi</file>
+      <file>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\port\energymicro\tg\gbee-heap.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\sensor.pbi</file>
+      <file>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\port\energymicro\tg\gbee-heap.c</file>
+      <file>$PROJ_DIR$\Debug\Obj\ANTInterface.o</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_int.o</file>
+      <file>$PROJ_DIR$\Debug\Obj\rtc.o</file>
+      <file>$PROJ_DIR$\Debug\Obj\uartmanager.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\gbee-usart.o</file>
+      <file>$PROJ_DIR$\ANT\ANTInterface.c</file>
+      <file>$PROJ_DIR$\..\common\emlib\inc\em_rtc.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\ystdio.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_aes.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\gbee-heap.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\serial.o</file>
+      <file>$PROJ_DIR$\Debug\Obj\gbee-port.o</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_timer_cc.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\system_efm32tg.o</file>
+      <file>$TOOLKIT_DIR$\inc\c\stdint.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\stdbool.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\gbee-tick.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\main_hrm.o</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_leuart.o</file>
+      <file>$PROJ_DIR$\..\common\CMSIS\Include\core_cm3.h</file>
+      <file>$PROJ_DIR$\..\common\bsp\trace.c</file>
+      <file>$PROJ_DIR$\..\common\emlib\inc\em_part.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Product.h</file>
+      <file>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\port\energymicro\tg\gbee-usart.cpp</file>
+      <file>$PROJ_DIR$\Debug\Obj\main_hrm.pbi</file>
+      <file>$PROJ_DIR$\..\common\emlib\inc\em_int.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_timer.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\dmamanager.pbi</file>
+      <file>$PROJ_DIR$\Debug\Exe\libgbee-test.bin</file>
+      <file>$PROJ_DIR$\..\common\emlib\src\em_system.c</file>
+      <file>$PROJ_DIR$\..\common\emlib\src\em_assert.c</file>
+      <file>$PROJ_DIR$\..\common\emlib\inc\em_dma.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32.h</file>
+      <file>$PROJ_DIR$\..\common\emlib\src\em_gpio.c</file>
+      <file>$PROJ_DIR$\..\common\drivers\rtc.h</file>
+      <file>$PROJ_DIR$\..\common\emlib\inc\em_msc.h</file>
+      <file>$PROJ_DIR$\..\common\emlib\inc\em_gpio.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Config_Normal.h</file>
+      <file>$PROJ_DIR$\..\common\drivers\dmamanager.cpp</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_msc.h</file>
+      <file>$PROJ_DIR$\..\common\drivers\uartport.cpp</file>
+      <file>$PROJ_DIR$\Debug\Obj\trace.o</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_dma_descriptor.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_usart.pbi</file>
+      <file>$PROJ_DIR$\..\common\drivers\uartmanager.h</file>
+      <file>$TOOLKIT_DIR$\lib\m7M_tl.a</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_emu.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_dma.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_usart.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_gpio.pbi</file>
+      <file>$PROJ_DIR$\..\common\drivers\rtc.c</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_lesense_st.h</file>
+      <file>$PROJ_DIR$\debug_output_control.h</file>
+      <file>$PROJ_DIR$\..\common\emlib\src\em_dma.c</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_adc.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\yvals.h</file>
+      <file>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\gbee.c</file>
+      <file>$PROJ_DIR$\..\common\drivers\dmamanager.h</file>
+      <file>$PROJ_DIR$\..\common\emlib\inc\em_system.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\serial.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\uartport.o</file>
+      <file>$PROJ_DIR$\..\common\emlib\inc\em_cmu.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\system_efm32tg.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_acmp.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\gbee.o</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_gpio.h</file>
+      <file>$PROJ_DIR$\..\common\CMSIS\Include\core_cmFunc.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_calibrate.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\xencoding_limits.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\ycheck.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\rtc.pbi</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Defaults.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\hrm_rx.o</file>
+      <file>$PROJ_DIR$\Debug\Obj\gbee-util.pbi</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Threads.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_wdog.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_rmu.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\stddef.h</file>
+      <file>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\gbee-util.c</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_dma_ch.h</file>
+      <file>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\gbee-port-interface.h</file>
+      <file>$PROJ_DIR$\..\common\emlib\src\em_usart.c</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_af_ports.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_emu.o</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Source\system_efm32tg.c</file>
+      <file>$PROJ_DIR$\Debug\Obj\dmamanager.o</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_int.pbi</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_rtc.h</file>
+      <file>$PROJ_DIR$\..\common\emlib\src\em_rtc.c</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_gpio.o</file>
+      <file>$PROJ_DIR$\Debug\Obj\ANTInterface.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_assert.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\gbee-tick.o</file>
+      <file>$PROJ_DIR$\main.cpp</file>
+      <file>$PROJ_DIR$\Debug\Obj\gbee-heap.o</file>
+      <file>$PROJ_DIR$\sensor.cpp</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_lcd.h</file>
+      <file>$PROJ_DIR$\ANT\main_hrm.c</file>
+      <file>$TOOLKIT_DIR$\inc\c\stdlib.h</file>
+      <file>$PROJ_DIR$\..\common\emlib\inc\em_bitband.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_leuart.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\system_efm32tg.pbi</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_dac.h</file>
+      <file>$PROJ_DIR$\..\common\emlib\src\em_emu.c</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_rtc.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\gbee.pbi</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_cmu.h</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_dmareq.h</file>
+      <file>$PROJ_DIR$\..\common\emlib\src\em_leuart.c</file>
+      <file>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\port\energymicro\tg\gbee-port.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_cmu.o</file>
+      <file>$PROJ_DIR$\Debug\Obj\em_usart.o</file>
+      <file>$PROJ_DIR$\ANT\serial.c</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg_lesense_ch.h</file>
+      <file>$PROJ_DIR$\..\common\emlib\src\em_int.c</file>
+      <file>$PROJ_DIR$\..\common\EFM32TG\Include\efm32tg840f32.h</file>
+      <file>$PROJ_DIR$\..\common\emlib\inc\em_emu.h</file>
+    </outputs>
+    <file>
+      <name>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\port\energymicro\tg\gbee-usart.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 73</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 17</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 20 83 138 124 140 106 91 137 143 84 55 7 44 33 90 101 184 88 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 35</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 20 83 138 124 140 106 91 137 143 84 55 7 44 33 90 101 184 88 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 35</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\ANT\hrm_rx.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 141</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 23</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Debug\Exe\libgbee-test.out</name>
+      <outputs>
+        <tool>
+          <name>OBJCOPY</name>
+          <file> 97</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ILINK</name>
+          <file> 31 154 48 179 59 152 158 70 87 2 16 180 163 80 161 73 0 133 58 71 45 82 110 40 129 15 26 42 114 41</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\port\energymicro\tg\gbee-port.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 80</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 34</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 149 83 138 124 140 106 91 137 143 178 66 84 53 20 8 7 76 55 44</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 149 83 138 124 140 106 91 137 143 178 66 84 53 20 8 7 76 55 44</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\common\EFM32TG\Source\startup_efm32tg.s</name>
+      <outputs>
+        <tool>
+          <name>AARM</name>
+          <file> 45</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\common\emlib\src\em_cmu.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 179</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 25</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 90 101 184 88 83 138 124 140 106 91 137 143 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 130 84 168 54 185</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 90 101 184 88 83 138 124 140 106 91 137 143 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 130 84 168 54 185</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\port\energymicro\tg\gbee-tick.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 161</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 85</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 53 83 138 124 140 106 91 137 143 84</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 53 83 138 124 140 106 91 137 143 84</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\common\drivers\uartmanager.cpp</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 40</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 72</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 8 138 124 140 106 91 137 143 7 76 113 83 130 84 90 101 184 88 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 168 105 54 9</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 8 138 124 140 106 91 137 143 7 76 113 83 130 84 90 101 184 88 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 168 105 54 9</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\port\energymicro\tg\gbee-heap.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 163</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 78</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 167 138 124 140 106 91 137 143 7 66 83 84</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 167 138 124 140 106 91 137 143 7 66 83 84</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\ANT\ANTInterface.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 69</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 159</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\common\bsp\trace.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 110</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 3</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 84 101 184 88 83 138 124 140 106 91 137 143 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 60 104 90 168</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 84 101 184 88 83 138 124 140 106 91 137 143 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 60 104 90 168</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\port\energymicro\tg\gbee-usart.cpp</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 73</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 17</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 20 83 138 124 140 106 91 137 143 84 55 7 44 8 76 113 130 90 101 184 88 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 168 105 54 9</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 20 83 138 124 140 106 91 137 143 84 55 7 44 8 76 113 130 90 101 184 88 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 168 105 54 9</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\common\emlib\src\em_system.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 16</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 51</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 90 101 184 88 83 138 124 140 106 91 137 143 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 127 84 54</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 90 101 184 88 83 138 124 140 106 91 137 143 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 127 84 54</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\common\emlib\src\em_assert.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 48</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 160</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 54</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 54</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\common\emlib\src\em_gpio.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 158</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 118</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 105 84 90 101 184 88 83 138 124 140 106 91 137 143 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 168 54</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 105 84 90 101 184 88 83 138 124 140 106 91 137 143 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 168 54</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\common\drivers\dmamanager.cpp</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 154</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 96</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 126 83 138 124 140 106 91 137 143 84 100 8 7 76 90 101 184 88 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 63 127</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 126 83 138 124 140 106 91 137 143 84 100 8 7 76 90 101 184 88 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 63 127</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>[ROOT_NODE]</name>
+      <outputs>
+        <tool>
+          <name>ILINK</name>
+          <file> 22</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\common\drivers\uartport.cpp</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 129</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 65</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 83 138 124 140 106 91 137 143 101 184 88 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 130 84 90 168 105 54 9 126 100 8 7 76 33 56 121</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 83 138 124 140 106 91 137 143 101 184 88 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 130 84 90 168 105 54 9 126 100 8 7 76 33 56 121</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\common\drivers\rtc.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 71</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 139</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 146 138 124 140 106 91 137 143 7 101 184 88 83 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 75 84 90 130 168 103</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 146 138 124 140 106 91 137 143 7 101 184 88 83 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 75 84 90 130 168 103</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\common\emlib\src\em_dma.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 59</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 61</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 100 8 138 124 140 106 91 137 143 7 76 84 90 101 184 88 83 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 130 168 54</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 100 8 138 124 140 106 91 137 143 7 76 84 90 101 184 88 83 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 130 168 54</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\gbee.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 133</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 174</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 43 84 83 138 124 140 106 91 137 143 149 178 66 53 20 8 7 76 55 44</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 43 84 83 138 124 140 106 91 137 143 149 178 66 53 20 8 7 76 55 44</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\gbee-util.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 0</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 142</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 14 43 84 83 138 124 140 106 91 137 143 149 178 66 53 20 8 7 76 55 44</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 14 43 84 83 138 124 140 106 91 137 143 149 178 66 53 20 8 7 76 55 44</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\common\emlib\src\em_usart.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 180</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 112</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 33 84 90 101 184 88 83 138 124 140 106 91 137 143 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 130 168 54</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 33 84 90 101 184 88 83 138 124 140 106 91 137 143 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 130 168 54</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\common\EFM32TG\Source\system_efm32tg.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 82</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 170</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 83 138 124 140 106 91 137 143 101 184 88 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 83 138 124 140 106 91 137 143 101 184 88 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\common\emlib\src\em_rtc.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 2</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 173</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 75 84 90 101 184 88 83 138 124 140 106 91 137 143 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 54 168</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 75 84 90 101 184 88 83 138 124 140 106 91 137 143 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 54 168</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\main.cpp</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 58</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 49</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 83 138 124 140 106 91 137 143 84 101 184 88 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 63 90 127 130 168 185 105 54 103 60 104 43 149 178 66 53 20 8 7 76 55 44 14</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 83 138 124 140 106 91 137 143 84 101 184 88 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 63 90 127 130 168 185 105 54 103 60 104 43 149 178 66 53 20 8 7 76 55 44 14</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\sensor.cpp</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 11</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 67</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\ANT\main_hrm.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 86</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 93</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\common\emlib\src\em_emu.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 152</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 19</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 185 84 90 101 184 88 83 138 124 140 106 91 137 143 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 168 130 54</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 185 84 90 101 184 88 83 138 124 140 106 91 137 143 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 168 130 54</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\common\emlib\src\em_leuart.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 87</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 50</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 56 84 90 101 184 88 83 138 124 140 106 91 137 143 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 130 168 54</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 56 84 90 101 184 88 83 138 124 140 106 91 137 143 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4 130 168 54</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\ANT\serial.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 79</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 128</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\common\emlib\src\em_int.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 70</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 155</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 83 138 124 140 106 91 137 143 94 90 101 184 88 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 83 138 124 140 106 91 137 143 94 90 101 184 88 46 32 12 135 131 21 151 38 108 115 145 175 77 120 57 182 37 52 134 30 1 148 116 81 95 117 169 47 13 6 123 171 132 28 165 156 144 111 24 39 136 176 4</file>
+        </tool>
+      </inputs>
+    </file>
+  </configuration>
+  <configuration>
+    <name>Release</name>
+    <outputs/>
+    <forcedrebuild>
+      <name>[MULTI_TOOL]</name>
+      <tool>ILINK</tool>
+    </forcedrebuild>
+  </configuration>
+</project>
+
+
