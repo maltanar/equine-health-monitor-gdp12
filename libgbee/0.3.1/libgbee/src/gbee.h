@@ -140,6 +140,13 @@ extern "C"{
 #include <stdint.h>
 #include "gbee-port-interface.h"
 
+/* IAR CC uses a different keyword for packed structures */
+#if defined ( __ICCARM__ )
+  #define PACKEDSTRUCT __packed struct
+#else
+  #define PACKEDSTRUCT struct __attribute__((__packed__))
+#endif
+
 #if defined(GBEE_PORT_BIG_ENDIAN) && !defined(GBEE_PORT_LITTLE_ENDIAN)
 /** Convert 16-bit value into XBee byte-order (big-endian). */
 #define GBEE_USHORT(x) (x)
@@ -184,7 +191,7 @@ typedef enum gbeeMode GBeeMode;
  * RF module status messages are sent from the module in response to specific
  * conditions.
  */
-struct __attribute__((__packed__)) gbeeModemStatus {
+PACKEDSTRUCT gbeeModemStatus {
 	/** API identifier: 0x8A. */
 	uint8_t ident;
 	/** Modem status byte. */
@@ -200,7 +207,7 @@ typedef struct gbeeModemStatus GBeeModemStatus;
  * immediately. This includes any register set with the “AT command - Queue 
  * Parameter value” (0x09) API type.
  */
-struct __attribute__((__packed__)) gbeeAtCommand {
+PACKEDSTRUCT gbeeAtCommand {
 	/** API identifier: 0x08. */
 	uint8_t ident;
 	/** 
@@ -227,7 +234,7 @@ typedef struct gbeeAtCommand GBeeAtCommand;
  * command is issued. Register queries (reading parameter values) are returned 
  * immediately.
  */
-struct __attribute__((__packed__)) gbeeAtCommandQueue {
+PACKEDSTRUCT gbeeAtCommandQueue {
 	/** API identifier: 0x09. */
 	uint8_t ident;
 	/**
@@ -253,7 +260,7 @@ typedef struct gbeeAtCommandQueue GBeeAtCommandQueue;
  * the ND (Node Discover) and AS (Active Scan) commands). These commands will 
  * end by sending a frame with a status of ATCMD_OK and no data.
  */
-struct __attribute__((__packed__)) gbeeAtCommandResponse {
+PACKEDSTRUCT gbeeAtCommandResponse {
 	/** API identifier: 0x88. */
 	uint8_t ident;
 	/**
@@ -279,7 +286,7 @@ typedef struct gbeeAtCommandResponse GBeeAtCommandResponse;
  * Allows for module parameter registers on a remote device to be queried or 
  * set.
  */
-struct __attribute__((__packed__)) gbeeRemoteAtCommand {
+PACKEDSTRUCT gbeeRemoteAtCommand {
 	/** API identifier: 0x17. */
 	uint8_t ident;
 	/**
@@ -328,7 +335,7 @@ typedef struct gbeeRemoteAtCommand GBeeRemoteAtCommand;
  * response message out the UART. Some commands may send back multiple frames,
  * for example, Node Discover (ND) command.
  */
-struct __attribute__((__packed__)) gbeeRemoteAtCommandResponse {
+PACKEDSTRUCT gbeeRemoteAtCommandResponse {
 	/** API identifier: 0x97. */
 	uint8_t ident;
 	/**
@@ -368,7 +375,7 @@ typedef struct gbeeRemoteAtCommandResponse GBeeRemoteAtCommandResponse;
 /**
  * A TX Request message will cause the module to send RF data as an RF Packet.
  */
-struct __attribute__((__packed__)) gbeeTxRequest {
+PACKEDSTRUCT gbeeTxRequest {
 	/** API identifier: 0x10. */
 	uint8_t ident;
 	/**
@@ -422,7 +429,7 @@ typedef struct gbeeTxRequest GBeeTxRequest;
  * there was a failure. This is the data structure that's compatible with
  * the latest version of the protocol
  */
-struct __attribute__((__packed__)) gbeeTxStatusNew {
+PACKEDSTRUCT gbeeTxStatusNew {
 	/** API identifier: 0x8B. */
 	uint8_t ident;
 	/**
@@ -465,7 +472,7 @@ typedef struct gbeeTxStatusNew GBeeTxStatusNew;
  * When the module receives an RF packet, it is sent out the UART using this
  * message type.
  */
-struct __attribute__((__packed__)) gbeeRxPacket {
+PACKEDSTRUCT gbeeRxPacket {
 	/** API identifier: 0x90. */
 	uint8_t ident;
 	/** MSB (most significant byte) first, LSB (least significant) last. */
@@ -524,7 +531,7 @@ typedef union gbeeFrameData GBeeFrameData;
 /**
  * This is the header of all frames.
  */
-struct __attribute__((__packed__)) gbeeFrameHeader {
+PACKEDSTRUCT gbeeFrameHeader {
 	/** Frame start delimiter, always 0x7E. */
 	uint8_t startDelimiter;
 	/** Length of frame data in bytes (MSB|LSB). */
@@ -537,7 +544,7 @@ typedef struct gbeeFrameHeader GBeeFrameHeader;
 /**
  * This is the trailer of all frames.
  */
-struct __attribute__((__packed__)) gbeeFrameTrailer {
+PACKEDSTRUCT gbeeFrameTrailer {
 	/** checksum over frame data. */
 	uint8_t checksum;
 };
@@ -548,7 +555,7 @@ typedef struct gbeeFrameTrailer GBeeFrameTrailer;
 /**
  * This is a complete XBee frame, including header, data, and trailer.
  */
-struct __attribute__((__packed__)) gbeeFrame {
+PACKEDSTRUCT gbeeFrame {
 	/** Frame header. */
 	GBeeFrameHeader header;
 	/** Frame data. */
