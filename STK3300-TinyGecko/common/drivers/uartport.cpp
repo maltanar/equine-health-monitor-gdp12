@@ -13,7 +13,8 @@
 #define UARTPORT_RX(x)          (m_portConfig->lowEnergy ? LEUART_Rx((LEUART_TypeDef *) x) : USART_Rx(x))
 #define UARTPORT_INTGET(x)      (m_portConfig->lowEnergy ? LEUART_IntGet((LEUART_TypeDef *) x ) : USART_IntGet(x))
 #define UARTPORT_INTCLR(x,y)    (m_portConfig->lowEnergy ? LEUART_IntClear((LEUART_TypeDef *) x,y) : USART_IntClear(x,y))  
-  
+#define UARTPORT_RXDATAV        (m_portConfig->lowEnergy ? LEUART_IF_RXDATAV : USART_IF_RXDATAV)
+
 UARTPort::UARTPort(const UARTPortConfig *cfg)
 {
   m_portConfig = cfg;
@@ -50,6 +51,7 @@ bool UARTPort::initialize(uint8_t *rxBuffer, uint8_t rxBufferSize,
   if(m_portConfig->lowEnergy)
   {
     // LEUART configuration
+    module_debug_uart("configuring LEUART...");
     LEUART_TypeDef      *leuart = (LEUART_TypeDef *) m_portConfig->usartBase;
     LEUART_Init_TypeDef init    = LEUART_INIT_DEFAULT;
 
@@ -87,6 +89,7 @@ bool UARTPort::initialize(uint8_t *rxBuffer, uint8_t rxBufferSize,
   else
   {
     // regular UART configuration
+    module_debug_uart("configuring USART...");
     USART_TypeDef *usart = m_portConfig->usartBase;
     USART_InitAsync_TypeDef init   = USART_INITASYNC_DEFAULT;
 
@@ -116,6 +119,7 @@ bool UARTPort::initialize(uint8_t *rxBuffer, uint8_t rxBufferSize,
   }
   
   m_initialized = true;
+  module_debug_uart("init OK, buffer size %d", m_rxBufferSize);
   
   return true;
 }
@@ -135,7 +139,7 @@ void UARTPort::handleInterrupt()
   uint32_t uartif = UARTPORT_INTGET(m_portConfig->usartBase);
   UARTPORT_INTCLR(m_portConfig->usartBase, uartif);
   
-  if (uartif & LEUART_IF_RXDATAV)
+  if (uartif & UARTPORT_RXDATAV)
   {
     int c = UARTPORT_RX(m_portConfig->usartBase);
     module_debug_uart("rx interrupt!");
@@ -233,6 +237,7 @@ int UARTPort::readChar(void)
       m_rxReadIndex = 0;
     }
     m_rxCount--;
+    module_debug_uart("read %x (%c)", c, c);
   }
   NVIC_EnableIRQ(m_portConfig->irqNumber);
 
@@ -248,6 +253,7 @@ void UARTPort::flushRxBuffer()
 
 int UARTPort::writeChar(char c)
 {
+  module_debug_uart("write %x (%c)", c, c);
   UARTPORT_TX(m_portConfig->usartBase, c);
 
   return c;

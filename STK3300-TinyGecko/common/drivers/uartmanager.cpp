@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "uartmanager.h"
 
 // TODO move definitions below to part-specific header file ------------------
@@ -5,6 +6,12 @@ void LEUART0_IRQHandler()
 {
   UARTManager::getInstance()->routeInterrupt(UARTManagerPortLEUART0);
 }
+
+void USART1_RX_IRQHandler()
+{
+  UARTManager::getInstance()->routeInterrupt(UARTManagerPortUSART1);
+}
+
 // TODO move definitions above to part-specific header file ------------------
 
 UARTManager::UARTManager()

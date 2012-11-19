@@ -28,7 +28,8 @@ class UARTPort {
 public:
   enum BaudRate {
     uartPortBaudRate4800 = 4800,
-    uartPortBaudRate9600 = 9600
+    uartPortBaudRate9600 = 9600,
+    uartPortBaudRate115200 = 115200,
   };
   
   enum Parity {
