@@ -20,6 +20,7 @@
 #define XBEE_IF
 
 #include "gbee.h"
+#include "messagetypes.h"
 #include <string>
 #include <inttypes.h>
 
@@ -130,14 +131,14 @@ private:
 class XBee_Message {
 friend class XBee;
 public:
-	XBee_Message(enum xbee_msg_type type, const uint8_t *payload, uint16_t length);
+	XBee_Message(enum MessageType type, const uint8_t *payload, uint16_t length);
 	XBee_Message(const uint8_t *message);
 	XBee_Message();
 	XBee_Message(const XBee_Message& msg);
 	XBee_Message& operator=(const XBee_Message &msg);
 	~XBee_Message();
 	uint8_t* get_payload(uint16_t *length);
-	enum xbee_msg_type get_type();
+	enum MessageType get_type();
 	bool is_complete();
 private:
 	bool append_msg(const XBee_Message &msg);
@@ -148,7 +149,7 @@ private:
 
 	uint8_t *message_buffer;
 	uint8_t *payload;
-	enum xbee_msg_type type;
+	enum MessageType type;
 	uint16_t payload_len;
 	uint8_t message_part;
 	uint16_t message_part_cnt;
