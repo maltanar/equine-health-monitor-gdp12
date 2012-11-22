@@ -19,7 +19,7 @@
   #define PACKEDSTRUCT struct __attribute__((__packed__))
 #endif
 
-typedef enum MessageType {
+enum MessageType {
 	messageTypeGPS,
 	messageTypeAccelerometer,
 	messageTypeTemperature,
@@ -34,7 +34,6 @@ typedef PACKEDSTRUCT {
 } Coordinate;
 
 typedef PACKEDSTRUCT {
-	uint8_t messageType;
 	Coordinate latitude;
 	bool latitudeNorth;
 	Coordinate longitude;
@@ -54,7 +53,7 @@ typedef PACKEDSTRUCT {
 
 typedef PACKEDSTRUCT {
 	double Vobj;
-	double Tenv_
+	double Tenv;
 } RawTemperatureMessage;
 
 typedef PACKEDSTRUCT {
