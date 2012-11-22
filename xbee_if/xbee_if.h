@@ -24,7 +24,7 @@
 #include <inttypes.h>
 
 #define XBEE_MSG_LENGTH 84
-#define XBEE_ADDR_CACHE_SIZE 4
+#define XBEE_ADDR_CACHE_SIZE 2
 
 #define MSG_HEADER_LENGTH 4
 /* define position of values in the header */
@@ -67,14 +67,12 @@ public:
 
 class XBee_Config {
 public:
-	XBee_Config(const string &port, const string &node, bool mode,
-		uint8_t unique_id, const uint8_t *pan, uint32_t timeout,
+	XBee_Config(const string &port, const string &node, bool mode, const uint8_t *pan, uint32_t timeout,
 		enum xbee_baud_rate baud, uint8_t max_unicast_hops);
 
 	const string serial_port;
 	const string node;
 	const bool coordinator_mode;
-	const uint8_t unique_id;
 	uint8_t pan_id[8];
 	const uint32_t timeout;
 	const enum xbee_baud_rate baud;
