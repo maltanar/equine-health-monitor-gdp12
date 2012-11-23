@@ -306,6 +306,7 @@
           <state>$PROJ_DIR$\..\common\bsp</state>
           <state>$PROJ_DIR$\..\..\efm32-common</state>
           <state>$PROJ_DIR$</state>
+          <state>$PROJ_DIR$\..\..\ehm-common</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>

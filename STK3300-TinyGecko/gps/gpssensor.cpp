@@ -8,6 +8,8 @@
 #include "gpssensor.h"
 #include "debug_output_control.h"
 
+#define ASCIITONUM(x)	(x - 0x30)
+
 GPSSensor::GPSSensor() :
   Sensor(sensorTypeGPS, 8, 5000)
 {
@@ -61,8 +63,9 @@ void GPSSensor::sampleSensorData()
 
 const void* GPSSensor::readSensorData(uint16_t *actualSize)
 {
-  // TODO implement
-  return 0;
+  *actualSize = sizeof(GPSMessage);
+  
+  return (const void *) &m_gpsMessage;
 }
 
 void GPSSensor::queryFirmwareVersion()
@@ -161,9 +164,47 @@ void GPSSensor::processNMEAMessage(uint8_t * buffer)
   
   buffer[i] = 0;
   
+  module_debug_gps("NMEA msg %s \n", &buffer[fieldPos[0]]);
   module_debug_gps("num of fields %d", c);
   for(i = 0; i < c; i++)
     module_debug_gps("field %d is %s", i, &buffer[fieldPos[i]]);
+  
+  // check if this was a GPRMC message
+  if(strcmp((char const *) &buffer[fieldPos[0]], "GPRMC") == 0)
+  {
+  	
+	// copy information from the parsed fields into GPSMessage structure
+	// position fix is invalid if V
+	m_gpsMessage.validPosFix = (buffer[fieldPos[2]] == 'V' ? false : true);
+	// latitude format is DDMM.SSxx
+	m_gpsMessage.latitude.degree = ASCIITONUM(buffer[fieldPos[3] + 0]) * 10 + ASCIITONUM(buffer[fieldPos[3] + 1]);
+	m_gpsMessage.latitude.minute = ASCIITONUM(buffer[fieldPos[3] + 2]) * 10 + ASCIITONUM(buffer[fieldPos[3] + 3]);
+	m_gpsMessage.latitude.second = ASCIITONUM(buffer[fieldPos[3] + 5]) * 10 + ASCIITONUM(buffer[fieldPos[3] + 6]);
+	// latitude hemisphere is N for north and S for south
+	m_gpsMessage.latitudeNorth = (buffer[fieldPos[4]] == 'N' ? true : false);
+	// longitude format is DDDMM.SSxx
+	m_gpsMessage.longitude.degree = ASCIITONUM(buffer[fieldPos[5] + 0]) * 100 
+	  								+ ASCIITONUM(buffer[fieldPos[5] + 1]) * 10
+									+ ASCIITONUM(buffer[fieldPos[5] + 2]) * 1;
+	m_gpsMessage.longitude.minute = ASCIITONUM(buffer[fieldPos[5] + 3]) * 10 + ASCIITONUM(buffer[fieldPos[5] + 4]);
+	m_gpsMessage.longitude.second = ASCIITONUM(buffer[fieldPos[5] + 6]) * 10 + ASCIITONUM(buffer[fieldPos[5] + 7]);
+	// longitude hemisphere is E for east and W for west
+	m_gpsMessage.longitudeWest = (buffer[fieldPos[6]] == 'W' ? true : false);
+	
+	module_debug_gps("validPosFix: %d", m_gpsMessage.validPosFix);
+	module_debug_gps("lat %d %d %d %d", m_gpsMessage.latitude.degree,
+					m_gpsMessage.latitude.minute,
+					m_gpsMessage.latitude.second,
+					m_gpsMessage.latitudeNorth);
+	module_debug_gps("long %d %d %d %d", m_gpsMessage.longitude.degree,
+					m_gpsMessage.longitude.minute,
+					m_gpsMessage.longitude.second,
+					m_gpsMessage.longitudeWest);
+  }
+  // TODO decide on action when we get a non-GPRMC message
+  // "keep old position data" assumed for now
+  // ideally we should have a separate message handler that does this
+  
 }
 
 void GPSSensor::sendNMEAString(char *data)

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "messagetypes.h"
 
 // Sensor class
 // common functionality for all sensors we use within the GDP

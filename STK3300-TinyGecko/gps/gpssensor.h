@@ -58,6 +58,7 @@ private:
   
   uint8_t m_msgBuffer[GPS_MSGBUFFER_SIZE];      // message buffer into which we receive raw NMEA strings
   UARTPort * m_port;                            // the UART IF for the GPS
+  GPSMessage m_gpsMessage;
   
   // process a buffer as an NMEA message
   void processNMEAMessage(uint8_t * buffer);
