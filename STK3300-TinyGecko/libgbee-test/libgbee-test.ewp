@@ -230,7 +230,7 @@
         <option>
           <name>CCAllowList</name>
           <version>1</version>
-          <state>0000000</state>
+          <state>1111111</state>
         </option>
         <option>
           <name>CCDebugInfo</name>
@@ -306,6 +306,8 @@
           <state>$PROJ_DIR$</state>
           <state>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src</state>
           <state>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\port\energymicro\tg</state>
+          <state>$PROJ_DIR$\..\..\xbee_if\</state>
+          <state>$PROJ_DIR$\..\..\ehm-common\</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -325,16 +327,16 @@
         </option>
         <option>
           <name>CCOptLevel</name>
-          <state>0</state>
+          <state>3</state>
         </option>
         <option>
           <name>CCOptStrategy</name>
           <version>0</version>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>CCOptLevelSlave</name>
-          <state>0</state>
+          <state>3</state>
         </option>
         <option>
           <name>CompilerMisraRules98</name>
@@ -674,27 +676,27 @@
         </option>
         <option>
           <name>IlinkMapFile</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IlinkLogFile</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IlinkLogInitialization</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IlinkLogModule</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IlinkLogSection</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IlinkLogVeneer</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IlinkIcfOverride</name>
@@ -833,15 +835,15 @@
         </option>
         <option>
           <name>IlinkLogAutoLibSelect</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IlinkLogRedirSymbols</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IlinkLogUnusedFragments</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IlinkCrcReverseByteOrder</name>
@@ -1867,6 +1869,15 @@
     </file>
     <file>
       <name>$PROJ_DIR$\main.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\ehm-common\messagetypes.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\xbee_if\xbee_if.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\xbee_if\xbee_if.h</name>
     </file>
   </group>
   <group>
