@@ -1,0 +1,7 @@
+Debug
+Release
+*.wsdt
+*.dep
+settings
+*.sfr
+*.ewd
