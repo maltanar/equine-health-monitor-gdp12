@@ -43,8 +43,32 @@
 #include "trace.h"
 #include "gbee.h"
 #include "gbee-util.h"
+#include "xbee_if.h"
 
 #define GBEE_UTIL_DEFAULT_FRAME_ID 0xCF
+
+volatile uint32_t msTicks; /* counts 1ms timeTicks */
+
+/**************************************************************************//**
+ * @brief SysTick_Handler
+ * Interrupt Service Routine for system tick counter
+ *****************************************************************************/
+void SysTick_Handler(void)
+{
+  msTicks++;       /* increment counter necessary in Delay()*/
+}
+
+/**************************************************************************//**
+ * @brief Delays number of msTick Systicks (typically 1 ms)
+ * @param dlyTicks Number of ticks to delay
+ *****************************************************************************/
+void Delay(uint32_t dlyTicks)
+{
+  uint32_t curTicks;
+
+  curTicks = msTicks;
+  while ((msTicks - curTicks) < dlyTicks) ;
+}
 
 void setupSWO(void)
 {
@@ -100,9 +124,9 @@ GBeeError gbeeUtilReadRegister(GBee *gbee, const char *regName, uint8_t *value,
         uint16_t responseLength;
         /* Timeout in milliseconds. */
         uint32_t timeout;
-        
+
         /* Query the GBee for the given register. */
-        error = gbeeSendAtCommand(gbee, GBEE_UTIL_DEFAULT_FRAME_ID, (uint8_t *)regName, 
+        error = gbeeSendAtCommand(gbee, GBEE_UTIL_DEFAULT_FRAME_ID, (uint8_t *)regName,
                         NULL, 0);
         GBEE_THROW(error);
 
@@ -110,26 +134,68 @@ GBeeError gbeeUtilReadRegister(GBee *gbee, const char *regName, uint8_t *value,
         timeout = 1000;
         do
         {
-                error = gbeeReceive(gbee, (GBeeFrameData *)&atCommandResponse, &responseLength, 
+                error = gbeeReceive(gbee, (GBeeFrameData *)&atCommandResponse, &responseLength,
                                 &timeout);
         }
-        while ((error == GBEE_NO_ERROR) 
+        while ((error == GBEE_NO_ERROR)
                         && (atCommandResponse.ident != GBEE_AT_COMMAND_RESPONSE));
         GBEE_THROW(error);
-        
+
         responseLength -= GBEE_AT_COMMAND_RESPONSE_HEADER_LENGTH;
-        
+
         /* Check the response. */
-        if ((atCommandResponse.atCommand[0] != regName[0]) 
-                        || (atCommandResponse.atCommand[1] != regName[1]) 
-                        || (atCommandResponse.status != GBEE_AT_COMMAND_STATUS_OK) 
+        if ((atCommandResponse.atCommand[0] != regName[0])
+                        || (atCommandResponse.atCommand[1] != regName[1])
+                        || (atCommandResponse.status != GBEE_AT_COMMAND_STATUS_OK)
                         || (maxLength < responseLength))
         {
                 GBEE_THROW(GBEE_RESPONSE_ERROR);
         }
-        
+
         GBEE_PORT_MEMORY_COPY(value, atCommandResponse.value, responseLength);
         return GBEE_NO_ERROR;
+}
+
+XBee_Message* get_message(uint16_t size) {
+	uint8_t *payload = new uint8_t[size];
+
+	for (int i = 0; i < size; i++) {
+		payload[i] = (uint8_t)i % 255;
+	}
+	XBee_Message* test_msg = new XBee_Message(messageTypeRawTemperature, payload, size);
+	delete[] payload;
+
+	return test_msg;
+}
+
+void speed_measurement(XBee* interface, uint16_t size, uint16_t iterations) {
+	uint32_t start_time, end_time, duration_ms;
+	uint8_t error_code;
+	XBee_Message* test_msg = get_message(size);
+
+	if (!test_msg) {
+		printf("Memory allocation problem\n");
+		return;
+	}
+
+	start_time = msTicks;
+	for (uint16_t i = 0; i < iterations; i++) {
+		test_msg = get_message(size);
+		if ((error_code = interface->xbee_send_to_coordinator(*test_msg))!= 0x00) {
+			printf("Error transmitting: %u\n", error_code);
+			break;
+		}
+		printf("Successfully transmitted msg %u with type %02x\n", i+1, (uint8_t)test_msg->get_type());
+	}
+
+	end_time = msTicks;
+	duration_ms = end_time - start_time;
+
+	printf("Elapsed time: %ld milliseconds\n", duration_ms);
+	if (error_code == 0x00)
+		printf("Data throughput: %.1f kB/s\n", (iterations * size) / (float) duration_ms);
+
+	delete test_msg;
 }
 
 /**************************************************************************//**
@@ -137,62 +203,46 @@ GBeeError gbeeUtilReadRegister(GBee *gbee, const char *regName, uint8_t *value,
  *****************************************************************************/
 int main(void)
 {
-  /* Chip errata */
-  CHIP_Init();
-  
-  setupSWO();
-  
-  // XBee assumed to be connected on USART1 with PD0 and PD1
-  // use PD2 for reset
-  GPIO_PinModeSet(gpioPortD, 2, gpioModePushPull, 1);
-  
-  // hardware reset the ZigBee module
-  // set !RST to low for 10 ms
-  GPIO_PinOutClear(gpioPortD, 2);
-  RTC_Trigger(10, NULL);
-  EMU_EnterEM2(true);
-  GPIO_PinOutSet(gpioPortD, 2);
-  
-  // wait for device to settle down after reset
-  RTC_Trigger(1000, NULL);
-  EMU_EnterEM2(true);
-  // TODO maybe wait for HW reset ACK from device instead of fixed time wait
+    /* Chip errata */
+    CHIP_Init();
 
-  // create the GBee instance
-  GBee* gb = gbeeCreate("");
+    setupSWO();
 
-  uint16_t addr = 0;
-  uint16_t length = 0;
-  GBeeError err;
-  uint32_t data = 0xCAFEBABE;
-  
-  err = gbeeUtilReadRegister(gb, "MY", (uint8_t *)&addr, &length, sizeof(uint16_t));
-    printf("Addr: %x len: %x err code %x  \n", addr, length, err);
-    
-    printf(gbeeUtilCodeToString(err));
-    printf("\n");
-  
-  while (1)
-  {
-    //timeout = 1000;
-    
-    printf("Waiting... \n");
-    
-    /*err = gbeeSendTxRequest(gb, 0xAB, 0, 
-		0, 0xFFFE, 0,
-		0, (uint8_t *)&data, 4);
-    
-    printf(gbeeUtilTxStatusCodeToString(err));
-    printf("\n");*/
-    
-    /*err = gbeeUtilReadRegister(gb, "MY", (uint8_t *)&addr, &length, sizeof(uint16_t));
-    printf("Addr: %x len: %x err code %x  \n", addr, length, err);
-    
-    printf(gbeeUtilCodeToString(err));
-    printf("\n");*/
-    
-    // sleep for a second
+	/* Setup SysTick Timer for 1 msec interrupts  */
+  //	if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 1000)) while (1) ;
+
+    // XBee assumed to be connected on USART1 with PD0 and PD1
+    // use PD2 for reset
+    GPIO_PinModeSet(gpioPortD, 2, gpioModePushPull, 1);
+
+    // hardware reset the ZigBee module
+    // set !RST to low for 10 ms
+
+	GPIO_PinOutClear(gpioPortD, 2);
+    RTC_Trigger(10, NULL);
+    EMU_EnterEM2(true);
+   	GPIO_PinOutSet(gpioPortD, 2);
+
+    // wait for device to settle down after reset
     RTC_Trigger(1000, NULL);
     EMU_EnterEM2(true);
-  }
-}
+    // TODO maybe wait for HW reset ACK from device instead of fixed time wait
+
+    // set configuration options for XBee device
+    uint8_t pan_id[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0xAB, 0xBC, 0xCD};
+    XBee_Config config("", "denver", false, pan_id, 1000, B9600, 1);
+
+	// initialize XBee device
+    XBee interface(config);
+    uint8_t error_code = interface.xbee_init();
+    if (error_code != GBEE_NO_ERROR) {
+		printf("Error: unable to configure device, code: %02x\n", error_code);
+		return 0;
+    }
+    interface.xbee_status();
+
+	// test the speed of the connection
+	speed_measurement(&interface, 10, 20);
+ }
+
+

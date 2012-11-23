@@ -56,7 +56,8 @@ void I2CBus::handleI2CInterrupt()
 {
   // Just run the I2C_Transfer function that checks interrupts flags and returns
   // the appropriate status
-  m_status = I2C_Transfer(I2C0);  
+  m_status = I2C_Transfer(I2C0);
+  module_debug_i2c("interrupt! status=%d", m_status);
 }
 
 bool I2CBus::readRegister16Bit(uint16_t addr, uint8_t reg, uint16_t *val)
@@ -92,13 +93,13 @@ bool I2CBus::readRegister16Bit(uint16_t addr, uint8_t reg, uint16_t *val)
   
   if (m_status != i2cTransferDone)
   {
-    module_debug_i2c("error reading, status %x", m_status);
+    module_debug_i2c("error reading, status %d", m_status);
     return false;
+  } else {
+  	*val = (((uint16_t)(data[0])) << 8) | data[1];
+	module_debug_i2c("read value %x from register %x", *val, reg);
   }
-
-  *val = (((uint16_t)(data[0])) << 8) | data[1];
   
-
   return true;
 }
 
@@ -130,7 +131,7 @@ bool I2CBus::writeRegister16Bit(uint16_t addr, uint8_t reg, uint16_t val)
   
   if (m_status != i2cTransferDone)
   {
-    module_debug_i2c("error writing, status %x", m_status);
+    module_debug_i2c("error writing, status %d", m_status);
     return false;
   } 
   else
@@ -172,7 +173,7 @@ bool I2CBus::readRegister8Bit(uint16_t addr, uint8_t reg, uint8_t *val)
   
   if (m_status != i2cTransferDone)
   {
-    module_debug_i2c("error 8 bit reading, status %x", m_status);
+    module_debug_i2c("error reading 8 bit register %x, status %d", reg, m_status);
     return false;
   }
 
@@ -209,7 +210,7 @@ bool I2CBus::writeRegister8Bit(uint16_t addr, uint8_t reg, uint8_t val)
   
   if (m_status != i2cTransferDone)
   {
-    module_debug_i2c("error writing 8 bit, status %x", m_status);
+    module_debug_i2c("error writing 8 bits to %x, status %d", reg, m_status);
     return false;
   } 
   else
