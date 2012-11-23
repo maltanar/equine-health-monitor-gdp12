@@ -6,7 +6,7 @@
 
 void I2C0_IRQHandler(void)
 {
-  I2CBus::getInstance().handleI2CInterrupt();
+  I2CBus::getInstance()->handleI2CInterrupt();
 }
 
 I2CBus::I2CBus()
@@ -131,6 +131,85 @@ bool I2CBus::writeRegister16Bit(uint16_t addr, uint8_t reg, uint16_t val)
   if (m_status != i2cTransferDone)
   {
     module_debug_i2c("error writing, status %x", m_status);
+    return false;
+  } 
+  else
+    return true;
+    
+}
+
+bool I2CBus::readRegister8Bit(uint16_t addr, uint8_t reg, uint8_t *val)
+{
+  I2C_TransferSeq_TypeDef seq;
+  uint8_t data[1], addr_data[1];
+  
+  // check for invalid read buffer pointer
+  if(val == NULL)
+    return false;
+  
+  module_debug_i2c("8 bit read from addr %x reg %x", addr, reg);
+
+  seq.addr = addr;
+  seq.flags = I2C_FLAG_WRITE_READ;
+  // Select register to be read
+  addr_data[0] = (uint8_t) reg;
+  seq.buf[0].data = addr_data;
+  seq.buf[0].len = 1;
+  // Select location/length to place register
+  seq.buf[1].data = data;
+//  seq.buf[1].len = 2;
+  seq.buf[1].len = 1;
+
+  // Do a polled transfer 
+  m_status = I2C_TransferInit(I2C0, &seq);
+  while (m_status == i2cTransferInProgress)
+  {
+    // Enter EM1 while waiting for I2C interrupt
+    // TODO is this a good idea to do inside a generic driver module?
+    // TODO add timeout function here?
+    EMU_EnterEM1();
+  }
+  
+  if (m_status != i2cTransferDone)
+  {
+    module_debug_i2c("error 8 bit reading, status %x", m_status);
+    return false;
+  }
+
+  *val = data[0];
+  
+
+  return true;
+}
+
+bool I2CBus::writeRegister8Bit(uint16_t addr, uint8_t reg, uint8_t val)
+{
+  I2C_TransferSeq_TypeDef seq;
+  uint8_t data[2];
+  
+  module_debug_i2c("8 bit write to addr %x reg %x val %x", addr, reg, val);
+
+  seq.addr = addr;
+  seq.flags = I2C_FLAG_WRITE;
+  // Select register to be written
+  data[0] = ((uint8_t)reg);
+  data[1] = val ;
+  seq.buf[0].data = data;
+  seq.buf[0].len = 2;
+
+  // Do a polled transfer
+  m_status = I2C_TransferInit(I2C0, &seq);
+  while (m_status == i2cTransferInProgress)
+  {
+    // Enter EM1 while waiting for I2C interrupt
+    // TODO is this a good idea to do inside a generic driver module?
+    // TODO add timeout function here?
+    EMU_EnterEM1();
+  }
+  
+  if (m_status != i2cTransferDone)
+  {
+    module_debug_i2c("error writing 8 bit, status %x", m_status);
     return false;
   } 
   else
