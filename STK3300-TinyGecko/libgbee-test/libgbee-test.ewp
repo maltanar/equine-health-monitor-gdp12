@@ -298,9 +298,9 @@
         </option>
         <option>
           <name>CCIncludePath2</name>
-          <state>$PROJ_DIR$\..\common\CMSIS\Include</state>
+          <state>$PROJ_DIR$\..\..\efm32-common\CMSIS\Include</state>
           <state>$PROJ_DIR$\..\common\EFM32TG\Include</state>
-          <state>$PROJ_DIR$\..\common\emlib\inc</state>
+          <state>$PROJ_DIR$\..\..\efm32-common\emlib\inc</state>
           <state>$PROJ_DIR$\..\common\drivers</state>
           <state>$PROJ_DIR$\..\common\bsp</state>
           <state>$PROJ_DIR$</state>
@@ -308,6 +308,7 @@
           <state>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\port\energymicro\tg</state>
           <state>$PROJ_DIR$\..\..\xbee_if\</state>
           <state>$PROJ_DIR$\..\..\ehm-common\</state>
+          <state>$PROJ_DIR$\..\..\efm32-common\</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -1865,9 +1866,6 @@
       <name>$PROJ_DIR$\debug_output_control.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\common\drivers\dmamanager.cpp</name>
-    </file>
-    <file>
       <name>$PROJ_DIR$\main.cpp</name>
     </file>
     <file>
@@ -1900,52 +1898,58 @@
     <group>
       <name>Drivers</name>
       <file>
+        <name>$PROJ_DIR$\..\..\efm32-common\dmamanager.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\efm32-common\dmamanager.h</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\common\drivers\rtc.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\common\drivers\uartmanager.cpp</name>
+        <name>$PROJ_DIR$\..\..\efm32-common\uartmanager.cpp</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\common\drivers\uartmanager.h</name>
+        <name>$PROJ_DIR$\..\..\efm32-common\uartmanager.h</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\common\drivers\uartport.cpp</name>
+        <name>$PROJ_DIR$\..\..\efm32-common\uartport.cpp</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\common\drivers\uartport.h</name>
+        <name>$PROJ_DIR$\..\..\efm32-common\uartport.h</name>
       </file>
     </group>
     <group>
       <name>emlib</name>
       <file>
-        <name>$PROJ_DIR$\..\common\emlib\src\em_assert.c</name>
+        <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_assert.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\common\emlib\src\em_cmu.c</name>
+        <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_cmu.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\common\emlib\src\em_dma.c</name>
+        <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_dma.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\common\emlib\src\em_emu.c</name>
+        <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_emu.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\common\emlib\src\em_gpio.c</name>
+        <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_gpio.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\common\emlib\src\em_int.c</name>
+        <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_int.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\common\emlib\src\em_leuart.c</name>
+        <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_leuart.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\common\emlib\src\em_rtc.c</name>
+        <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_rtc.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\common\emlib\src\em_system.c</name>
+        <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_system.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\common\emlib\src\em_usart.c</name>
+        <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_usart.c</name>
       </file>
     </group>
   </group>

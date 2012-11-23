@@ -9,6 +9,16 @@
 
 #include "em_i2c.h"
 
+typedef struct {
+  I2C_TypeDef i2cTypeDef;
+  uint8_t i2cLocation;
+  IRQn irqNumber;
+  GPIO_Port_TypeDef sclPort;
+  uint8_t sclPin;
+  GPIO_Port_TypeDef sdaPort;
+  uint8_t sdaPin;
+} I2CPortConfig;
+
 class I2CBus {
 public:
   static I2CBus* getInstance()

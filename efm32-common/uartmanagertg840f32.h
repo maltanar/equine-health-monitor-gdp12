@@ -1,8 +1,8 @@
 // University of Southampton, 2012
 // EMECS Group Design Project
 
-#ifndef __UARTMANAGER_H
-#define __UARTMANAGER_H
+#ifndef __UARTMANAGERTG840F32_H
+#define __UARTMANAGERTG840F32_H
 
 #include <stdint.h>
 #include "em_cmu.h"
@@ -75,4 +75,4 @@ private:
   UARTPort * m_ports[UART_MANAGER_PORT_COUNT];
 };
 
-#endif // __UARTMANAGER_H
+#endif // __UARTMANAGERTG840F32_H

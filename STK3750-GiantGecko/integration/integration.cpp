@@ -39,9 +39,12 @@
 #include "em_gpio.h"
 #include "dvk.h"
 #include "trace.h"
+#include "gbee.h"
+#include "gbee-util.h"
+#include "xbee_if.h"
 
 /* Counts 1ms timeTicks */
-volatile uint32_t msTicks; 
+volatile uint32_t msTicks;
 
 /* Local prototypes */
 void Delay(uint32_t dlyTicks);
@@ -72,21 +75,34 @@ void Delay(uint32_t dlyTicks)
  *****************************************************************************/
 int main(void)
 {
-  /* Setup SysTick Timer for 1 msec interrupts  */
-  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 1000)) while (1) ;
+	/* Setup SysTick Timer for 1 msec interrupts  */
+	if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 1000)) while (1) ;
 
-  /* Configure board. Select either EBI or SPI mode. */
-  DVK_init(DVK_Init_SPI);
+	/* Configure board. Select either EBI or SPI mode. */
+	DVK_init(DVK_Init_SPI);
 
-  /* If first word of user data page is non-zero, enable eA Profiler trace */
-  TRACE_ProfilerSetup();
+	/* If first word of user data page is non-zero, enable eA Profiler trace */
+	TRACE_ProfilerSetup();
 
-  /* Infinite blink loop */
-  while (1)
-  {
-    DVK_setLEDs(0xff00);
-    Delay(200);
-    DVK_setLEDs(0x00ff);
-    Delay(200);
-  }
+	/* Infinite blink loop */
+	while (1)
+	{
+		DVK_setLEDs(0xff00);
+		Delay(200);
+		DVK_setLEDs(0x00ff);
+		Delay(200);
+	}
+	// set configuration options for XBee device
+	uint8_t pan_id[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0xAB, 0xBC, 0xCD};
+	XBee_Config config("", "denver", false, pan_id, 1000, B9600, 1);
+
+	// initialize XBee device
+	XBee interface(config);
+	uint8_t error_code = interface.xbee_init();
+	if (error_code != GBEE_NO_ERROR) {
+		printf("Error: unable to configure device, code: %02x\n", error_code);
+		return 0;
+	}
+	interface.xbee_status();
+
 }
