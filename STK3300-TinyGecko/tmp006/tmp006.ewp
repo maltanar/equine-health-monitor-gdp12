@@ -1225,9 +1225,10 @@
         </option>
         <option>
           <name>CCIncludePath2</name>
-          <state>$PROJ_DIR$\..\common\CMSIS\Include</state>
+          <state>$PROJ_DIR$\..\..\efm32-common\CMSIS\Include</state>
+          <state>$PROJ_DIR$\..\..\efm32-common\emlib\inc</state>
+          <state>$PROJ_DIR$\..\..\efm32-common\</state>
           <state>$PROJ_DIR$\..\common\EFM32TG\Include</state>
-          <state>$PROJ_DIR$\..\common\emlib\inc</state>
           <state>$PROJ_DIR$\..\common\drivers</state>
           <state>$PROJ_DIR$\..\common\bsp</state>
           <state>$PROJ_DIR$</state>
@@ -1902,10 +1903,13 @@
     <group>
       <name>Drivers</name>
       <file>
-        <name>$PROJ_DIR$\..\common\drivers\i2cbus.cpp</name>
+        <name>$PROJ_DIR$\..\..\efm32-common\i2cbus.cpp</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\common\drivers\i2cbus.h</name>
+        <name>$PROJ_DIR$\..\..\efm32-common\i2cbus.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\efm32-common\i2cmanager.h</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\common\drivers\rtc.c</name>
@@ -1914,25 +1918,25 @@
     <group>
       <name>emlib</name>
       <file>
-        <name>$PROJ_DIR$\..\common\emlib\src\em_assert.c</name>
+        <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_assert.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\common\emlib\src\em_cmu.c</name>
+        <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_cmu.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\common\emlib\src\em_emu.c</name>
+        <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_emu.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\common\emlib\src\em_gpio.c</name>
+        <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_gpio.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\common\emlib\src\em_i2c.c</name>
+        <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_i2c.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\common\emlib\src\em_rtc.c</name>
+        <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_rtc.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\common\emlib\src\em_system.c</name>
+        <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_system.c</name>
       </file>
     </group>
   </group>

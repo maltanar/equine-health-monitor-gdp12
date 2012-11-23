@@ -13,7 +13,7 @@ void I2C0_IRQHandler(void)
 I2CBus::I2CBus()
 {
   module_debug_i2c("instance constructed!");
-  
+
   // initialize I2C driver
   // TODO make I2C location and index configurable?
   // TODO GIANTGECKO this bit will have to change to use correct pin/location
@@ -25,10 +25,8 @@ I2CBus::I2CBus()
   /* Use location 3: SDA - Pin D6, SCL - Pin D7 */
   /* Output value must be set to 1 to not drive lines low... We set */
   /* SCL first, to ensure it is high before changing SDA. */
-  GPIO_PinModeSet(I2CPortConf.sclPort, sclPin, gpioModeWiredAnd, 1);
-  GPIO_PinModeSet(I2CPortConf.sdaPort, sdaPin, gpioModeWiredAnd, 1);
-  //GPIO_PinModeSet(gpioPortD, 7, gpioModeWiredAnd, 1);
-  //GPIO_PinModeSet(gpioPortD, 6, gpioModeWiredAnd, 1);
+  GPIO_PinModeSet(I2CPortConf.sclPort, I2CPortConf.sclPin, gpioModeWiredAnd, 1);
+  GPIO_PinModeSet(I2CPortConf.sdaPort, I2CPortConf.sdaPin, gpioModeWiredAnd, 1);
 
   /* In some situations (after a reset during an I2C transfer), the slave */
   /* device may be left in an unknown state. Send 9 clock pulses just in case. */
@@ -40,8 +38,8 @@ I2CBus::I2CBus()
      * but DVK only has fast mode devices. Need however to add some time
      * measurement in order to not be dependable on frequency and code executed.
      */
-    GPIO_PinModeSet(gpioPortD, 7, gpioModeWiredAnd, 0);
-    GPIO_PinModeSet(gpioPortD, 7, gpioModeWiredAnd, 1);
+    GPIO_PinModeSet(I2CPortConf.sclPort, I2CPortConf.sclPin, gpioModeWiredAnd, 0);
+    GPIO_PinModeSet(I2CPortConf.sclPort, I2CPortConf.sclPin, gpioModeWiredAnd, 1);
   }
 
   /* Enable pins at location 1 */
@@ -49,28 +47,28 @@ I2CBus::I2CBus()
                 I2C_ROUTE_SCLPEN |
                 (1 << _I2C_ROUTE_LOCATION_SHIFT);
 
-  I2C_Init(I2C0, & i2cInit);
-  
-  NVIC_ClearPendingIRQ(I2C0_IRQn);
-  NVIC_EnableIRQ(I2C0_IRQn);
+  I2C_Init(I2CPortConf.i2cTypeDef, & i2cInit);
+
+  NVIC_ClearPendingIRQ(I2CPortConf.irqNumber);
+  NVIC_EnableIRQ(I2CPortConf.irqNumber);
 }
 
 void I2CBus::handleI2CInterrupt()
 {
   // Just run the I2C_Transfer function that checks interrupts flags and returns
   // the appropriate status
-  m_status = I2C_Transfer(I2C0);  
+  m_status = I2C_Transfer(I2CPortConf.i2cTypeDef);
 }
 
 bool I2CBus::readRegister16Bit(uint16_t addr, uint8_t reg, uint16_t *val)
 {
   I2C_TransferSeq_TypeDef seq;
   uint8_t data[2], addr_data[1];
-  
+
   // check for invalid read buffer pointer
   if(val == NULL)
     return false;
-  
+
   module_debug_i2c("read from addr %x reg %x", addr, reg);
 
   seq.addr = addr;
@@ -83,7 +81,7 @@ bool I2CBus::readRegister16Bit(uint16_t addr, uint8_t reg, uint16_t *val)
   seq.buf[1].data = data;
   seq.buf[1].len = 2;
 
-  // Do a polled transfer 
+  // Do a polled transfer
   m_status = I2C_TransferInit(I2C0, &seq);
   while (m_status == i2cTransferInProgress)
   {
@@ -92,7 +90,7 @@ bool I2CBus::readRegister16Bit(uint16_t addr, uint8_t reg, uint16_t *val)
     // TODO add timeout function here?
     EMU_EnterEM1();
   }
-  
+
   if (m_status != i2cTransferDone)
   {
     module_debug_i2c("error reading, status %x", m_status);
@@ -100,7 +98,7 @@ bool I2CBus::readRegister16Bit(uint16_t addr, uint8_t reg, uint16_t *val)
   }
 
   *val = (((uint16_t)(data[0])) << 8) | data[1];
-  
+
 
   return true;
 }
@@ -109,7 +107,7 @@ bool I2CBus::writeRegister16Bit(uint16_t addr, uint8_t reg, uint16_t val)
 {
   I2C_TransferSeq_TypeDef seq;
   uint8_t data[3];
-  
+
   module_debug_i2c("write to addr %x reg %x val %x", addr, reg, val);
 
   seq.addr = addr;
@@ -122,7 +120,7 @@ bool I2CBus::writeRegister16Bit(uint16_t addr, uint8_t reg, uint16_t val)
   seq.buf[0].len = 3;
 
   // Do a polled transfer
-  m_status = I2C_TransferInit(I2C0, &seq);
+  m_status = I2C_TransferInit(I2CPortConf.i2cTypeDef, &seq);
   while (m_status == i2cTransferInProgress)
   {
     // Enter EM1 while waiting for I2C interrupt
@@ -130,26 +128,26 @@ bool I2CBus::writeRegister16Bit(uint16_t addr, uint8_t reg, uint16_t val)
     // TODO add timeout function here?
     EMU_EnterEM1();
   }
-  
+
   if (m_status != i2cTransferDone)
   {
     module_debug_i2c("error writing, status %x", m_status);
     return false;
-  } 
+  }
   else
     return true;
-    
+
 }
 
 bool I2CBus::readRegister8Bit(uint16_t addr, uint8_t reg, uint8_t *val)
 {
   I2C_TransferSeq_TypeDef seq;
   uint8_t data[1], addr_data[1];
-  
+
   // check for invalid read buffer pointer
   if(val == NULL)
     return false;
-  
+
   module_debug_i2c("8 bit read from addr %x reg %x", addr, reg);
 
   seq.addr = addr;
@@ -163,8 +161,8 @@ bool I2CBus::readRegister8Bit(uint16_t addr, uint8_t reg, uint8_t *val)
 //  seq.buf[1].len = 2;
   seq.buf[1].len = 1;
 
-  // Do a polled transfer 
-  m_status = I2C_TransferInit(I2C0, &seq);
+  // Do a polled transfer
+  m_status = I2C_TransferInit(I2CPortConf.i2cTypeDef, &seq);
   while (m_status == i2cTransferInProgress)
   {
     // Enter EM1 while waiting for I2C interrupt
@@ -172,7 +170,7 @@ bool I2CBus::readRegister8Bit(uint16_t addr, uint8_t reg, uint8_t *val)
     // TODO add timeout function here?
     EMU_EnterEM1();
   }
-  
+
   if (m_status != i2cTransferDone)
   {
     module_debug_i2c("error 8 bit reading, status %x", m_status);
@@ -180,7 +178,7 @@ bool I2CBus::readRegister8Bit(uint16_t addr, uint8_t reg, uint8_t *val)
   }
 
   *val = data[0];
-  
+
 
   return true;
 }
@@ -189,7 +187,7 @@ bool I2CBus::writeRegister8Bit(uint16_t addr, uint8_t reg, uint8_t val)
 {
   I2C_TransferSeq_TypeDef seq;
   uint8_t data[2];
-  
+
   module_debug_i2c("8 bit write to addr %x reg %x val %x", addr, reg, val);
 
   seq.addr = addr;
@@ -201,7 +199,7 @@ bool I2CBus::writeRegister8Bit(uint16_t addr, uint8_t reg, uint8_t val)
   seq.buf[0].len = 2;
 
   // Do a polled transfer
-  m_status = I2C_TransferInit(I2C0, &seq);
+  m_status = I2C_TransferInit(I2CPortConf.i2cTypeDef, &seq);
   while (m_status == i2cTransferInProgress)
   {
     // Enter EM1 while waiting for I2C interrupt
@@ -209,13 +207,13 @@ bool I2CBus::writeRegister8Bit(uint16_t addr, uint8_t reg, uint8_t val)
     // TODO add timeout function here?
     EMU_EnterEM1();
   }
-  
+
   if (m_status != i2cTransferDone)
   {
     module_debug_i2c("error writing 8 bit, status %x", m_status);
     return false;
-  } 
+  }
   else
     return true;
-    
+
 }

@@ -10,11 +10,11 @@
 #include "debug_output_control.h"
 
 // TMP006 Internal Pointer Register Addresses
-#define TMP006_P_VOBJ       0x00        // TMP006 object voltage register pointer 
-#define TMP006_P_TABT       0x01        // TMP006 ambient temperature register pointer 
-#define TMP006_P_WRITE_REG  0x02        // TMP006 configuration register pointer 
-#define TMP006_P_MAN_ID     0xFE        // TMP006 manufacturer ID register pointer 
-#define TMP006_P_DEVICE_ID  0xFF        // TMP006 device ID register pointer 
+#define TMP006_P_VOBJ       0x00        // TMP006 object voltage register pointer
+#define TMP006_P_TABT       0x01        // TMP006 ambient temperature register pointer
+#define TMP006_P_WRITE_REG  0x02        // TMP006 configuration register pointer
+#define TMP006_P_MAN_ID     0xFE        // TMP006 manufacturer ID register pointer
+#define TMP006_P_DEVICE_ID  0xFF        // TMP006 device ID register pointer
 
 
 // TMP006 Configuration Register Bits
@@ -29,41 +29,41 @@
 #define TMP006_EN           0x0100
 #define TMP006_DRDY         0x0080
 /*! @} */
-  
-// I2C device address for temperature sensor 
-// this is set by the value of the ADR* pins 
-// which are always 0 for the breakout board 
+
+// I2C device address for temperature sensor
+// this is set by the value of the ADR* pins
+// which are always 0 for the breakout board
 #define TMP006_I2C_ADDR     0x80
 
-TemperatureSensor::TemperatureSensor(SensorPeriod period) 
+TemperatureSensor::TemperatureSensor(SensorPeriod period)
  : Sensor(sensorTypeTemperature, 8, period)
 {
   m_temp = 0;
   m_rate = 0;
-  
+
   // TODO initialize I2C driver here
 
   // Reset TMP006
   writeRegister(TMP006_P_WRITE_REG, TMP006_RST);
   // power-up
   writeRegister(TMP006_P_WRITE_REG, TMP006_POWER_UP);
-  
+
   // do a sanity check on the sensor using the manufacturer and device ID
   uint16_t mid = getManufacturerID(), did = getDeviceID();
   if(mid != 0x5449 || did != 0x0067)
     module_debug_temp("Unknown manufacturer/device id: %x / %x", mid, did);
   else
     module_debug_temp("TMP006 manufacturer/device id OK: %x / %x", mid, did);
-  
+
   // set conversion rate
   setPeriod(period);
-  
+
 }
 
 void TemperatureSensor::setPeriod(SensorPeriod ms)
 {
   Sensor::setPeriod(ms);
-  
+
   // also need to set sensor config flags to set conversion rate
   // determine which of the fixed conversion rate settings to use
   // we can use ones smaller than requested to ensure samples are ready by then
@@ -79,7 +79,7 @@ void TemperatureSensor::setPeriod(SensorPeriod ms)
      m_rate = TMP006_CR_0_25;
   else
     module_debug_temp("Unknown period: %x", ms);
-  
+
   module_debug_temp("period: %d rate bits %x", ms, m_rate);
 
   // read the configuration register, filter out current conversion rate bits
@@ -105,10 +105,10 @@ uint16_t TemperatureSensor::getDeviceID(void)
 int16_t TemperatureSensor::readRegister(unsigned char reg)
 {
   uint16_t val;
-  
+
   module_debug_temp("read %x", reg);
-  
-  if(I2CBus::getInstance().readRegister16Bit(TMP006_I2C_ADDR, reg, &val))
+
+  if(I2CBus::getInstance()->readRegister16Bit(TMP006_I2C_ADDR, reg, &val))
     return val;
   else {
     module_debug_temp("failed to get register %x", reg);
@@ -119,8 +119,8 @@ int16_t TemperatureSensor::readRegister(unsigned char reg)
 void TemperatureSensor::writeRegister(unsigned char reg, unsigned int val)
 {
   module_debug_temp("write %x to %x", val, reg);
-  
-  if(!I2CBus::getInstance().writeRegister16Bit(TMP006_I2C_ADDR, reg, val))
+
+  if(!I2CBus::getInstance()->writeRegister16Bit(TMP006_I2C_ADDR, reg, val))
     module_debug_temp("failed to write register %x", reg);
 }
 
@@ -139,11 +139,11 @@ double TemperatureSensor::calculateTemp(double * tDie, double * vObj)
   double Vos = b0 + b1*(*tDie - Tref) + b2*pow((*tDie - Tref),2);
   double fObj = (*vObj - Vos) + c2*pow((*vObj - Vos),2);
   double Tobj = pow(pow(*tDie,4) + (fObj/S), (double).25) - 273.15;
-  
+
   module_debug_temp("Vobj: %f", *vObj);
   module_debug_temp("Tdie: %f", *tDie);
   module_debug_temp("Temp: %f", Tobj);
-  
+
   return Tobj;
 }
 
@@ -160,7 +160,7 @@ void TemperatureSensor::sampleSensorData()
 {
   double vObjcorr = 0, tDieKelvin = 0;
   int vObj = 0, tDie = 0;
-  
+
   // do not modify previous sample is new data is not ready
   if(!isMeasurementReady())
   {
@@ -204,6 +204,6 @@ char TemperatureSensor::setSleepState(bool sleepState)
 
   // write the configuration register
   writeRegister(TMP006_P_WRITE_REG, settings);
-  
+
   return Sensor::setSleepState(sleepState);
 }
