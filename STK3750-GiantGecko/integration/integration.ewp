@@ -1913,16 +1913,10 @@
       <name>$PROJ_DIR$\..\..\efm32-common\i2cmanager.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\efm32-common\i2cmanagergg990f1024.h</name>
-    </file>
-    <file>
       <name>$PROJ_DIR$\..\..\efm32-common\uartmanager.cpp</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\efm32-common\uartmanager.h</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\efm32-common\uartmanagergg990f1024.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\efm32-common\uartport.cpp</name>
@@ -2037,6 +2031,12 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\sensor\sensor.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\sensor\temperaturesensor.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\sensor\temperaturesensor.h</name>
     </file>
   </group>
   <group>

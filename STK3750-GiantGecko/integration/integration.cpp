@@ -46,6 +46,7 @@
 #include "uartmanager.h"
 #include "gpssensor.h"
 #include "accelerationsensor.h"
+#include "temperaturesensor.h"
 
 void sfHook(uint8_t * buf)
 {
@@ -68,10 +69,12 @@ int main(void)
 	
 	//UARTManager::getInstance()->getPort(UARTManagerPortLEUART0)->setSignalFrameHook(&sfHook);
 	//GPSSensor::getInstance();
-	AccelerationSensor *s = new AccelerationSensor(100);
+	AccelerationSensor *a = new AccelerationSensor(100);
+	TemperatureSensor *t = new TemperatureSensor(1000);
 	
-	printf("accelerometer devid: %x \n", s->getDeviceID());
-	
+	printf("accelerometer devid: %x \n", a->getDeviceID());
+	printf("tempsens ids %x %x \n", t->getManufacturerID(),
+		   t->getDeviceID());
 	
 	
 	while (1)
