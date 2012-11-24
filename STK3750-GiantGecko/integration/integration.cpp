@@ -36,38 +36,19 @@
 #include <stdbool.h>
 #include "efm32.h"
 #include "em_cmu.h"
+#include "em_emu.h"
 #include "em_gpio.h"
 #include "dvk.h"
 #include "trace.h"
 #include "gbee.h"
 #include "gbee-util.h"
 #include "xbee_if.h"
+#include "uartmanager.h"
+#include "gpssensor.h"
 
-/* Counts 1ms timeTicks */
-volatile uint32_t msTicks;
-
-/* Local prototypes */
-void Delay(uint32_t dlyTicks);
-
-/**************************************************************************//**
- * @brief SysTick_Handler
- * Interrupt Service Routine for system tick counter
- *****************************************************************************/
-void SysTick_Handler(void)
+void sfHook(uint8_t * buf)
 {
-  msTicks++;       /* increment counter necessary in Delay()*/
-}
-
-/**************************************************************************//**
- * @brief Delays number of msTick Systicks (typically 1 ms)
- * @param dlyTicks Number of ticks to delay
- *****************************************************************************/
-void Delay(uint32_t dlyTicks)
-{
-  uint32_t curTicks;
-
-  curTicks = msTicks;
-  while ((msTicks - curTicks) < dlyTicks) ;
+	GPSSensor::getInstance()->sampleSensorData();
 }
 
 /**************************************************************************//**
@@ -75,23 +56,26 @@ void Delay(uint32_t dlyTicks)
  *****************************************************************************/
 int main(void)
 {
-	/* Setup SysTick Timer for 1 msec interrupts  */
-	if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 1000)) while (1) ;
-
 	/* Configure board. Select either EBI or SPI mode. */
 	DVK_init(DVK_Init_SPI);
+	TRACE_SWOSetup();
 
 	/* If first word of user data page is non-zero, enable eA Profiler trace */
-	TRACE_ProfilerSetup();
-
-	/* Infinite blink loop */
+	// TODO disabled as it may be taking over some of the PD pins we want
+	// needed for eA profiler?
+	// TRACE_ProfilerSetup();
+	
+	UARTManager::getInstance()->getPort(UARTManagerPortLEUART0)->setSignalFrameHook(&sfHook);
+	GPSSensor::getInstance();
+	
+	
+	
 	while (1)
 	{
-		DVK_setLEDs(0xff00);
-		Delay(200);
-		DVK_setLEDs(0x00ff);
-		Delay(200);
+		EMU_EnterEM2(true);
 	}
+	
+	/*
 	// set configuration options for XBee device
 	uint8_t pan_id[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0xAB, 0xBC, 0xCD};
 	XBee_Config config("", "denver", false, pan_id, 1000, B9600, 1);
@@ -104,5 +88,5 @@ int main(void)
 		return 0;
 	}
 	interface.xbee_status();
-
+	*/
 }
