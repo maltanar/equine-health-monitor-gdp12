@@ -45,7 +45,7 @@ I2CBus::I2CBus()
   /* Enable pins at location 1 */
   I2C0->ROUTE = I2C_ROUTE_SDAPEN |
                 I2C_ROUTE_SCLPEN |
-                (1 << _I2C_ROUTE_LOCATION_SHIFT);
+                (I2CPortConf.i2cLocation << _I2C_ROUTE_LOCATION_SHIFT);
 
   I2C_Init(I2CPortConf.i2cTypeDef, & i2cInit);
 

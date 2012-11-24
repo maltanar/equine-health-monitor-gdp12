@@ -178,7 +178,7 @@ void UARTPort::handleInterrupt()
   }
 }
 
-void UARTPort::setupDMA(uint8_t dmaChannel, uint8_t signalFrameChar)
+void UARTPort::setupSignalFrameDMA(uint8_t dmaChannel, uint8_t signalFrameChar)
 {
   // TODO add support for non-LE UART
   if(!m_portConfig->lowEnergy)
@@ -190,6 +190,9 @@ void UARTPort::setupDMA(uint8_t dmaChannel, uint8_t signalFrameChar)
   // require normal initialization first
   if(!m_initialized)
     return;
+  
+  module_debug_uart("Configuring sigframe DMA on channel %d and sigframe 0x%x", dmaChannel,
+					signalFrameChar);
   
   // TODO this is hardcoded for LEUART0, modify this to support others
   

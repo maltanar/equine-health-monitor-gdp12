@@ -17,15 +17,15 @@
         <debug>1</debug>
         <option>
           <name>ExePath</name>
-          <state>integration\Debug\Exe</state>
+          <state>Debug\Exe</state>
         </option>
         <option>
           <name>ObjPath</name>
-          <state>integration\Debug\Obj</state>
+          <state>Debug\Obj</state>
         </option>
         <option>
           <name>ListPath</name>
-          <state>integration\Debug\List</state>
+          <state>Debug\List</state>
         </option>
         <option>
           <name>Variant</name>
@@ -39,20 +39,20 @@
         <option>
           <name>Input variant</name>
           <version>3</version>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>Input description</name>
-          <state>Full formatting.</state>
+          <state>Automatic choice of formatter.</state>
         </option>
         <option>
           <name>Output variant</name>
           <version>2</version>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>Output description</name>
-          <state>Full formatting.</state>
+          <state>Automatic choice of formatter.</state>
         </option>
         <option>
           <name>GOutputBinary</name>
@@ -304,6 +304,7 @@
           <state>$PROJ_DIR$\..\..\xbee_if\</state>
           <state>$PROJ_DIR$\..\..\ehm-common\</state>
           <state>$PROJ_DIR$\..\..\efm32-common\</state>
+          <state>$PROJ_DIR$\..\..\sensor</state>
           <state>$PROJ_DIR$</state>
         </option>
         <option>
@@ -948,15 +949,15 @@
         <debug>0</debug>
         <option>
           <name>ExePath</name>
-          <state>integration\Release\Exe</state>
+          <state>Release\Exe</state>
         </option>
         <option>
           <name>ObjPath</name>
-          <state>integration\Release\Obj</state>
+          <state>Release\Obj</state>
         </option>
         <option>
           <name>ListPath</name>
-          <state>integration\Release\List</state>
+          <state>Release\List</state>
         </option>
         <option>
           <name>Variant</name>
@@ -970,20 +971,20 @@
         <option>
           <name>Input variant</name>
           <version>3</version>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>Input description</name>
-          <state>Full formatting.</state>
+          <state>Automatic choice of formatter.</state>
         </option>
         <option>
           <name>Output variant</name>
           <version>2</version>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>Output description</name>
-          <state>Full formatting.</state>
+          <state>Automatic choice of formatter.</state>
         </option>
         <option>
           <name>GOutputBinary</name>
@@ -1034,7 +1035,7 @@
         </option>
         <option>
           <name>GenLowLevelInterface</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>GEndianModeBE</name>
@@ -1046,7 +1047,7 @@
         </option>
         <option>
           <name>GenStdoutInterface</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>GeneralMisraRules98</name>
@@ -1095,9 +1096,7 @@
         <debug>0</debug>
         <option>
           <name>CCDefines</name>
-          <state>NDEBUG</state>
           <state>EFM32GG990F1024</state>
-          <state>DEBUG_EFM</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -1226,11 +1225,18 @@
         </option>
         <option>
           <name>CCIncludePath2</name>
-          <state>$PROJ_DIR$\..\..\STK3300-TinyGecko\common\CMSIS\Include</state>
+          <state>$PROJ_DIR$\..\..\efm32-common\CMSIS\Include</state>
           <state>$PROJ_DIR$\..\common\Device\EnergyMicro\EFM32GG\Include</state>
-          <state>$PROJ_DIR$\..\..\STK3300-TinyGecko\common\emlib\inc</state>
+          <state>$PROJ_DIR$\..\..\efm32-common\emlib\inc</state>
           <state>$PROJ_DIR$\..\common\drivers</state>
-          <state>$PROJ_DIR$\..\..\STK3300-TinyGecko\common\bsp</state>
+          <state>$PROJ_DIR$\..\common\bsp</state>
+          <state>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src</state>
+          <state>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\port\energymicro\tg</state>
+          <state>$PROJ_DIR$\..\..\xbee_if\</state>
+          <state>$PROJ_DIR$\..\..\ehm-common\</state>
+          <state>$PROJ_DIR$\..\..\efm32-common\</state>
+          <state>$PROJ_DIR$\..\..\sensor</state>
+          <state>$PROJ_DIR$</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -1250,7 +1256,7 @@
         </option>
         <option>
           <name>CCOptLevel</name>
-          <state>0</state>
+          <state>3</state>
         </option>
         <option>
           <name>CCOptStrategy</name>
@@ -1285,7 +1291,7 @@
         </option>
         <option>
           <name>IccLang</name>
-          <state>0</state>
+          <state>2</state>
         </option>
         <option>
           <name>IccCDialect</name>
@@ -1782,7 +1788,7 @@
         </option>
         <option>
           <name>IlinkOptInline</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>IlinkOptExceptionsAllow</name>
@@ -1898,13 +1904,19 @@
       <name>$PROJ_DIR$\..\..\efm32-common\dmamanager.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\i2cbus.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\i2cbus.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\i2cmanager.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\efm32-common\uartmanager.cpp</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\efm32-common\uartmanager.h</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\efm32-common\uartmanagergg990f1024.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\efm32-common\uartport.cpp</name>
@@ -1932,6 +1944,9 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_gpio.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_i2c.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_leuart.c</name>
@@ -1998,7 +2013,37 @@
     </file>
   </group>
   <group>
+    <name>sensor</name>
+    <file>
+      <name>$PROJ_DIR$\..\..\sensor\accelerationsensor.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\sensor\accelerationsensor.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\sensor\gpssensor.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\sensor\gpssensor.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\sensor\sensor.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\sensor\sensor.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\sensor\temperaturesensor.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\sensor\temperaturesensor.h</name>
+    </file>
+  </group>
+  <group>
     <name>Source</name>
+    <file>
+      <name>$PROJ_DIR$\debug_output_control.h</name>
+    </file>
     <file>
       <name>$PROJ_DIR$\integration.cpp</name>
     </file>

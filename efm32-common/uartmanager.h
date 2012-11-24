@@ -4,14 +4,31 @@
 #ifndef __UARTMANAGER_H
 #define __UARTMANAGER_H
 
-#if defined(EFM32GG990F1024)
-#include "uartmanagergg990f1024.h"
+#include "em_usart.h"
+#include "em_leuart.h"
+#include "port_config.h"
 
-#elif defined(EFM32TG840F32)
-#include "uartmanagertg840f32.h"
+class UARTManager {
+public:
+  // singleton instance accessor
+  static UARTManager* getInstance()
+  {
+    static UARTManager instance;
+    return &instance;
+  }
 
-#else
-#error "uartmanager.h: PART NUMBER undefined"
-#endif
+  UARTPort * getPort(UARTManagerPort port);
+  void routeInterrupt(UARTManagerPort port);
+
+private:
+  // ------ start of singleton pattern specific section ------
+  UARTManager();
+  UARTManager(UARTManager const&);                // do not implement
+  void operator=(UARTManager const&);        // do not implement
+  // ------ end of singleton pattern specific section --------
+
+  const UARTPortConfig * m_configs;
+  UARTPort * m_ports[UART_MANAGER_PORT_COUNT];
+};
 
 #endif // __UARTMANAGER_H
