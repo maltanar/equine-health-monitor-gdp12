@@ -52,7 +52,7 @@ public:
   bool initialize(uint8_t *rxBuffer, uint8_t rxBufferSize, BaudRate baudRate, 
                   DataBits dataBits, Parity parity, StopBits stopBits);
   
-  void setupDMA(uint8_t dmaChannel, uint8_t signalFrameChar);
+  void setupSignalFrameDMA(uint8_t dmaChannel, uint8_t signalFrameChar);
   
   void setRxHook(RxHook h);
   void setSignalFrameHook(SigFrameHook h);

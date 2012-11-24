@@ -25,7 +25,7 @@ GPSSensor::GPSSensor() :
   
 #ifdef USE_GPS_DMA
   // configure DMA 
-  m_port->setupDMA(DMA_CHANNEL_GPS, '\n');
+  m_port->setupSignalFrameDMA(DMA_CHANNEL_GPS, '\n');
 #endif
   
   // TODO GPS is responding weirdly to these control msgs, but why?
