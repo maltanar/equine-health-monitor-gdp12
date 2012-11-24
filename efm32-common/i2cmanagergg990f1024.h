@@ -10,12 +10,12 @@ const I2CPortConfig I2CPortConf =
 {
   // port configuration for I2C0, pos3
   .i2cTypeDef = I2C0,
-  .i2cLocation = 3,
+  .i2cLocation = 1,
   .irqNumber = I2C0_IRQn,
   .sclPort = gpioPortD,
-  .sclPin = 15,
+  .sclPin = 7,
   .sdaPort = gpioPortD,
-  .sdaPin = 14
+  .sdaPin = 6
  };
 
 #endif // I2CMANAGERGG990F1024_H
