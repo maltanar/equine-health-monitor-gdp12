@@ -84,14 +84,7 @@ int main(void)
 	/* If first word of user data page is non-zero, enable eA Profiler trace */
 	TRACE_ProfilerSetup();
 
-	/* Infinite blink loop */
-	while (1)
-	{
-		DVK_setLEDs(0xff00);
-		Delay(200);
-		DVK_setLEDs(0x00ff);
-		Delay(200);
-	}
+
 	// set configuration options for XBee device
 	uint8_t pan_id[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0xAB, 0xBC, 0xCD};
 	XBee_Config config("", "denver", false, pan_id, 1000, B9600, 1);
@@ -105,4 +98,12 @@ int main(void)
 	}
 	interface.xbee_status();
 
+	/* Infinite blink loop */
+	while (1)
+	{
+		DVK_setLEDs(0xff00);
+		Delay(200);
+		DVK_setLEDs(0x00ff);
+		Delay(200);
+	}
 }
