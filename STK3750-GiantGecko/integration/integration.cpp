@@ -45,6 +45,7 @@
 #include "xbee_if.h"
 #include "uartmanager.h"
 #include "gpssensor.h"
+#include "accelerationsensor.h"
 
 void sfHook(uint8_t * buf)
 {
@@ -65,8 +66,11 @@ int main(void)
 	// needed for eA profiler?
 	// TRACE_ProfilerSetup();
 	
-	UARTManager::getInstance()->getPort(UARTManagerPortLEUART0)->setSignalFrameHook(&sfHook);
-	GPSSensor::getInstance();
+	//UARTManager::getInstance()->getPort(UARTManagerPortLEUART0)->setSignalFrameHook(&sfHook);
+	//GPSSensor::getInstance();
+	AccelerationSensor *s = new AccelerationSensor(100);
+	
+	printf("accelerometer devid: %x \n", s->getDeviceID());
 	
 	
 	

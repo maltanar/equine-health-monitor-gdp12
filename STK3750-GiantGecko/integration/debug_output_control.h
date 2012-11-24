@@ -32,8 +32,9 @@
 #define ENABLE_DEBUG_OUTPUT_UART
 #define nENABLE_DEBUG_OUTPUT_HRMRX
 #define nENABLE_DEBUG_OUTPUT_TEMP
-#define nENABLE_DEBUG_OUTPUT_I2C
+#define ENABLE_DEBUG_OUTPUT_I2C
 #define ENABLE_DEBUG_OUTPUT_GPS
+#define ENABLE_DEBUG_OUTPUT_ACCL
 
 #endif
 
@@ -82,6 +83,12 @@
 #define module_debug_gps(fmt, ...)   printf("GPS: "fmt"\n", ##__VA_ARGS__)
 #else
 #define module_debug_gps(fmt, ...)   
+#endif
+
+#ifdef ENABLE_DEBUG_OUTPUT_ACCL
+#define module_debug_accl(fmt, ...)   printf("ACCL: "fmt"\n", ##__VA_ARGS__)
+#else
+#define module_debug_accl(fmt, ...)   
 #endif
 
 #endif // DEBUGOUTPUTCONTROL_H

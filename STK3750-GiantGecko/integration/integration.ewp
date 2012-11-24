@@ -1904,6 +1904,18 @@
       <name>$PROJ_DIR$\..\..\efm32-common\dmamanager.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\i2cbus.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\i2cbus.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\i2cmanager.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\i2cmanagergg990f1024.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\efm32-common\uartmanager.cpp</name>
     </file>
     <file>
@@ -1938,6 +1950,9 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_gpio.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_i2c.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_leuart.c</name>
@@ -2005,6 +2020,12 @@
   </group>
   <group>
     <name>sensor</name>
+    <file>
+      <name>$PROJ_DIR$\..\..\sensor\accelerationsensor.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\sensor\accelerationsensor.h</name>
+    </file>
     <file>
       <name>$PROJ_DIR$\..\..\sensor\gpssensor.cpp</name>
     </file>
