@@ -1890,6 +1890,12 @@
     </file>
   </group>
   <group>
+    <name>drivers</name>
+    <file>
+      <name>$PROJ_DIR$\..\common\drivers\rtc.c</name>
+    </file>
+  </group>
+  <group>
     <name>efm32-common</name>
     <file>
       <name>$PROJ_DIR$\..\..\efm32-common\dmamanager.cpp</name>
@@ -1935,6 +1941,9 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_leuart.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_rtc.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_system.c</name>
