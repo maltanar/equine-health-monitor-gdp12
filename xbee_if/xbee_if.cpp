@@ -499,6 +499,26 @@ uint8_t XBee::xbee_configure_device() {
 		register_updated = true;
 	}
 
+	/* check the sleep mode settings for end devices */
+	if (!config.coordinator_mode) {
+		cmd = XBee_At_Command("SM");
+		uint8_t sleep_mode = 0x01;
+		error_code = xbee_send_at_command(cmd);
+		if (error_code != GBEE_NO_ERROR)
+			return error_code;
+		/* SM returns 1 byte, Value defines the sleep mode
+		 * 0x00 - sleep disabled
+		 * 0x01 - pin sleep enabled --> desired mode of operation
+		 * 0x04 - cyclic sleep enabled
+		 * 0x05 - cyclic sleep, pin wake */
+		if (cmd.data[0] != sleep_mode) {
+			printf("Enabling to pin sleep mode");
+			XBee_At_Command cmd_sm("SM", &sleep_mode, 1);
+			xbee_send_at_command(cmd_sm);
+			register_updated = true;
+		}
+	}
+
 	/* check the Baud Rate */
 	cmd = XBee_At_Command("BD");
 	error_code = xbee_send_at_command(cmd);
@@ -546,7 +566,6 @@ uint8_t XBee::xbee_status() {
 	}
 	/* wait for the response to the command */
 	frame = new GBeeFrameData;
-	printf("frame at %0x, size %u\n", frame, sizeof(*frame));
 	error_code = gbeeReceive(gbee_handle, frame, &length, &timeout);
 	if (error_code != GBEE_NO_ERROR)
 		status = error_code;
@@ -609,11 +628,6 @@ uint8_t XBee::xbee_send_at_command(XBee_At_Command& cmd){
 			else
 				cmd.append_data(at_frame->value, length - 5, at_frame->status);
 			break;
-		/* Modem Status frames can be transmitted at arbitrary times,
-		 * as long as there's no message queue, we have to handle them here */
-		} else if (frame->ident == GBEE_MODEM_STATUS) {
-			GBeeModemStatus *status_frame = (GBeeModemStatus*) frame;
-			printf("Received Modem status: %02x\n", status_frame->status);
 		} else {
 			printf("Received frame with ident %02x\n", frame->ident);
 			break;
@@ -674,8 +688,7 @@ XBee_Message* XBee::xbee_receive_message() {
 				else
 					retry_cnt = 3;
 				break;
-			}
-			else {
+			} else {
 				printf("Received unexpected message frame: ident=%02x\n",frame->ident);
 			}
 		}
@@ -727,15 +740,15 @@ uint8_t XBee::xbee_send(XBee_Message& msg, const XBee_Address *addr) {
 	uint8_t tx_status = 0xFF;	/* -> Unknown Tx Status */
 	uint16_t length;
 	uint32_t timeout = config.timeout;
-
 	/* send the message, by splitting it up into parts that have the
 	 * correct length for transmission over ZigBee */
 	for (uint16_t i = 1; i <= msg.message_part_cnt; i++) {
+		uint8_t *message = msg.get_msg(i);
 		/* send out one part of the message, use the message part as frame id */
 		error_code = gbeeSendTxRequest(gbee_handle, i, addr->addr64h, addr->addr64l,
-		addr->addr16, bcast_radius, options, msg.get_msg(i), msg.get_msg_len(i));
-		printf("Sending message part %u of %u with length %u\n",
-			i, msg.message_part_cnt, msg.get_msg_len(i));
+		addr->addr16, bcast_radius, options, message, msg.get_msg_len(i));
+		printf("Sending message part %u of %u with length %u and addr %0x, msg addr %0x\n",
+			i, msg.message_part_cnt, msg.get_msg_len(i), frame, message);
 		if (error_code != GBEE_NO_ERROR) {
 			printf("Error sending message part %u of %u: %s\n",
 			i, msg.message_part_cnt, gbeeUtilCodeToString(error_code));
