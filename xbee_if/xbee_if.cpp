@@ -439,7 +439,7 @@ uint8_t XBee::xbee_init() {
 	gbee_handle = gbeeCreate(config.serial_port.c_str());
 	if (!gbee_handle) {
 		printf("Error creating handle for XBee device\n");
-		exit(-1);
+		return GBEE_RS232_ERROR;
 	}
 
 	/* TODO: check if device is operating in API mode: the functions provided by
@@ -533,7 +533,7 @@ uint8_t XBee::xbee_configure_device() {
 uint8_t XBee::xbee_status() {
 	GBeeFrameData *frame;
 	GBeeError error_code;
-	uint16_t length;
+	uint16_t length = 0;
 	uint32_t timeout = config.timeout;
 	uint8_t frame_id = 3;	/* used to identify response frame */
 	uint8_t status = 0xFE;	/* Unknown Status */
@@ -546,10 +546,11 @@ uint8_t XBee::xbee_status() {
 	}
 	/* wait for the response to the command */
 	frame = new GBeeFrameData;
+	printf("frame at %0x, size %u\n", frame, sizeof(*frame));
 	error_code = gbeeReceive(gbee_handle, frame, &length, &timeout);
 	if (error_code != GBEE_NO_ERROR)
-		return error_code;
-	if (frame->ident == GBEE_AT_COMMAND_RESPONSE) {
+		status = error_code;
+	else if (frame->ident == GBEE_AT_COMMAND_RESPONSE) {
 		GBeeAtCommandResponse *at_frame = (GBeeAtCommandResponse*) frame;
 		status = at_frame->value[0];
 		printf("Status: %s\n", gbeeUtilStatusCodeToString(status));
@@ -596,9 +597,8 @@ uint8_t XBee::xbee_send_at_command(XBee_At_Command& cmd){
 				if (frame_id < at_frame->frameId)
 					break;
 				/* if it's smaller, wait for a second and try again */
-                        	RTC_Trigger(1000, NULL);
-    				EMU_EnterEM2(true);
-				delete frame;
+				RTC_Trigger(1000, NULL);
+    			EMU_EnterEM2(true);
 				continue;
 			}
 			/* copy the response payload into the XBee_At_Command object.
