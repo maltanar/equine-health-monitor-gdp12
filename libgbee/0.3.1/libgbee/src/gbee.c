@@ -10,18 +10,18 @@
  *
  * \section LICENSE
  *
- * This library is free software; you can redistribute it and/or modify it 
- * under the terms of the GNU Lesser General Public License as published by the 
- * Free Software Foundation; either version 2.1 of the License, or (at your 
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by the
+ * Free Software Foundation; either version 2.1 of the License, or (at your
  * option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License 
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
  * for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License 
- * along with this library; if not, write to the Free Software Foundation, 
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
@@ -41,38 +41,38 @@
 
 /**
  * Calculates and returns the frame data checksum.
- * 
+ *
  * \param[in] frameData points to the data to calculate the checksum for.
  * \param[in] length is the length of the frame data.
- * 
+ *
  * \return Frame data checksum.
  */
 static uint8_t gbeeCalculateChecksum(const uint8_t *frameData, uint8_t length);
 
 /**
  * Verifies the frame data checksum.
- * 
+ *
  * \param[in] frameData points to the data to verify the checksum for.
  * \param[in] length is the length of the frame data.
- * 
- * \return GBEE_NO_ERROR if the checksum is valid and GBEE_CHECKSUM_ERROR 
+ *
+ * \return GBEE_NO_ERROR if the checksum is valid and GBEE_CHECKSUM_ERROR
  * otherwise.
  */
 static GBeeError gbeeVerifyChecksum(const uint8_t *frameData, uint8_t length,
 		uint8_t checksum);
-		
+
 /**
  * Starts buffering data from the GBee, until the given maximum number of byte
  * is buffered, or until the stop character is received, or until no byte is
  * received within the given character timeout.
- * 
+ *
  * \param[in] self points to the GBee device.
  * \param[out] response is a pointer where to store the data.
  * \param[out] size is the number of bytes buffered.
  * \param[in] maxSize is the maximum number of bytes to buffer.
  * \param[in] if stop_char is received buffering is stopped.
  * \param[in] if no byte received after char_timeout ms buffering is stopped.
- * 
+ *
  * \return GBEE_NO_ERROR if successful, or dedicated error code in case of any
  * error.
  */
@@ -81,7 +81,7 @@ static GBeeError gbeeGetResponse(GBee *self, uint8_t *response, uint16_t *size,
 
 /**
  * GBee wait routine - delays for the requested number of milliseconds.
- * 
+ *
  * \param[in] self is a pointer to the GBee device structure.
  * \param[in] milliseconds specifies the number of milliseconds to delay.
  */
@@ -111,7 +111,7 @@ GBee *gbeeCreate(const char *serialName)
 	// Initialize self.
 	self->serialDevice = deviceIndex;
 	self->lastError    = GBEE_NO_ERROR;
-	
+
 	return self;
 }
 
@@ -125,7 +125,7 @@ void gbeeDestroy(GBee *self)
 
 /******************************************************************************/
 
-GBeeError gbeeReceive(GBee *self, GBeeFrameData *frameData, uint16_t *length, 
+GBeeError gbeeReceive(GBee *self, GBeeFrameData *frameData, uint16_t *length,
 		uint32_t *timeout)
 {
 	// Header of frame.
@@ -142,13 +142,13 @@ GBeeError gbeeReceive(GBee *self, GBeeFrameData *frameData, uint16_t *length,
 	GBeeError error = GBEE_NO_ERROR;
 	// GBee read error code.
 	GBeeError readError;
-	
+
 	// Check some pre-conditions.
 	if (self->lastError != GBEE_NO_ERROR)
 	{
 		error = GBEE_INHERITED_ERROR;
 	}
-	GBEE_THROW(error);	
+	GBEE_THROW(error);
 
 	// Prepare.
 	*length                    = 0;
@@ -157,9 +157,9 @@ GBeeError gbeeReceive(GBee *self, GBeeFrameData *frameData, uint16_t *length,
 	frameHeader.length         = 0;
 	elapsedTime                = 0;
 	bytePtr                    = (uint8_t*)&frameHeader;
-	
+
 	GBEE_DEBUG_LOG("%s: ", __func__);
-	
+
 	// Loop to read the frame byte-wise.
 	while (error == GBEE_NO_ERROR)
 	{
@@ -189,7 +189,7 @@ GBeeError gbeeReceive(GBee *self, GBeeFrameData *frameData, uint16_t *length,
 			error = GBEE_FRAME_INTEGRITY_ERROR;
 			break;
 		}
-		
+
 		// First byte must be the start delimiter.
 		if ((frameSize > 0) || (frameHeader.startDelimiter == 0x7E))
 		{
@@ -252,7 +252,7 @@ GBeeError gbeeSend(GBee *self, GBeeFrameData *frameData, uint16_t length)
 	GBeeError error = GBEE_NO_ERROR;
 	// Total frame size.
 	uint16_t totalLength;
-	
+
 	// Check some pre-conditions.
 	if (self->lastError != GBEE_NO_ERROR)
 	{
@@ -262,15 +262,15 @@ GBeeError gbeeSend(GBee *self, GBeeFrameData *frameData, uint16_t length)
 	{
 		error = GBEE_FRAME_SIZE_ERROR;
 	}
-	GBEE_THROW(error);	
-	
+	GBEE_THROW(error);
+
 	// Create frame to send to the XBee.
 	frameHeader->startDelimiter = 0x7E;
 	frameHeader->length = GBEE_USHORT(length);
 	GBEE_PORT_MEMORY_COPY(&self->scratch[sizeof(GBeeFrameHeader)], frameData, length);
 	frameTrailer->checksum = gbeeCalculateChecksum((uint8_t *)frameData, length);
 	totalLength = length + sizeof(GBeeFrameHeader) + sizeof(GBeeFrameTrailer);
-		
+
 	// Print the GBee message to send if debug logging is enabled.
 #ifdef GBEE_PORT_DEBUG_LOG
 	{
@@ -283,7 +283,7 @@ GBeeError gbeeSend(GBee *self, GBeeFrameData *frameData, uint16_t length)
 		printf("\r\n");
 	}
 #endif // GBEE_PORT_DEBUG_LOG
-	
+
 	// Send the frame via the serial interface.
 	error = GBEE_PORT_UART_SEND_BUFFER(self->serialDevice, self->scratch, totalLength);
 	return error;
@@ -291,7 +291,7 @@ GBeeError gbeeSend(GBee *self, GBeeFrameData *frameData, uint16_t length)
 
 /******************************************************************************/
 
-GBeeError gbeeSendAtCommand(GBee *self, uint8_t frameId, uint8_t *atCmd, 
+GBeeError gbeeSendAtCommand(GBee *self, uint8_t frameId, uint8_t *atCmd,
 		uint8_t *value, uint16_t length)
 {
 	// GBee error code.
@@ -304,7 +304,7 @@ GBeeError gbeeSendAtCommand(GBee *self, uint8_t frameId, uint8_t *atCmd,
 	{
 		error = GBEE_INHERITED_ERROR;
 	}
-	GBEE_THROW(error);	
+	GBEE_THROW(error);
 
 	// Assemble the AT command frame.
 	atCommand.ident        = GBEE_AT_COMMAND;
@@ -320,7 +320,7 @@ GBeeError gbeeSendAtCommand(GBee *self, uint8_t frameId, uint8_t *atCmd,
 
 /******************************************************************************/
 
-GBeeError gbeeSendAtCommandQueue(GBee *self, uint8_t frameId, uint8_t *atCmd, 
+GBeeError gbeeSendAtCommandQueue(GBee *self, uint8_t frameId, uint8_t *atCmd,
 		uint8_t *value, uint16_t length)
 {
 	// GBee error code.
@@ -333,7 +333,7 @@ GBeeError gbeeSendAtCommandQueue(GBee *self, uint8_t frameId, uint8_t *atCmd,
 	{
 		error = GBEE_INHERITED_ERROR;
 	}
-	GBEE_THROW(error);	
+	GBEE_THROW(error);
 
 	// Assemble the AT command frame.
 	atCommandQueue.ident        = GBEE_AT_COMMAND_QUEUE;
@@ -363,7 +363,7 @@ GBeeError gbeeSendRemoteAtCommand(GBee *self, uint8_t frameId, uint32_t dstAddr6
 	{
 		error = GBEE_INHERITED_ERROR;
 	}
-	GBEE_THROW(error);	
+	GBEE_THROW(error);
 
 	// Assemble the AT command frame.
 	remoteAtCommand.ident        = GBEE_REMOTE_AT_COMMAND;
@@ -384,7 +384,7 @@ GBeeError gbeeSendRemoteAtCommand(GBee *self, uint8_t frameId, uint32_t dstAddr6
 
 /******************************************************************************/
 
-GBeeError gbeeSendTxRequest(GBee *self, uint8_t frameId, uint32_t dstAddr64h, 
+GBeeError gbeeSendTxRequest(GBee *self, uint8_t frameId, uint32_t dstAddr64h,
 		uint32_t dstAddr64l, uint16_t dstAddr16, uint8_t bcastRadius,
 		uint8_t options, uint8_t *data, uint16_t length) {
 
@@ -425,25 +425,25 @@ static GBeeError gbeeGetResponse(GBee *self, uint8_t *response, uint16_t *size,
 	// GBee error code.
 	GBeeError error = GBEE_NO_ERROR;
 	*size = 0;
-	
+
 	while (1)
 	{
 		// Read a byte.
 		error = GBEE_PORT_UART_RECEIVE_BYTE(self->serialDevice, &response[*size],
 				charTimeout);
-		
+
 		if (error == GBEE_NO_ERROR)
 		{
 			// Count the byte.
 			(*size)++;
-			
+
 			// Got a byte. Check if it is the stop character.
 			if (response[(*size)-1] == stopChar)
 			{
 				error = GBEE_NO_ERROR;
 				break;
 			}
-			
+
 			// Check if maximum number of bytes received.
 			if (*size >= maxSize)
 			{
@@ -489,7 +489,7 @@ static uint8_t gbeeCalculateChecksum(const uint8_t *frameData, uint8_t length)
 
 /******************************************************************************/
 
-static GBeeError gbeeVerifyChecksum(const uint8_t *frameData, uint8_t length, 
+static GBeeError gbeeVerifyChecksum(const uint8_t *frameData, uint8_t length,
 		uint8_t checksum)
 {
 	// Pointer to current byte.
