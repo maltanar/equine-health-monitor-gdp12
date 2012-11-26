@@ -180,7 +180,6 @@ void speed_measurement(XBee* interface, uint16_t size, uint16_t iterations) {
 
 	start_time = msTicks;
 	for (uint16_t i = 0; i < iterations; i++) {
-		test_msg = get_message(size);
 		if ((error_code = interface->xbee_send_to_coordinator(*test_msg))!= 0x00) {
 			printf("Error transmitting: %u\n", error_code);
 			break;
@@ -198,6 +197,20 @@ void speed_measurement(XBee* interface, uint16_t size, uint16_t iterations) {
 	delete test_msg;
 }
 
+void sleep_test(XBee *interface) {
+	uint8_t error_code;
+
+	printf("Starting sleep test\n");
+	while(1) {
+		// wake up device
+		GPIO_PinOutClear(gpioPortD, 3);
+		if (interface->xbee_status() != 0x00)
+			printf("timout\n");
+		// send to sleep & wait for a second
+		GPIO_PinOutSet(gpioPortD, 3);
+	}
+}
+
 /**************************************************************************//**
  * @brief  Main function
  *****************************************************************************/
@@ -208,41 +221,49 @@ int main(void)
 
     setupSWO();
 
-	/* Setup SysTick Timer for 1 msec interrupts  */
-  //	if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 1000)) while (1) ;
-
     // XBee assumed to be connected on USART1 with PD0 and PD1
     // use PD2 for reset
     GPIO_PinModeSet(gpioPortD, 2, gpioModePushPull, 1);
 
-    // hardware reset the ZigBee module
-    // set !RST to low for 10 ms
+	// define sleep ctrl pin for XBee device, use portD pin 3
+	GPIO_PinModeSet(gpioPortD, 3, gpioModePushPull, 1);
+	GPIO_PinOutClear(gpioPortD, 3);
 
+	// hardware reset the ZigBee module
+    // set !RST to low for 10 ms
 	GPIO_PinOutClear(gpioPortD, 2);
-    RTC_Trigger(10, NULL);
+   	RTC_Trigger(10, NULL);
     EMU_EnterEM2(true);
    	GPIO_PinOutSet(gpioPortD, 2);
 
-    // wait for device to settle down after reset
+	// wait for device to settle down after reset
     RTC_Trigger(1000, NULL);
     EMU_EnterEM2(true);
     // TODO maybe wait for HW reset ACK from device instead of fixed time wait
 
     // set configuration options for XBee device
     uint8_t pan_id[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0xAB, 0xBC, 0xCD};
-    XBee_Config config("", "denver", false, pan_id, 1000, B9600, 1);
+	const uint32_t timeout = 100;
+	const uint8_t max_unicast_hops = 1;
+    XBee_Config config("", "denver", false, pan_id, timeout, B9600, max_unicast_hops);
 
 	// initialize XBee device
+	// !do not use RTC_Trigger after this point, it's used by the alarm class */
     XBee interface(config);
-    uint8_t error_code = interface.xbee_init();
+
+	uint8_t error_code = interface.xbee_init();
     if (error_code != GBEE_NO_ERROR) {
 		printf("Error: unable to configure device, code: %02x\n", error_code);
-		return 0;
     }
-    interface.xbee_status();
+	// wait with sleep test until the device has joined a network
+	while (interface.xbee_status() != 0x00) {}
+
+	// printf("Sleep Test\n");
+	// test the sleep mode
+	// sleep_test(&interface);
 
 	// test the speed of the connection
-	speed_measurement(&interface, 10, 20);
+	speed_measurement(&interface, 100, 100);
  }
 
 

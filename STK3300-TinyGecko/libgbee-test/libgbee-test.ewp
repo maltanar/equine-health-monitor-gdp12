@@ -1958,6 +1958,12 @@
     <group>
       <name>port</name>
       <file>
+        <name>$PROJ_DIR$\alarm.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\alarm.h</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\port\energymicro\tg\gbee-heap.c</name>
       </file>
       <file>

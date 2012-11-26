@@ -9,7 +9,7 @@ TriggerName=main
 LimitSize=0
 ByteLimit=50
 [DebugChecksum]
-Checksum=-1275476594
+Checksum=-1573571884
 [Exceptions]
 StopOnUncaught=_ 0
 StopOnThrow=_ 0
@@ -78,13 +78,33 @@ GraphEnabled=0
 ShowTimeLog=1
 ShowTimeSum=1
 SumSortOrder=0
+[Disassemble mode]
+mode=0
+[Breakpoints2]
+Bp0=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\xbee_if\xbee_if.cpp}.569.2" 0 0 1 "" 0 "" 0
+Bp1=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\xbee_if\xbee_if.cpp}.569.2" 0 0 1 "" 0 "" 0
+Bp2=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\xbee_if\xbee_if.cpp}.569.2" 0 0 1 "" 0 "" 0
+Bp3=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\xbee_if\xbee_if.cpp}.569.2" 0 0 1 "" 0 "" 0
+Bp4=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\xbee_if\xbee_if.cpp}.569.2" 0 0 1 "" 0 "" 0
+Bp5=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\xbee_if\xbee_if.cpp}.569.2" 0 0 1 "" 0 "" 0
+Bp6=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\xbee_if\xbee_if.cpp}.569.2" 0 0 1 "" 0 "" 0
+Bp7=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\xbee_if\xbee_if.cpp}.569.2" 0 0 1 "" 0 "" 0
+Bp8=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\xbee_if\xbee_if.cpp}.569.2" 0 0 1 "" 0 "" 0
+Bp9=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\xbee_if\xbee_if.cpp}.569.2" 0 0 1 "" 0 "" 0
+Bp10=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\xbee_if\xbee_if.cpp}.569.2" 0 0 1 "" 0 "" 0
+Bp11=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\xbee_if\xbee_if.cpp}.569.2" 0 0 1 "" 0 "" 0
+Bp12=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\xbee_if\xbee_if.cpp}.569.2" 0 0 1 "" 0 "" 0
+Bp13=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\xbee_if\xbee_if.cpp}.569.2" 0 0 1 "" 0 "" 0
+Bp14=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\xbee_if\xbee_if.cpp}.569.2" 0 0 1 "" 0 "" 0
+Bp15=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\..\xbee_if\xbee_if.cpp}.569.2" 0 0 1 "" 0 "" 0
+Count=16
 [Log file]
 LoggingEnabled=_ 0
 LogFile=_ ""
 Category=_ 0
-[TermIOLog]
-LoggingEnabled=_ 0
-LogFile=_ ""
+[Aliases]
+Count=0
+SuppressDialog=0
 [Trace2]
 Enabled=0
 ShowSource=0
@@ -105,10 +125,6 @@ Mode=3
 Graph=0
 Symbiont=0
 Exclusions=
-[Disassemble mode]
-mode=0
-[Breakpoints2]
-Count=0
-[Aliases]
-Count=0
-SuppressDialog=0
+[TermIOLog]
+LoggingEnabled=_ 0
+LogFile=_ ""
