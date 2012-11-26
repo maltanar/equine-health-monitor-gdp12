@@ -26,7 +26,40 @@
 #define	GPIO_GPS_VBAT_PIN		5
 #define GPIO_GPS_VBAT			GPIO_GPS_VBAT_PORT, GPIO_GPS_VBAT_PIN
 // TODO Merve will continue with the other ports and pins
-// -------------------------------------------------------------------------
+// PA1 is connected to INT1 pin of ADXL
+#define GPIO_ADXL_INT1_PORT 	gpioPortA 
+#define GPIO_ADXL_INT1_PIN 		1
+#define GPIO_ADXL_INT1			GPIO_ADXL_INT1_PORT, GPIO_ADXL_INT1_PIN
+// PA0 is connected to INT2 pin of ADXL
+#define GPIO_ADXL_INT2_PORT 	gpioPortA 
+#define GPIO_ADXL_INT2_PIN 		0
+#define GPIO_ADXL_INT2			GPIO_ADXL_INT2_PORT, GPIO_ADXL_INT2_PIN
+// PE9 is connected to DRDY' pin of TMP006
+#define GPIO_TMP006_DRDY_PORT 	gpioPortE 
+#define GPIO_TMP006_DRDY_PIN 	9
+#define GPIO_TMP006_DRDY		GPIO_TMP006_DRDY_PORT, GPIO_TMP006_DRDY_PIN
+// PA10 is connected to the transistor that turns on/off the ANT Vcc
+#define GPIO_ANT_VCC_PORT 	gpioPortA 
+#define GPIO_ANT_VCC_PIN 	10
+#define GPIO_ANT_VCC		GPIO_ANT_VCC_PORT, GPIO_ANT_VCC_PIN
+// PA4 is connected to the sleep pin of the ANT
+#define GPIO_ANT_SLEEP_PORT 	gpioPortA 
+#define GPIO_ANT_SLEEP_PIN 		4
+#define GPIO_ANT_SLEEP			GPIO_ANT_SLEEP_PORT, GPIO_ANT_SLEEP_PIN
+// PA2 is connected to the RTS/SEN pin of the ANT
+#define GPIO_ANT_RTS_PORT 	gpioPortA 
+#define GPIO_ANT_RTS_PIN 	2
+#define GPIO_ANT_RTS		GPIO_ANT_RTS_PORT, GPIO_ANT_RTS_PIN
+// What about ANT GLBL_RST?
+// Nothing with microSD
+// PA8 is connected to the DTR'/SLEEP_RQ pin of the XBEE
+#define GPIO_XBEE_DTR_PORT 	gpioPortA 
+#define GPIO_XBEE_DTR_PIN 	8
+#define GPIO_XBEE_DTR		GPIO_XBEE_DTR_PORT, GPIO_XBEE_DTR_PIN
+// PA9 is connected to the transistor that turns on/off the XBEE Vcc
+#define GPIO_XBEE_VCC_PORT 	gpioPortA 
+#define GPIO_XBEE_VCC_PIN 	9
+#define GPIO_XBEE_VCC		GPIO_XBEE_VCC_PORT, GPIO_XBEE_VCC_PIN
 // End Section: Misc GPIO port config --------------------------------------
 // -------------------------------------------------------------------------
 
