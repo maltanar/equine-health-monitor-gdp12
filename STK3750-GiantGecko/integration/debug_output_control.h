@@ -35,6 +35,7 @@
 #define ENABLE_DEBUG_OUTPUT_I2C
 #define ENABLE_DEBUG_OUTPUT_GPS
 #define ENABLE_DEBUG_OUTPUT_ACCL
+#define nENABLE_DEBUG_OUTPUT_XBEE
 
 #endif
 
@@ -89,6 +90,12 @@
 #define module_debug_accl(fmt, ...)   printf("ACCL: "fmt"\n", ##__VA_ARGS__)
 #else
 #define module_debug_accl(fmt, ...)   
+#endif
+
+#ifdef ENABLE_DEBUG_OUTPUT_XBEE
+#define module_debug_xbee(fmt, ...)   printf("XBee: "fmt"\n", ##__VA_ARGS__)
+#else
+#define module_debug_xbee(fmt, ...)
 #endif
 
 #endif // DEBUGOUTPUTCONTROL_H
