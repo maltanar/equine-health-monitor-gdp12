@@ -73,7 +73,7 @@ bool UARTPort::initialize(uint8_t *rxBuffer, uint8_t rxBufferSize,
     LEUART_Init(leuart, &init);
     // Enable pins at default location 
     leuart->ROUTE = LEUART_ROUTE_RXPEN | LEUART_ROUTE_TXPEN 
-                    | m_portConfig->routeLocation;
+                    | (m_portConfig->routeLocation << _LEUART_ROUTE_LOCATION_SHIFT);
 
     // Clear previous RX interrupts
     LEUART_IntClear(leuart, LEUART_IF_RXDATAV);
@@ -104,7 +104,7 @@ bool UARTPort::initialize(uint8_t *rxBuffer, uint8_t rxBufferSize,
 
     // Enable pins at desired UART location
     usart->ROUTE = USART_ROUTE_RXPEN | USART_ROUTE_TXPEN | 
-                   m_portConfig->routeLocation;
+                   (m_portConfig->routeLocation << _USART_ROUTE_LOCATION_SHIFT);
 
     // Clear previous RX interrupts 
     USART_IntClear(usart, USART_IF_RXDATAV);

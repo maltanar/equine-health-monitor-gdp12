@@ -44,7 +44,7 @@ const UARTPortConfig UARTManagerPortConfigs[UART_MANAGER_PORT_COUNT] =
     .irqNumber = LEUART0_IRQn,
     .usartBase = (USART_TypeDef *) LEUART0,
     // TODO route location & pins should be runtime configurable?
-    .routeLocation = LEUART_ROUTE_LOCATION_LOC0,
+    .routeLocation = 0,
     .txPort = gpioPortD,
     .txPin = 4,
     .rxPort = gpioPortD,
@@ -57,7 +57,7 @@ const UARTPortConfig UARTManagerPortConfigs[UART_MANAGER_PORT_COUNT] =
     .irqNumber = USART1_RX_IRQn,
     .usartBase = (USART_TypeDef *) USART1,
     // TODO route location & pins should be runtime configurable?
-    .routeLocation = USART_ROUTE_LOCATION_LOC1,
+    .routeLocation = 1,
     .txPort = gpioPortD,
     .txPin = 0,
     .rxPort = gpioPortD,
