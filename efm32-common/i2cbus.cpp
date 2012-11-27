@@ -5,6 +5,12 @@
 #include "debug_output_control.h"
 #include "i2cmanager.h"
 
+// use to control mode of sleeping during the poll that waits for the I2C interrupt
+// do not sleep, busy wait
+#define I2CBUS_POLL_SLEEP	;
+// sleep in EM1
+//#define I2CBUS_POLL_SLEEP	EMU_EnterEM1();
+
 void I2C0_IRQHandler(void)
 {
   I2CBus::getInstance()->handleI2CInterrupt();
@@ -85,10 +91,9 @@ bool I2CBus::readRegister16Bit(uint16_t addr, uint8_t reg, uint16_t *val)
   m_status = I2C_TransferInit(I2C0, &seq);
   while (m_status == i2cTransferInProgress)
   {
-    // Enter EM1 while waiting for I2C interrupt
-    // TODO is this a good idea to do inside a generic driver module?
+    // Enter sleep (if configured) while waiting for I2C interrupt
     // TODO add timeout function here?
-    EMU_EnterEM1();
+    I2CBUS_POLL_SLEEP;
   }
 
   if (m_status != i2cTransferDone)
@@ -123,10 +128,9 @@ bool I2CBus::writeRegister16Bit(uint16_t addr, uint8_t reg, uint16_t val)
   m_status = I2C_TransferInit(I2CPortConf.i2cTypeDef, &seq);
   while (m_status == i2cTransferInProgress)
   {
-    // Enter EM1 while waiting for I2C interrupt
-    // TODO is this a good idea to do inside a generic driver module?
+    // Enter sleep (if configured) while waiting for I2C interrupt
     // TODO add timeout function here?
-    EMU_EnterEM1();
+    I2CBUS_POLL_SLEEP;
   }
 
   if (m_status != i2cTransferDone)
@@ -165,10 +169,9 @@ bool I2CBus::readRegister8Bit(uint16_t addr, uint8_t reg, uint8_t *val)
   m_status = I2C_TransferInit(I2CPortConf.i2cTypeDef, &seq);
   while (m_status == i2cTransferInProgress)
   {
-    // Enter EM1 while waiting for I2C interrupt
-    // TODO is this a good idea to do inside a generic driver module?
+    // Enter sleep (if configured) while waiting for I2C interrupt
     // TODO add timeout function here?
-    EMU_EnterEM1();
+    I2CBUS_POLL_SLEEP;
   }
 
   if (m_status != i2cTransferDone)
@@ -202,10 +205,9 @@ bool I2CBus::writeRegister8Bit(uint16_t addr, uint8_t reg, uint8_t val)
   m_status = I2C_TransferInit(I2CPortConf.i2cTypeDef, &seq);
   while (m_status == i2cTransferInProgress)
   {
-    // Enter EM1 while waiting for I2C interrupt
-    // TODO is this a good idea to do inside a generic driver module?
+    // Enter sleep (if configured) while waiting for I2C interrupt
     // TODO add timeout function here?
-    EMU_EnterEM1();
+    I2CBUS_POLL_SLEEP;
   }
 
   if (m_status != i2cTransferDone)
