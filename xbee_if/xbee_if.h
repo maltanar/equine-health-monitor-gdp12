@@ -29,9 +29,8 @@
 
 #define MSG_HEADER_LENGTH 4
 /* define position of values in the header */
-#define MSG_TYPE 0x00
-#define MSG_PART 0x01
-#define MSG_PART_CNT 0x02
+#define MSG_PART 0x00
+#define MSG_PART_CNT 0x01
 #define MSG_PAYLOAD_LENGTH 0x03
 
 enum xbee_msg_type {
@@ -131,14 +130,13 @@ private:
 class XBee_Message {
 friend class XBee;
 public:
-	XBee_Message(enum MessageType type, const uint8_t *payload, uint16_t length);
+	XBee_Message(const uint8_t *payload, uint16_t length);
 	XBee_Message(const uint8_t *message);
 	XBee_Message();
 	XBee_Message(const XBee_Message& msg);
 	XBee_Message& operator=(const XBee_Message &msg);
 	~XBee_Message();
 	uint8_t* get_payload(uint16_t *length);
-	enum MessageType get_type();
 	bool is_complete();
 private:
 	bool append_msg(const XBee_Message &msg);
@@ -149,7 +147,6 @@ private:
 
 	uint8_t *message_buffer;
 	uint8_t *payload;
-	enum MessageType type;
 	uint16_t payload_len;
 	uint8_t message_part;
 	uint16_t message_part_cnt;

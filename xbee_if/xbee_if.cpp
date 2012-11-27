@@ -183,8 +183,7 @@ void XBee_At_Command::append_data(const uint8_t *new_data, uint8_t cmd_length, u
 /** XBee_Message Class implementation */
 /* constructor for a XBee message - used to create messages for transmission */
 // TODO: Make message part in Header 2 bytes long
-XBee_Message::XBee_Message(enum MessageType type, const uint8_t *msg_payload, uint16_t msg_length):
-		type(type),
+XBee_Message::XBee_Message(const uint8_t *msg_payload, uint16_t msg_length):
 		payload_len(msg_length),
 		message_part(1),	/* message part numbers start with 1 */
 		message_complete(true)	/* messages created by this constructor
@@ -204,7 +203,6 @@ XBee_Message::XBee_Message(enum MessageType type, const uint8_t *msg_payload, ui
 /* constructor for XBee_messages - used to deserialize objects after reception */
 XBee_Message::XBee_Message(const uint8_t *message):
 		message_buffer(NULL),	/* this message type will not use the buffer */
-		type(static_cast<MessageType>(message[MSG_TYPE])),
 		payload_len(message[MSG_PAYLOAD_LENGTH]),
 		message_part(message[MSG_PART]),
 		message_part_cnt(message[MSG_PART_CNT])
@@ -234,7 +232,6 @@ XBee_Message::XBee_Message():
 /* copy constructor, performs a deep copy */
 XBee_Message::XBee_Message(const XBee_Message& msg) :
 	message_buffer(NULL),
-	type(msg.type),
 	payload_len(msg.payload_len),
 	message_part(msg.message_part),
 	message_part_cnt(msg.message_part_cnt),
@@ -286,10 +283,6 @@ uint8_t* XBee_Message::get_payload(uint16_t *length) {
 	return payload;
 }
 
-enum MessageType XBee_Message::get_type() {
-	return type;
-}
-
 bool XBee_Message::is_complete() {
 	return message_complete;
 }
@@ -324,7 +317,6 @@ bool XBee_Message::append_msg(const XBee_Message &msg) {
 	payload = new_payload;
 	payload_len += msg.payload_len;
 	message_part += 1;
-	type = msg.type;
 
 	/* determine if the message is complete */
 	if (message_part == message_part_cnt) {
@@ -367,7 +359,6 @@ uint8_t* XBee_Message::get_msg(uint16_t part = 1) {
 		offset = (part - 1) * (XBEE_MSG_LENGTH - MSG_HEADER_LENGTH);
 	}
 	/* create the header of the message */
-	message_buffer[MSG_TYPE] = static_cast<uint8_t>(type);
 	message_buffer[MSG_PART] = part;
 	message_buffer[MSG_PART_CNT] = message_part_cnt;
 	message_buffer[MSG_PAYLOAD_LENGTH] = length;
