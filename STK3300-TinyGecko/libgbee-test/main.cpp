@@ -162,7 +162,7 @@ XBee_Message* get_message(uint16_t size) {
 	for (int i = 0; i < size; i++) {
 		payload[i] = (uint8_t)i % 255;
 	}
-	XBee_Message* test_msg = new XBee_Message(messageTypeRawTemperature, payload, size);
+	XBee_Message* test_msg = new XBee_Message(payload, size);
 	delete[] payload;
 
 	return test_msg;
@@ -184,7 +184,7 @@ void speed_measurement(XBee* interface, uint16_t size, uint16_t iterations) {
 			printf("Error transmitting: %u\n", error_code);
 			break;
 		}
-		printf("Successfully transmitted msg %u with type %02x\n", i+1, (uint8_t)test_msg->get_type());
+		printf("Successfully transmitted msg %u with type %02x\n", i+1);
 	}
 
 	end_time = msTicks;
@@ -198,8 +198,6 @@ void speed_measurement(XBee* interface, uint16_t size, uint16_t iterations) {
 }
 
 void sleep_test(XBee *interface) {
-	uint8_t error_code;
-
 	printf("Starting sleep test\n");
 	while(1) {
 		// wake up device

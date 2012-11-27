@@ -8,10 +8,13 @@
 #ifndef __PORTS_TG840F32_H
 #define __PORTS_TG840F32_H
 
+#include "uartport.h"
+#include "i2cbus.h"
+
 // -------------------------------------------------------------------------
 // Section: I2C port config ------------------------------------------------
 // -------------------------------------------------------------------------
-const I2CPortConfig I2CPortConf = 
+const I2CPortConfig I2CPortConf =
 {
   // port configuration for I2C0, pos3
   .i2cTypeDef = I2C0,
