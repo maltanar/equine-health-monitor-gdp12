@@ -1897,6 +1897,12 @@
     </group>
     <group>
       <name>Drivers</name>
+      <group>
+        <name>Common</name>
+        <file>
+          <name>$PROJ_DIR$\..\..\efm32-common\port_config.h</name>
+        </file>
+      </group>
       <file>
         <name>$PROJ_DIR$\..\..\efm32-common\dmamanager.cpp</name>
       </file>
