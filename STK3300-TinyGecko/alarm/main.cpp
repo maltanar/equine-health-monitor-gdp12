@@ -12,12 +12,24 @@ extern "C" {
 void TRACE_SWOSetup();
 }
 
+void alarmHandler(AlarmID id)
+{
+	printf("Handled alarm %d \n", id);
+	
+	if(id == 2)
+		AlarmManager::getInstance()->stopAlarm(0);
+}
+
 int main()
 {
   CHIP_Init();
   TRACE_SWOSetup();
   
-  AlarmManager::getInstance();
+  AlarmManager * am = AlarmManager::getInstance();
+  
+  am->createAlarm(1, false, &alarmHandler);
+  am->createAlarm(2, false, &alarmHandler);
+  am->createAlarm(4, false, &alarmHandler);
   
   
   while(1)

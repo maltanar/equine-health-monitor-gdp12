@@ -29,7 +29,7 @@
  */
 
 #include "gbee-port-interface.h"
-#include "alarm.h"
+#include "alarmmanager.h"
 #include <stdbool.h>
 
 /******************************************************************************/
@@ -38,7 +38,7 @@
  * global variable "timeout_loop" that's used to control the maximal wait
  * time for receiving a Byte from the serial port */
 static volatile bool usartReceiveTimout = false;
-void gbeeUsartReceiveTimeout(int id)
+void gbeeUsartReceiveTimeout(AlarmID id)
 {
 	usartReceiveTimout = false;
 }
@@ -56,18 +56,18 @@ GBeeError gbeePortUsartSendBuffer(int deviceIndex, const uint8_t *buffer,
 
 GBeeError gbeePortUsartReceiveByte(int deviceIndex, uint8_t *byte, uint32_t timeout)
 {
-	int alarmId;
+	AlarmID alarmId;
 
 	usartReceiveTimout = true;
 	/* create an alarm that's triggered after 200ms (ALARM_TICK_MS * 1) */
-	alarmId = Alarm_Create(2, true, &gbeeUsartReceiveTimeout);
+	alarmId = AlarmManager::getInstance()->createAlarm(2, true, &gbeeUsartReceiveTimeout);
 	/* Wait until there is a byte available, or timeout elapsed */
 	do
 	{
 		if (gbeeUsartByteGet(deviceIndex, byte))
 		{
 			/* disable the alarm */
-			Alarm_SetTimeout(alarmId, 0);
+			AlarmManager::getInstance()->stopAlarm(alarmId);
 			return GBEE_NO_ERROR;
 		}
 	}

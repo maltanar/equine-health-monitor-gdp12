@@ -96,7 +96,7 @@ const UARTPortConfig UARTManagerPortConfigs[UART_MANAGER_PORT_COUNT] =
     .irqNumber = LEUART0_IRQn,
     .usartBase = (USART_TypeDef *) LEUART0,
     // TODO route location & pins should be runtime configurable?
-    .routeLocation = LEUART_ROUTE_LOCATION_LOC2,
+    .routeLocation = 2,
     .txPort = gpioPortE,
     .txPin = 14,
     .rxPort = gpioPortE,
@@ -109,7 +109,7 @@ const UARTPortConfig UARTManagerPortConfigs[UART_MANAGER_PORT_COUNT] =
     .irqNumber = LEUART1_IRQn,
     .usartBase = (USART_TypeDef *) LEUART1,
     // TODO route location & pins should be runtime configurable?
-    .routeLocation = LEUART_ROUTE_LOCATION_LOC0,
+    .routeLocation = 0,
     .txPort = gpioPortC,
     .txPin = 6,
     .rxPort = gpioPortC,
@@ -122,7 +122,7 @@ const UARTPortConfig UARTManagerPortConfigs[UART_MANAGER_PORT_COUNT] =
     .irqNumber = USART0_RX_IRQn,
     .usartBase = (USART_TypeDef *) USART0,
     // TODO route location & pins should be runtime configurable?
-    .routeLocation = USART_ROUTE_LOCATION_LOC2,
+    .routeLocation = 2,
     .txPort = gpioPortC,
     .txPin = 11,
     .rxPort = gpioPortC,
@@ -136,7 +136,7 @@ const UARTPortConfig UARTManagerPortConfigs[UART_MANAGER_PORT_COUNT] =
     .irqNumber = USART1_RX_IRQn,
     .usartBase = (USART_TypeDef *) USART1,
     // TODO route location & pins should be runtime configurable?
-    .routeLocation = USART_ROUTE_LOCATION_LOC1,
+    .routeLocation = 1,
     .txPort = gpioPortD,
     .txPin = 0,
     .rxPort = gpioPortD,
@@ -150,7 +150,7 @@ const UARTPortConfig UARTManagerPortConfigs[UART_MANAGER_PORT_COUNT] =
     .irqNumber = USART2_RX_IRQn,
     .usartBase = (USART_TypeDef *) USART2,
     // TODO route location & pins should be runtime configurable?
-    .routeLocation = USART_ROUTE_LOCATION_LOC0,
+    .routeLocation = 0,
     .txPort = gpioPortC,
     .txPin = 11,
     .rxPort = gpioPortC,

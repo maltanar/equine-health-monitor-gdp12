@@ -13,14 +13,6 @@
 // subclasses need to call constructor with appropriate type information
 // and override the (pure) virtual functions
 
-typedef enum _SensorType {
-  sensorTypeRawData,
-  sensorTypeTemperature,
-  sensorTypeAccelerometer,
-  sensorTypeHeartRate,
-  sensorTypeGPS
-} SensorType;
-
 typedef unsigned short SensorPeriod;
 
 class Sensor {

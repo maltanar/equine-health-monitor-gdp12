@@ -36,7 +36,7 @@
 #define TMP006_I2C_ADDR     0x80
 
 TemperatureSensor::TemperatureSensor(SensorPeriod period)
- : Sensor(sensorTypeTemperature, 8, period)
+ : Sensor(typeTemperature, 8, period)
 {
   m_temp = 0;
   m_rate = 0;

@@ -45,14 +45,15 @@
 #include "xbee_if.h"
 #include "uartmanager.h"
 #include "gpssensor.h"
+#include "rtc.h"
 #include "accelerationsensor.h"
 #include "temperaturesensor.h"
 
-void sfHook(uint8_t * buf)
-{
-	GPSSensor::getInstance()->sampleSensorData();
-}
-
+	 void sfHook(uint8_t *)
+	 {
+		 GPSSensor::getInstance()->sampleSensorData();
+	 }
+	 
 /**************************************************************************//**
  * @brief  Main function
  *****************************************************************************/
@@ -67,26 +68,26 @@ int main(void)
 	// needed for eA profiler?
 	// TRACE_ProfilerSetup();
 	
-	//UARTManager::getInstance()->getPort(UARTManagerPortLEUART0)->setSignalFrameHook(&sfHook);
-	//GPSSensor::getInstance();
-	AccelerationSensor *a = new AccelerationSensor(100);
-	TemperatureSensor *t = new TemperatureSensor(1000);
-	
-	printf("accelerometer devid: %x \n", a->getDeviceID());
-	printf("tempsens ids %x %x \n", t->getManufacturerID(),
-		   t->getDeviceID());
-	
-	
-	while (1)
-	{
-		EMU_EnterEM2(true);
-	}
-	
-	/*
 	// set configuration options for XBee device
 	uint8_t pan_id[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0xAB, 0xBC, 0xCD};
 	XBee_Config config("", "denver", false, pan_id, 1000, B9600, 1);
 
+	GPIO_PinModeSet(gpioPortD, 11, gpioModePushPull, 1);
+	
+	printf("rest starting \n");
+
+	// hardware reset the ZigBee module
+    // set !RST to low for 10 ms
+	GPIO_PinOutClear(gpioPortD, 11);
+   	RTC_Delay(10);
+   	GPIO_PinOutSet(gpioPortD, 11);
+
+	// wait for device to settle down after reset
+    RTC_Delay(1000);
+	
+	printf("rest finished \n");
+	
+	
 	// initialize XBee device
 	XBee interface(config);
 	uint8_t error_code = interface.xbee_init();
@@ -94,6 +95,38 @@ int main(void)
 		printf("Error: unable to configure device, code: %02x\n", error_code);
 		return 0;
 	}
-	interface.xbee_status();
-	*/
+	while(interface.xbee_status() != 0);
+	
+	XBee_At_Command m("OI");
+	interface.xbee_send_at_command(m);
+	printf("%d \n", m.length);
+	printf("%x \n", *(uint16_t *)m.data);
+	
+	uint16_t size;
+	XBee_Message *x;
+	char * str = "hola de la luna!";
+	
+	
+	
+	UARTManager::getInstance()->getPort(UARTManagerPortLEUART0)->setSignalFrameHook(&sfHook);
+	GPSSensor::getInstance();
+	/*AccelerationSensor *a = new AccelerationSensor(100);
+	TemperatureSensor *t = new TemperatureSensor(1000);
+	
+	printf("accelerometer devid: %x \n", a->getDeviceID());
+	printf("tempsens ids %x %x \n", t->getManufacturerID(),
+		   t->getDeviceID());*/
+	
+	
+	while (1)
+	{
+		x = new XBee_Message((const uint8_t *) GPSSensor::getInstance()->readSensorData(&size), (uint16_t) sizeof(GPSMessage));
+		interface.xbee_send_to_coordinator(*x);
+		delete x;
+		//EMU_EnterEM2(true);
+		//a->sampleSensorData();
+		//t->sampleSensorData();
+		
+	}
+	
 }

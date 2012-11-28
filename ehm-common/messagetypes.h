@@ -20,13 +20,73 @@
 #endif
 
 enum MessageType {
-	messageTypeGPS,
-	messageTypeAccelerometer,
-	messageTypeTemperature,
-	messageTypeRawTemperature,
-	messageTypeHeartRate
+	msgSensorData,
+	msgSensorConfig,
+	msgDebug
 };
 
+enum ConfigMsgType {
+	typeSensorConfig,
+	typeNodeConfig
+};
+
+enum DebugMsgType {
+	typeDebugString
+};
+
+enum SensorType {
+	typeGPS,
+	typeAccelerometer,
+	typeTemperature,
+	typeRawTemperature,
+	typeHeartRate
+};
+
+
+
+// definition of the data structure at the highest abstraction level.
+// This structure is used to transmit data between monitoring
+// devices and the base station
+typedef PACKEDSTRUCT {
+	enum MessageType mainType;
+	uint16_t payloadLength;
+	uint8_t *payload;
+} MessagePacket;
+
+// definition of the three main message groups: Sensor, Config and Debug
+// They contain a subtype field for specialization
+typedef PACKEDSTRUCT {
+	enum SensorType;
+	uint32_t startTimestampMs;
+	uint16_t sampleIntervalMs;
+	uint8_t arrayLength;	// could also be calculated during de-serialization
+	uint8_t *sensorMsgArray;
+} SensorMessage;
+
+typedef PACKEDSTRUCT {
+	enum ConfigMsgType;
+	uint8_t arrayLength;
+	uint8_t *configMsgArray;
+} ConfigMessage;
+
+typedef PACKEDSTRUCT {
+	enum DebugMsgType;
+	uint8_t *debugData;
+} DebugMessage;
+
+// definition of subtypes for ConfigMessages
+typedef PACKEDSTRUCT {
+	enum SensorType;
+	uint8_t enableSensor;
+	uint16_t sampleIntervalMs;
+	uint16_t samplePeriodMs;
+} ConfigSensor;
+
+typedef PACKEDSTRUCT {
+	uint8_t *data;
+} ConfigNode;
+
+// definition of subtypes for SensorMessage
 typedef PACKEDSTRUCT {
 	uint8_t degree;
 	uint8_t minute;

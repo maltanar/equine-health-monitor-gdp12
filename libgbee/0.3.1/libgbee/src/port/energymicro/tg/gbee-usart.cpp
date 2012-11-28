@@ -28,7 +28,6 @@
 #include <string.h>
 #include <stdio.h>
 #include "uartmanager.h"
-#include "alarm.h"
 
 UARTPort * port = NULL;
 static uint8_t msgbuf[80];
@@ -42,8 +41,6 @@ int gbeeUsartEnable(const char *deviceName)
                    UARTPort::uartPortDataBits8, UARTPort::uartPortParityNone,
                    UARTPort::uartPortStopBits1);
 
-  	// enable the alarm system used for receive timeouts
-	Alarm_InitializeSystem();
 	return 0;
 }
 

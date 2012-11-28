@@ -11,7 +11,7 @@
 #define ASCIITONUM(x)	(x - 0x30)
 
 GPSSensor::GPSSensor() :
-  Sensor(sensorTypeGPS, 8, 5000)
+  Sensor(typeGPS, 8, 5000)
 {
   // initialize UART
   m_port= UARTManager::getInstance()->getPort(UARTManagerPortLEUART0);
