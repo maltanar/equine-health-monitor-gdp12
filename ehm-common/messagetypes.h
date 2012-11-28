@@ -19,36 +19,27 @@
   #define PACKEDSTRUCT struct __attribute__((__packed__))
 #endif
 
-enum MessageType {
+typedef enum {
 	msgSensorData,
 	msgSensorConfig,
 	msgDebug
-};
+} MessageType;
 
-enum ConfigMsgType {
-	typeSensorConfig,
-	typeNodeConfig
-};
-
-enum DebugMsgType {
-	typeDebugString
-};
-
-enum SensorType {
+typedef enum  {
 	typeGPS,
 	typeAccelerometer,
 	typeTemperature,
 	typeRawTemperature,
-	typeHeartRate
-};
-
-
+	typeHeartRate,
+	typeZigBee,
+	typeMonitoringDevice
+} DeviceType;
 
 // definition of the data structure at the highest abstraction level.
 // This structure is used to transmit data between monitoring
 // devices and the base station
 typedef PACKEDSTRUCT {
-	enum MessageType mainType;
+	MessageType mainType;
 	uint16_t payloadLength;
 	uint8_t *payload;
 } MessagePacket;
@@ -56,7 +47,7 @@ typedef PACKEDSTRUCT {
 // definition of the three main message groups: Sensor, Config and Debug
 // They contain a subtype field for specialization
 typedef PACKEDSTRUCT {
-	enum SensorType;
+	DeviceType sensorType;
 	uint32_t startTimestampMs;
 	uint16_t sampleIntervalMs;
 	uint8_t arrayLength;	// could also be calculated during de-serialization
@@ -64,13 +55,13 @@ typedef PACKEDSTRUCT {
 } SensorMessage;
 
 typedef PACKEDSTRUCT {
-	enum ConfigMsgType;
+	DeviceType deviceType;
+	bool isReadRequest;
 	uint8_t arrayLength;
 	uint8_t *configMsgArray;
 } ConfigMessage;
 
 typedef PACKEDSTRUCT {
-	enum DebugMsgType;
 	uint8_t *debugData;
 } DebugMessage;
 
