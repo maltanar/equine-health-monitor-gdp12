@@ -35,11 +35,6 @@ bool UARTPort::initialize(uint8_t *rxBuffer, uint8_t rxBufferSize,
   m_rxCount      = 0;
   m_rxBufferSize = rxBufferSize;
   m_rxBuffer     = rxBuffer;
-  
-  if(!rxBuffer || rxBufferSize == 0) {
-    module_debug_uart("cannot work without rx buffer!");
-    return false;
-  }
 
   // Configure GPIO pins 
   CMU_ClockEnable(cmuClock_GPIO, true);
@@ -141,14 +136,22 @@ void UARTPort::handleInterrupt()
   
   if (uartif & UARTPORT_RXDATAV)
   {
-    int c = UARTPORT_RX(m_portConfig->usartBase);
-    module_debug_uart("rx interrupt!");
+    uint8_t c = UARTPORT_RX(m_portConfig->usartBase);
+    module_debug_uart("rx interrupt! %x ", c);
     
     // execute rx hook if defined
     if(m_rxHook)
-      m_rxHook(c);
+      if(m_rxHook(c))
+		  return;	// exit handler if rx hook returns true, it already
+					// received processed the data
+	
+	if(!m_rxBuffer || m_rxBufferSize == 0)
+	{
+		module_debug_uart("no rx buffer, dropping data");
+		return;
+	}
 
-    // store data 
+    // store data in buffer if it was not handled by rxHook
     m_rxBuffer[m_rxWriteIndex] = c;
     m_rxWriteIndex++;
     m_rxCount++;
@@ -186,6 +189,13 @@ void UARTPort::setupSignalFrameDMA(uint8_t dmaChannel, uint8_t signalFrameChar)
     module_debug_uart("DMA for non-LE UART not yet supported!");
     return;
   }
+  
+  if(!m_rxBuffer || m_rxBufferSize == 0)
+  {
+	module_debug_uart("cannot enable DMA without RX buffer");
+    return;
+  }
+  
   
   // require normal initialization first
   if(!m_initialized)
