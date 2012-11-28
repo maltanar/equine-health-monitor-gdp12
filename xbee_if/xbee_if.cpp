@@ -212,7 +212,7 @@ XBee_Message::XBee_Message(const GBeeRxPacket *message):
 {
 	/* deserialize the source address */
 	address = XBee_Address(message);
-	
+
 	/* allocate memory to copy the payload into the object */
 	payload = new uint8_t[payload_len];
 	memcpy(payload, &message->data[MSG_HEADER_LENGTH], payload_len);
@@ -343,7 +343,7 @@ bool XBee_Message::append_msg(const XBee_Message &msg) {
 	return true;
 }
 
-bool XBee_Message::append_msg(const uint8_t *data) {
+bool XBee_Message::append_msg(const GBeeRxPacket *data) {
 	XBee_Message tmp_msg(data);
 	return append_msg(tmp_msg);
 }
@@ -655,7 +655,7 @@ uint8_t XBee::xbee_send_data(const string &destination, const uint8_t *data, uin
 	const XBee_Address *addr = xbee_get_address(destination);
 	if (!addr)
 		return GBEE_TIMEOUT_ERROR;	/* node couldn't be found in network */
-	msg = new XBee_Message(*addr, data, length); 
+	msg = new XBee_Message(*addr, data, length);
 	status = xbee_send_data(*msg);
 	delete msg;
 

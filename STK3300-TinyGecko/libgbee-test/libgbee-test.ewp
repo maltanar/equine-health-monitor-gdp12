@@ -1904,6 +1904,12 @@
         </file>
       </group>
       <file>
+        <name>$PROJ_DIR$\..\..\efm32-common\alarmmanager.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\efm32-common\alarmmanager.h</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\..\efm32-common\dmamanager.cpp</name>
       </file>
       <file>
@@ -1976,7 +1982,7 @@
         <name>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\port\energymicro\tg\gbee-heap.h</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\port\energymicro\tg\gbee-port.c</name>
+        <name>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\port\energymicro\tg\gbee-port.cpp</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\port\energymicro\tg\gbee-port.h</name>

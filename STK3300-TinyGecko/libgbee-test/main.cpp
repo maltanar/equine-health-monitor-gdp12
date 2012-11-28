@@ -156,22 +156,27 @@ GBeeError gbeeUtilReadRegister(GBee *gbee, const char *regName, uint8_t *value,
         return GBEE_NO_ERROR;
 }
 
-XBee_Message* get_message(uint16_t size) {
+XBee_Message* get_message(XBee* interface, const string &dest, uint16_t size) {
+	const XBee_Address *addr = interface->xbee_get_address(dest);
 	uint8_t *payload = new uint8_t[size];
 
+	if (!addr) {
+		printf("Error getting address for node %s \n", dest.c_str());
+		return NULL;
+	}
 	for (int i = 0; i < size; i++) {
 		payload[i] = (uint8_t)i % 255;
 	}
-	XBee_Message* test_msg = new XBee_Message(payload, size);
+	XBee_Message* test_msg = new XBee_Message(*addr, payload, size);
 	delete[] payload;
 
 	return test_msg;
 }
 
-void speed_measurement(XBee* interface, uint16_t size, uint16_t iterations) {
+void speed_measurement(XBee* interface, const string &dest, uint16_t size, uint16_t iterations) {
 	uint32_t start_time, end_time, duration_ms;
 	uint8_t error_code;
-	XBee_Message* test_msg = get_message(size);
+	XBee_Message* test_msg = get_message(interface, dest, size);
 
 	if (!test_msg) {
 		printf("Memory allocation problem\n");
@@ -180,7 +185,7 @@ void speed_measurement(XBee* interface, uint16_t size, uint16_t iterations) {
 
 	start_time = msTicks;
 	for (uint16_t i = 0; i < iterations; i++) {
-		if ((error_code = interface->xbee_send_to_coordinator(*test_msg))!= 0x00) {
+		if ((error_code = interface->xbee_send_data(*test_msg))!= 0x00) {
 			printf("Error transmitting: %u\n", error_code);
 			break;
 		}
@@ -261,7 +266,7 @@ int main(void)
 	// sleep_test(&interface);
 
 	// test the speed of the connection
-	speed_measurement(&interface, 100, 100);
+	speed_measurement(&interface, "coordinator", 100, 100);
  }
 
 
