@@ -76,7 +76,7 @@ XBee_Address::XBee_Address(const string &node, const uint8_t *payload) :
  /* TODO: find a good way to set baud rate for xbees */
 XBee_Config::XBee_Config(const string &port, const string &node, bool mode,
 			const uint8_t *pan, uint32_t timeout,
-			enum xbee_baud_rate baud, uint8_t max_unicast_hops):
+			xbee_baud_rate baud, uint8_t max_unicast_hops):
 		serial_port(port),
 		node(node),
 		coordinator_mode(mode),
@@ -185,7 +185,8 @@ void XBee_At_Command::append_data(const uint8_t *new_data, uint8_t cmd_length, u
 /** XBee_Message Class implementation */
 /* constructor for a XBee message - used to create messages for transmission */
 // TODO: Make message part in Header 2 bytes long
-XBee_Message::XBee_Message(const uint8_t *msg_payload, uint16_t msg_length):
+XBee_Message::XBee_Message(const XBee_Address &addr, const uint8_t *msg_payload, uint16_t msg_length):
+		address(addr),
 		payload_len(msg_length),
 		message_part(1),	/* message part numbers start with 1 */
 		message_complete(true)	/* messages created by this constructor
@@ -203,15 +204,18 @@ XBee_Message::XBee_Message(const uint8_t *msg_payload, uint16_t msg_length):
 }
 
 /* constructor for XBee_messages - used to deserialize objects after reception */
-XBee_Message::XBee_Message(const uint8_t *message):
+XBee_Message::XBee_Message(const GBeeRxPacket *message):
 		message_buffer(NULL),	/* this message type will not use the buffer */
-		payload_len(message[MSG_PAYLOAD_LENGTH]),
-		message_part(message[MSG_PART]),
-		message_part_cnt(message[MSG_PART_CNT])
+		payload_len(message->data[MSG_PAYLOAD_LENGTH]),
+		message_part(message->data[MSG_PART]),
+		message_part_cnt(message->data[MSG_PART_CNT])
 {
+	/* deserialize the source address */
+	address = XBee_Address(message);
+	
 	/* allocate memory to copy the payload into the object */
 	payload = new uint8_t[payload_len];
-	memcpy(payload, &message[MSG_HEADER_LENGTH], payload_len);
+	memcpy(payload, &message->data[MSG_HEADER_LENGTH], payload_len);
 
 	/* determine if the message is complete, or just a part of a longer
 	 * message */
@@ -223,6 +227,7 @@ XBee_Message::XBee_Message(const uint8_t *message):
 
 /* constructor for a empty XBee message - used to create messages for appending data */
 XBee_Message::XBee_Message():
+	address(),
 	message_buffer(NULL),
 	payload(NULL),
 	payload_len(0),
@@ -233,6 +238,7 @@ XBee_Message::XBee_Message():
 
 /* copy constructor, performs a deep copy */
 XBee_Message::XBee_Message(const XBee_Message& msg) :
+	address(msg.address),
 	message_buffer(NULL),
 	payload_len(msg.payload_len),
 	message_part(msg.message_part),
@@ -250,6 +256,7 @@ XBee_Message::XBee_Message(const XBee_Message& msg) :
 
 /* assignment operator, performs deep copy for pointer members */
 XBee_Message& XBee_Message::operator=(const XBee_Message& msg) {
+	address = msg.address;
 	payload_len = msg.payload_len;
 	message_part = msg.message_part;
 	message_part_cnt = msg.message_part_cnt;
@@ -280,6 +287,10 @@ XBee_Message::~XBee_Message() {
 		delete[] message_buffer;
 }
 
+const XBee_Address& XBee_Message::get_address() {
+	return address;
+}
+
 uint8_t* XBee_Message::get_payload(uint16_t *length) {
 	*length = payload_len;
 	return payload;
@@ -297,13 +308,16 @@ bool XBee_Message::append_msg(const XBee_Message &msg) {
 	uint16_t new_payload_len;
 
 	/* check if it's possible to append the given message */
+	// TODO: Compare addresses, only possible if they are equal
 	if (msg.message_part != message_part+1)
 		return false;
 
-	/* if it's the first part of a message, copy the total part count */
-	if (msg.message_part == 1)
+	/* if it's the first part of a message, copy the total part count
+	 * and the source address */
+	if (msg.message_part == 1) {
 		message_part_cnt = msg.message_part_cnt;
-
+		address = msg.address;
+	}
 	/* given message passed validity check -> allocate memory */
 	new_payload_len = payload_len + msg.payload_len;
 	new_payload = new uint8_t[new_payload_len];
@@ -633,21 +647,19 @@ uint8_t XBee::xbee_send_at_command(XBee_At_Command& cmd){
 	return error_code;
 }
 
-/* sends the data in the message object to the coordinator */
-uint8_t XBee::xbee_send_to_coordinator(XBee_Message& msg) {
-	/* coordinator can be addressed by setting the 64bit destination
-	 * address to all zeros and the 16bit address to 0xFFFE */
-	XBee_Address addr;
-	addr.addr16 = 0xFFFE;
-	return xbee_send(msg, &addr);
-}
-
-/* sends the data in the message object to a Network Node */
-uint8_t XBee::xbee_send_to_node(XBee_Message& msg, const string &node) {
-	const XBee_Address *addr = xbee_get_address(node);
+/* sends the data the node identified by the string
+ * this function copies the given buffer into an XBee_Message object */
+uint8_t XBee::xbee_send_data(const string &destination, const uint8_t *data, uint16_t length) {
+	XBee_Message *msg;
+	uint8_t status;
+	const XBee_Address *addr = xbee_get_address(destination);
 	if (!addr)
 		return GBEE_TIMEOUT_ERROR;	/* node couldn't be found in network */
-	return xbee_send(msg, addr);
+	msg = new XBee_Message(*addr, data, length); 
+	status = xbee_send_data(*msg);
+	delete msg;
+
+	return status;
 }
 
 /* checks the buffer for (parts of) messages, puts together a complete message
@@ -676,7 +688,7 @@ XBee_Message* XBee::xbee_receive_message() {
 				GBeeRxPacket *rx_frame = (GBeeRxPacket*) frame;
 				/* try to append the data to the message
 				 * if it fails, give up and assume an faulty transmission */
-				if (!msg->append_msg(rx_frame->data))
+				if (!msg->append_msg(rx_frame))
 					retry_cnt = 0;
 				else
 					retry_cnt = 3;
@@ -691,7 +703,7 @@ XBee_Message* XBee::xbee_receive_message() {
 	return msg;
 }
 
-/* returns a reference to an address object, that contains the current network
+/* returns a pointer to an address object, that contains the current network
  * address of the node identified by the string */
 const XBee_Address* XBee::xbee_get_address(const string &node) {
 	uint8_t error_code;
@@ -722,9 +734,10 @@ int XBee::xbee_bytes_available() {
   return 0;
 }
 
-uint8_t XBee::xbee_send(XBee_Message& msg, const XBee_Address *addr) {
+uint8_t XBee::xbee_send_data(XBee_Message& msg) {
 	GBeeFrameData *frame = new GBeeFrameData;
 	GBeeError error_code;
+	const XBee_Address &addr = msg.get_address();
 	const uint8_t bcast_radius = 0;	/* -> max hops for bcast transmission */
 	const uint8_t options = 0x00;	/* 0x01 = Disable ACK, 0x20 - Enable APS
 				 * encryption (if EE=1), 0x04 = Send packet
@@ -738,10 +751,10 @@ uint8_t XBee::xbee_send(XBee_Message& msg, const XBee_Address *addr) {
 	for (uint16_t i = 1; i <= msg.message_part_cnt; i++) {
 		uint8_t *message = msg.get_msg(i);
 		/* send out one part of the message, use the message part as frame id */
-		error_code = gbeeSendTxRequest(gbee_handle, i, addr->addr64h, addr->addr64l,
-		addr->addr16, bcast_radius, options, message, msg.get_msg_len(i));
-		module_debug_xbee("Sending message part %u of %u with length %u and addr %0x, msg addr %0x\n",
-			i, msg.message_part_cnt, msg.get_msg_len(i), frame, message);
+		error_code = gbeeSendTxRequest(gbee_handle, i, addr.addr64h, addr.addr64l,
+		addr.addr16, bcast_radius, options, message, msg.get_msg_len(i));
+		module_debug_xbee("Sending message part %u of %u with length %u\n",
+			i, msg.message_part_cnt, msg.get_msg_len(i));
 		if (error_code != GBEE_NO_ERROR) {
 			module_debug_xbee("Error sending message part %u of %u: %s\n",
 			i, msg.message_part_cnt, gbeeUtilCodeToString(error_code));
@@ -782,10 +795,4 @@ uint8_t* XBee::at_cmd_str(const string at_cmd_str) {
 	static uint8_t at_cmd[2];
 	memcpy(at_cmd, at_cmd_str.c_str(), 2);
 	return &at_cmd[0];
-}
-
-
-#define DTA_SIZE 400
-void XBee::xbee_test_msg() {
-
 }
