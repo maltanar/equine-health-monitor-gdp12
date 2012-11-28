@@ -33,13 +33,7 @@
 #define MSG_PART_CNT 0x01
 #define MSG_PAYLOAD_LENGTH 0x03
 
-enum xbee_msg_type {
-	CONFIG,
-	TEST,
-	DATA
-};
-
-enum xbee_baud_rate {
+typedef enum {
 	B1200 = 0,
 	B2400,
 	B4800,
@@ -47,8 +41,8 @@ enum xbee_baud_rate {
 	B19200,
 	B38400,
 	B57600,
-	B115200
-};
+	B115200 = 7
+}xbee_baud_rate ;
 
 class XBee_Message;
 
@@ -67,15 +61,16 @@ public:
 
 class XBee_Config {
 public:
-	XBee_Config(const string &port, const string &node, bool mode, const uint8_t *pan, uint32_t timeout,
-		enum xbee_baud_rate baud, uint8_t max_unicast_hops);
+	XBee_Config(const string &port, const string &node, bool mode, 
+		const uint8_t *pan, uint32_t timeout,
+		xbee_baud_rate baud, uint8_t max_unicast_hops);
 
 	const string serial_port;
 	const string node;
 	const bool coordinator_mode;
 	uint8_t pan_id[8];
 	const uint32_t timeout;
-	const enum xbee_baud_rate baud;
+	const xbee_baud_rate baud;
 	const uint8_t max_unicast_hops;
 };
 
@@ -102,20 +97,20 @@ private:
 class XBee {
 public:
 	XBee(XBee_Config& config);
-	virtual ~XBee();
+	~XBee();
+
 	uint8_t xbee_init();
 	uint8_t xbee_status();
 	uint8_t xbee_send_at_command(XBee_At_Command& cmd);
-	uint8_t xbee_send_to_coordinator(XBee_Message& msg);
-	uint8_t xbee_send_to_node(XBee_Message& msg, const string &node);
+	uint8_t xbee_send_data(const string &destination, const uint8_t *data, uint16_t length);
+	uint8_t xbee_send_data(XBee_Message &msg);
 	XBee_Message* xbee_receive_message();
 	const XBee_Address* xbee_get_address(const string &node);
 	int xbee_bytes_available();
-	void xbee_test_msg();
 private:
 	XBee(const XBee&);
 	XBee& operator=(const XBee&);
-	uint8_t xbee_send(XBee_Message& msg, const XBee_Address *addr);
+
 	uint8_t xbee_send_ackn(const XBee_Address *addr);
 	uint8_t xbee_receive_acknowledge();
 	uint8_t xbee_configure_device();
@@ -130,21 +125,24 @@ private:
 class XBee_Message {
 friend class XBee;
 public:
-	XBee_Message(const uint8_t *payload, uint16_t length);
-	XBee_Message(const uint8_t *message);
+	XBee_Message(const XBee_Address& addr, const uint8_t *payload, uint16_t length);
+	XBee_Message(const GBeeRxPacket *message);
 	XBee_Message();
 	XBee_Message(const XBee_Message& msg);
 	XBee_Message& operator=(const XBee_Message &msg);
 	~XBee_Message();
+
+	const XBee_Address& get_address();
 	uint8_t* get_payload(uint16_t *length);
 	bool is_complete();
 private:
 	bool append_msg(const XBee_Message &msg);
-	bool append_msg(const uint8_t *data);
+	bool append_msg(const GBeeRxPacket *message);
 	uint8_t* get_msg(uint16_t part);
 	uint16_t get_msg_len(uint16_t part);
 	uint8_t* allocate_msg_buffer(uint16_t payload_length);
 
+	XBee_Address address;
 	uint8_t *message_buffer;
 	uint8_t *payload;
 	uint16_t payload_len;

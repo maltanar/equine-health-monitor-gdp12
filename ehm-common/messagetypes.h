@@ -67,7 +67,7 @@ typedef PACKEDSTRUCT {
 
 // definition of subtypes for ConfigMessages
 typedef PACKEDSTRUCT {
-	enum SensorType;
+	DeviceType sensorType;
 	uint8_t enableSensor;
 	uint16_t sampleIntervalMs;
 	uint16_t samplePeriodMs;
