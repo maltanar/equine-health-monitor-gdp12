@@ -21,7 +21,7 @@ typedef struct {
   bool lowEnergy;
 } UARTPortConfig;
 
-typedef void(*RxHook)(int c);
+typedef bool(*RxHook)(uint8_t c);
 typedef void(*SigFrameHook)(uint8_t *buf);
 
 class UARTPort {
