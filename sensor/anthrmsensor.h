@@ -10,6 +10,7 @@
 #include "sensor.h"
 
 #define ANTHRM_MSGBUFFER_SIZE   40
+#define ANTHRM_DEFAULT_RATE     4000
 
 class ANTHRMSensor : public Sensor {
 public:
@@ -47,6 +48,8 @@ private:
   UARTPort * m_port;                            // the UART IF for the ANT HRM
   HeartRateMessage m_hrmMessage;
   
+  // process one char received from UART
+  void processUARTRxChar(uint8_t c);
   // process a buffer
   void processANTMessage(uint8_t * buffer);
   // send an ANT message. adds preamble, checksum, etc.
