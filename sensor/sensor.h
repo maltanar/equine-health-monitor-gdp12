@@ -17,11 +17,11 @@ typedef unsigned short SensorPeriod;
 
 class Sensor {
 public:
-  Sensor(SensorType sensorType, unsigned int sensorDataLen, 
+  Sensor(DeviceType sensorType, unsigned int sensorDataLen, 
                SensorPeriod period);
   
   // base sensor data access functions, no need to override these
-  SensorType getSensorType();
+  DeviceType getDeviceType();
   unsigned int getSensorDataLength();
   
   // virtual functions which can be overridden if the sensor supports
@@ -36,7 +36,7 @@ public:
   virtual const void* readSensorData(uint16_t *actualSize) = 0;
   
 protected:
-  SensorType m_sensorType;
+  DeviceType m_sensorType;
   unsigned int m_sensorDataLength;
   bool m_sleeping;
   SensorPeriod m_period;

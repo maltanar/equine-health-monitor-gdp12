@@ -4,7 +4,7 @@
 #include "sensor.h"
 
 
-Sensor::Sensor(SensorType sensorType, unsigned int sensorDataLen, 
+Sensor::Sensor(DeviceType sensorType, unsigned int sensorDataLen, 
                SensorPeriod period)
 {
   m_sensorType = sensorType;
@@ -12,7 +12,7 @@ Sensor::Sensor(SensorType sensorType, unsigned int sensorDataLen,
   m_period = period;
 }
 
-SensorType Sensor::getSensorType()
+DeviceType Sensor::getDeviceType()
 {
   return m_sensorType;
 }
