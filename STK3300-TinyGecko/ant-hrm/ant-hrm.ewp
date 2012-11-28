@@ -168,7 +168,7 @@
         </option>
         <option>
           <name>CCDefines</name>
-          <state>NDEBUG</state>
+          <state>DEBUG</state>
           <state>EFM32TG840F32</state>
           <state>DEBUG_EFM</state>
         </option>
@@ -307,6 +307,7 @@
           <state>$PROJ_DIR$\..\..\efm32-common</state>
           <state>$PROJ_DIR$</state>
           <state>$PROJ_DIR$\..\..\ehm-common</state>
+          <state>$PROJ_DIR$\..\..\sensor</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -1860,8 +1861,23 @@
   </configuration>
   <group>
     <name>Application</name>
+    <group>
+      <name>ANT</name>
+      <file>
+        <name>$PROJ_DIR$\..\..\sensor\ANT\antmessage.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\sensor\ANT\antplus.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\sensor\ANT\hrm_rx.h</name>
+      </file>
+    </group>
     <file>
       <name>$PROJ_DIR$\..\..\sensor\anthrmsensor.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\sensor\anthrmsensor.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\debug_output_control.h</name>

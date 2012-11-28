@@ -6,6 +6,7 @@
 #include "em_emu.h"
 #include "em_gpio.h"
 #include "uartmanager.h"
+#include "anthrmsensor.h"
 
 extern "C" {
 void TRACE_SWOSetup();
@@ -25,12 +26,19 @@ void rxHook(int c)
 int main()
 {
   CHIP_Init();
-  TRACE_SWOSetup();  
+  TRACE_SWOSetup();
+  ANTHRMSensor * hrm = ANTHRMSensor::getInstance();
+  
   //UARTManager::getInstance()->getPort(UARTManagerPortLEUART0)->setSignalFrameHook(&frameHandler);
   //UARTManager::getInstance()->getPort(UARTManagerPortLEUART0)->setRxHook(&rxHook);
   
-  while(1)
-  {
-    EMU_EnterEM2(true);
-  }
+  bool OK = hrm->initializeNetwork();
+  
+	while(1)
+	{
+		if(OK)
+			hrm->transaction();
+		
+		EMU_EnterEM2(true);
+	}
 }
