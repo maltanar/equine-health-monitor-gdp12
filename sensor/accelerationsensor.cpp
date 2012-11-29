@@ -5,7 +5,8 @@
 AccelerationSensor::AccelerationSensor(SensorPeriod period)	:
   Sensor(typeAccelerometer, sizeof(AccelerometerMessage), period)
 {
-	m_ofsX = m_ofsY = m_ofsZ = 0;
+	m_sensorMessage.arrayLength = 0;
+	m_sensorMessage.sensorMsgArray = (uint8_t *) m_accSampleBuffer;
 	
   	// sanity check by device ID control
 	uint8_t deviceID = getDeviceID();
@@ -32,11 +33,12 @@ AccelerationSensor::AccelerationSensor(SensorPeriod period)	:
 	setSleepState(false);
 	
 	// read the offset values for each axis
-	readRegister(ADXL350_REG_OFSX, (uint8_t *) &m_ofsX);
+	/*readRegister(ADXL350_REG_OFSX, (uint8_t *) &m_ofsX);
 	readRegister(ADXL350_REG_OFSY, (uint8_t *) &m_ofsY);
 	readRegister(ADXL350_REG_OFSZ, (uint8_t *) &m_ofsZ);
-	
-	module_debug_accl("offsets %d %d %d", m_ofsX, m_ofsY, m_ofsZ);
+	// TODO these offset values need to be calibrated - useless to read them
+	// like this
+	*/
 }
  
 char AccelerationSensor::setSleepState(bool sleepState)
@@ -71,33 +73,56 @@ void AccelerationSensor::setPeriod(SensorPeriod ms)
 // read the acceleration data from registers & store in memory
 void AccelerationSensor::sampleSensorData()
 {
+	// discard old samples if buffer was full
+	if(m_sensorMessage.arrayLength == ACCL_MAX_SAMPLES)
+		discardOldSamples();
+	
   	uint8_t aH, aL;
+	AccelerometerMessage accMsg;
 	
 	// x-axis
 	if(readRegister(ADXL350_REG_XMSB, &aH) && readRegister(ADXL350_REG_XLSB, &aL))
-	  m_accMsg.x = (aH << 8) | aL;
+	  accMsg.x = (aH << 8) | aL;
 	else
 	  module_debug_accl("failed to read x accel");
 	
 	// y-axis
 	if(readRegister(ADXL350_REG_YMSB, &aH) && readRegister(ADXL350_REG_YLSB, &aL))
-	  m_accMsg.y = (aH << 8) | aL;
+	  accMsg.y = (aH << 8) | aL;
 	else
 	  module_debug_accl("failed to read y accel");
 	
 	// z-axis
 	if(readRegister(ADXL350_REG_ZMSB, &aH) && readRegister(ADXL350_REG_ZLSB, &aL))
-	  m_accMsg.z = (aH << 8) | aL;
+	  accMsg.z = (aH << 8) | aL;
 	else
 	  module_debug_accl("failed to read z accel");
 	
-	module_debug_accl("sampled x %d y %d z %d", m_accMsg.x, m_accMsg.y, m_accMsg.z);
+	// write into buffer and increment the sample count
+	m_accSampleBuffer[m_sensorMessage.arrayLength++] = accMsg;
+	
+	module_debug_accl("sampled x %d y %d z %d", accMsg.x, accMsg.y, accMsg.z);
+}
+
+void AccelerationSensor::discardOldSamples()
+{
+	module_debug_accl("discarding old samples");
+	m_sensorMessage.arrayLength = 0;
 }
 
 const void* AccelerationSensor::readSensorData(uint16_t *actualSize)
 {
-  // TODO implement
-  return NULL;
+	// call parent implementation
+	const void* ret = Sensor::readSensorData(actualSize);
+	
+	AccelerometerMessage accMsg ;
+	  	
+	// if we had not reached the full sample cycle, discard the old ones
+	// this is because we cannot afford a cyclic buffer and memory reordering
+	if(m_sensorMessage.arrayLength != ACCL_MAX_SAMPLES)
+		discardOldSamples();
+	
+	return ret;
 }
  
 uint8_t AccelerationSensor::getDeviceID()

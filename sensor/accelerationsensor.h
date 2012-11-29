@@ -31,6 +31,7 @@
 #define ADXL350_REG_ZLSB		0x36
 #define ADXL350_REG_ZMSB		0x37
 
+#define ACCL_MAX_SAMPLES		10
 
 // AccelerationSensor class
 // Sensor implenentation for the ADXL350 sensor
@@ -62,11 +63,10 @@ public:
   uint8_t getDeviceID();	// should return ADXL350_DEVICE_ID
   // change how the device FIFO operates
   bool setFIFOMode(AccelerationSensorFIFOMode mode);
+  void discardOldSamples();
   
 protected:
-  // offset values for each axis
-  int8_t m_ofsX, m_ofsY, m_ofsZ;
-  AccelerometerMessage m_accMsg;
+  AccelerometerMessage m_accSampleBuffer[ACCL_MAX_SAMPLES];
   
   // internal helper functions to read-write ADXL350 registers
   bool readRegister(uint8_t reg, uint8_t * val);
