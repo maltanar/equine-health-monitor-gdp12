@@ -48,7 +48,7 @@ typedef PACKEDSTRUCT {
 // They contain a subtype field for specialization
 typedef PACKEDSTRUCT {
 	DeviceType sensorType;
-	uint32_t startTimestampMs;
+	uint32_t endTimestampS;		// Unix-style timestamp for the latest sample in this message
 	uint16_t sampleIntervalMs;
 	uint8_t arrayLength;	// could also be calculated during de-serialization
 	uint8_t *sensorMsgArray;
