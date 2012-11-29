@@ -127,6 +127,7 @@ int main(void)
 					}
 					break;
 				  default:
+					;
 				}
 				msg->endTimestampS = alarmManager->getUnixTime();
 				acquireNewData[i] = false;
