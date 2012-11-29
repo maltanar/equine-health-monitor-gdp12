@@ -35,7 +35,7 @@ public:
   uint16_t getDeviceID();       // should return 0x0067
   
 protected:
-  double m_temp;           // Calculated temperature reading 
+  TemperatureMessage m_temperatureMessage;	// calculated temperature reading 
   int16_t m_rate;             // conversion rate flags for internal config
   
   // internal helper functions to read-write TMP006 registers

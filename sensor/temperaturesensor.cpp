@@ -38,8 +38,11 @@
 TemperatureSensor::TemperatureSensor(SensorPeriod period)
  : Sensor(typeTemperature, 8, period)
 {
-  m_temp = 0;
-  m_rate = 0;
+	// configure for outputting single reading
+	m_temperatureMessage.Tobj = 0;
+	m_sensorMessage.sensorMsgArray = (uint8_t *) &m_temperatureMessage;
+	m_sensorMessage.arrayLength = 1;
+	m_rate = 0;
 
   // TODO initialize I2C driver here
 
@@ -177,18 +180,20 @@ void TemperatureSensor::sampleSensorData()
   vObjcorr = ((double)(vObj)) * .00000015625;
 
   // call helper function to make the final Tobj calculation
-  m_temp = calculateTemp(&tDieKelvin, &vObjcorr);
+  
+  m_temperatureMessage.Tobj = calculateTemp(&tDieKelvin, &vObjcorr);
 }
 
 const void* TemperatureSensor::readSensorData(uint16_t *actualSize)
 {
-  *actualSize = sizeof(m_temp);
-  return (const void*) &m_temp;
+	*actualSize = sizeof(SensorMessage) + sizeof(m_temperatureMessage) - sizeof(uint8_t *);
+
+	return (const void *) &m_sensorMessage;
 }
 
 double TemperatureSensor::getTemperatureReading()
 {
-  return m_temp;
+  return m_temperatureMessage.Tobj;
 }
 
 char TemperatureSensor::setSleepState(bool sleepState)
