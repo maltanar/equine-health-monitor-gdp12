@@ -40,7 +40,6 @@ typedef enum  {
 // devices and the base station
 typedef PACKEDSTRUCT {
 	MessageType mainType;
-	uint16_t payloadLength;
 	uint8_t *payload;
 } MessagePacket;
 
