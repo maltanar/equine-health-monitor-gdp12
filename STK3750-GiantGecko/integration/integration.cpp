@@ -81,6 +81,8 @@ int main(void)
 	SensorMessage *msg;
 	GPSMessage *gps;
 	TemperatureMessage *tempMsg;
+	AccelerometerMessage *acclMsg;
+	int acclSampleCount = 0;
 	
 	while (1)
 	{
@@ -91,7 +93,8 @@ int main(void)
 			{
 				printf("sample and read for sensor %d \n", i);
 				sensors[i]->sampleSensorData();
-				msg = (SensorMessage *) sensors[i]->readSensorData(&size);
+				if(i != SENSOR_ACCL_INDEX)
+					msg = (SensorMessage *) sensors[i]->readSensorData(&size);
 				switch(i)
 				{
 				  case SENSOR_GPS_INDEX:
@@ -105,6 +108,21 @@ int main(void)
 				  case SENSOR_TEMP_INDEX:
 					tempMsg = (TemperatureMessage *) msg->sensorMsgArray;
 					printf("TMP: %f \n", tempMsg->Tobj);
+					break;
+				  case SENSOR_ACCL_INDEX:
+					acclSampleCount++;
+					if(acclSampleCount == ACCL_MAX_SAMPLES)
+					{
+						msg = (SensorMessage *) sensors[i]->readSensorData(&size);
+						printf("ACCL: %d samples \n", msg->arrayLength);
+						for(int i=0; i < ACCL_MAX_SAMPLES; i++)
+						{
+							acclMsg = &(((AccelerometerMessage *) msg->sensorMsgArray)[i]);
+							printf("sample %d : %d %d %d \n", i, acclMsg->x,
+								   acclMsg->y, acclMsg->z);
+						}
+						acclSampleCount = 0;
+					}
 					break;
 				  default:
 				}
