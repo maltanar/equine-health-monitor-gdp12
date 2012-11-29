@@ -10,9 +10,33 @@
 
 #define ASCIITONUM(x)	(x - 0x30)
 
-GPSSensor::GPSSensor() :
-  Sensor(typeGPS, 8, 5000)
+
+// if parse-on-receive is enabled while operating in DMA mode, every GPRMC
+// message received will be automatically parsed into internal structures
+void gpsSignalFrameHandler(uint8_t *buf)
 {
+	GPSSensor::getInstance()->sampleSensorData();
+}
+
+GPSSensor::GPSSensor() :
+  Sensor(typeGPS, 8, 1000)
+{
+	// GPS does not pack messages together, always 1 sample in the message
+	m_sensorMessage.arrayLength = 1;
+	m_sensorMessage.sensorMsgArray = (uint8_t *) &m_gpsMessage;
+	
+	// initialize the GPS message to all 0xFF's
+	m_gpsMessage.latitude.degree = 0xFF;
+	m_gpsMessage.latitude.minute = 0xFF;
+	m_gpsMessage.latitude.second = 0xFF;
+	m_gpsMessage.latitudeNorth = false;
+	m_gpsMessage.longitude.degree = 0xFF;
+	m_gpsMessage.longitude.minute = 0xFF;
+	m_gpsMessage.longitude.second = 0xFF;
+	m_gpsMessage.longitudeWest = false;
+	m_gpsMessage.validPosFix = false;
+	
+	
   // initialize UART
   m_port= UARTManager::getInstance()->getPort(UARTManagerPortLEUART0);
   
@@ -36,7 +60,15 @@ GPSSensor::GPSSensor() :
   //setPeriod(5000);
   configureWantedNMEASentences();
   
-  module_debug_gps("initialized with period %d", 5000);
+  module_debug_gps("initialized with period %d", 1000);
+}
+
+void GPSSensor::setParseOnReceive(bool enable)
+{
+	if(enable)
+		m_port->setSignalFrameHook(&gpsSignalFrameHandler);
+	else
+		m_port->setSignalFrameHook(NULL);
 }
 
 char GPSSensor::setSleepState(bool sleepState)
@@ -63,9 +95,9 @@ void GPSSensor::sampleSensorData()
 
 const void* GPSSensor::readSensorData(uint16_t *actualSize)
 {
-  *actualSize = sizeof(GPSMessage);
+  *actualSize = sizeof(SensorMessage) + sizeof(GPSMessage) - sizeof(uint8_t *);
   
-  return (const void *) &m_gpsMessage;
+  return (const void *) &m_sensorMessage;
 }
 
 void GPSSensor::queryFirmwareVersion()

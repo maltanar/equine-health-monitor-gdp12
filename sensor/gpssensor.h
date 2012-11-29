@@ -39,6 +39,9 @@ public:
   void sampleSensorData();
   const void* readSensorData(uint16_t *actualSize);
   
+  // GPS driver control
+  void setParseOnReceive(bool enable);
+  
   // GPS module control commands
   void hotRestart();
   void queryFirmwareVersion();
@@ -48,6 +51,7 @@ public:
                                         // so that we don't get NMEA sentences
                                         // which we have no use for
   
+  friend void gpsSignalFrameHandler(uint8_t *buf);
   
 private:
   // ------ start of singleton pattern specific section ------
