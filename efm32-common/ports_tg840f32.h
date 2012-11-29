@@ -10,6 +10,20 @@
 
 #include "uartport.h"
 #include "i2cbus.h"
+
+// -------------------------------------------------------------------------
+// Section: Peripheral port mappings ---------------------------------------
+// -------------------------------------------------------------------------
+#define GPS_USART_PORT		UARTManagerPortLEUART0
+#define ANT_USART_PORT		UARTManagerPortLEUART0
+#define XBEE_USART_PORT		UARTManagerPortUSART1
+#define MIC_USART_PORT		UARTManagerPortUSART?	// TODO
+#define SD_USART_PORT		UARTManagerPortUSART?	// TODO
+// -------------------------------------------------------------------------
+// End Section: Peripheral port mappings -----------------------------------
+// -------------------------------------------------------------------------
+
+
 // -------------------------------------------------------------------------
 // Section: Misc GPIO port config ------------------------------------------
 // -------------------------------------------------------------------------
@@ -103,6 +117,7 @@ const UARTPortConfig UARTManagerPortConfigs[UART_MANAGER_PORT_COUNT] =
     .txPin = 4,
     .rxPort = gpioPortD,
     .rxPin = 5,
+	.async = true,
     .lowEnergy = true
   },
   // port configuration for USART1, location 1
@@ -116,6 +131,7 @@ const UARTPortConfig UARTManagerPortConfigs[UART_MANAGER_PORT_COUNT] =
     .txPin = 0,
     .rxPort = gpioPortD,
     .rxPin = 1,
+	.async = true,
     .lowEnergy = false
   }
 };

@@ -95,7 +95,7 @@ const I2CPortConfig I2CPortConf =
 
 #define UART_MANAGER_PORT_COUNT         5
 
-const UARTPortConfig UARTManagerPortConfigs[UART_MANAGER_PORT_COUNT] =
+static const UARTPortConfig UARTManagerPortConfigs[UART_MANAGER_PORT_COUNT] =
 {
   // port configuration for LEUART0, location 2
   {
@@ -108,6 +108,7 @@ const UARTPortConfig UARTManagerPortConfigs[UART_MANAGER_PORT_COUNT] =
     .txPin = 14,
     .rxPort = gpioPortE,
     .rxPin = 15,
+	.async = true,
     .lowEnergy = true
   },
   // port configuration for LEUART1, location 0
@@ -121,6 +122,7 @@ const UARTPortConfig UARTManagerPortConfigs[UART_MANAGER_PORT_COUNT] =
     .txPin = 6,
     .rxPort = gpioPortC,
     .rxPin = 7,
+	.async = true,
     .lowEnergy = true
   },
   // port configuration for USART0, location 2
@@ -134,10 +136,10 @@ const UARTPortConfig UARTManagerPortConfigs[UART_MANAGER_PORT_COUNT] =
     .txPin = 11,
     .rxPort = gpioPortC,
     .rxPin = 10,
-	//.async = true,
+	.async = true,
     .lowEnergy = false
   },
-  // port configuration for USART1, location 1
+  // port configuration for USART1, location 1 / SPI or I2S mode
   {
     .clockPoint = cmuClock_USART1 ,
     .irqNumber = USART1_RX_IRQn,
@@ -148,10 +150,14 @@ const UARTPortConfig UARTManagerPortConfigs[UART_MANAGER_PORT_COUNT] =
     .txPin = 0,
     .rxPort = gpioPortD,
     .rxPin = 1,
-	//.async = false,
+	.sclkPort = gpioPortD,
+	.sclkPin = 2,
+	.csPort = gpioPortD,
+	.csPin = 3,
+	.async = false,
     .lowEnergy = false
   },
-  // port configuration for USART2, location 0
+  // port configuration for USART2, location 0 / SPI mode
   {
     .clockPoint = cmuClock_USART2,
     .irqNumber = USART2_RX_IRQn,
@@ -159,10 +165,14 @@ const UARTPortConfig UARTManagerPortConfigs[UART_MANAGER_PORT_COUNT] =
     // TODO route location & pins should be runtime configurable?
     .routeLocation = 0,
     .txPort = gpioPortC,
-    .txPin = 11,
+    .txPin = 2,
     .rxPort = gpioPortC,
-    .rxPin = 12,
-	//.async = true,
+    .rxPin = 3,
+	.sclkPort = gpioPortC,
+	.sclkPin = 4,
+	.csPort = gpioPortC,
+	.csPin = 5,
+	.async = false,
     .lowEnergy = false
   }
 };

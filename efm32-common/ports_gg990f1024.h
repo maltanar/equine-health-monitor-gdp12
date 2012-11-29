@@ -98,7 +98,7 @@ const I2CPortConfig I2CPortConf =
 
 #define UART_MANAGER_PORT_COUNT         3
 
-const UARTPortConfig UARTManagerPortConfigs[UART_MANAGER_PORT_COUNT] =
+static const UARTPortConfig UARTManagerPortConfigs[UART_MANAGER_PORT_COUNT] =
 {
   // port configuration for LEUART0, location 0
   {

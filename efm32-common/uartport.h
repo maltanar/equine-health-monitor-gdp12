@@ -18,6 +18,11 @@ typedef struct {
   uint8_t txPin;
   GPIO_Port_TypeDef rxPort;
   uint8_t rxPin;
+  GPIO_Port_TypeDef sclkPort;
+  uint8_t sclkPin;
+  GPIO_Port_TypeDef csPort;
+  uint8_t csPin;
+  bool async;
   bool lowEnergy;
 } UARTPortConfig;
 
