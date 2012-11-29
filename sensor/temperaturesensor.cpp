@@ -36,12 +36,11 @@
 #define TMP006_I2C_ADDR     0x80
 
 TemperatureSensor::TemperatureSensor(SensorPeriod period)
- : Sensor(typeTemperature, 8, period)
+ : Sensor(typeTemperature, sizeof(TemperatureMessage), period)
 {
 	// configure for outputting single reading
 	m_temperatureMessage.Tobj = 0;
 	m_sensorMessage.sensorMsgArray = (uint8_t *) &m_temperatureMessage;
-	m_sensorMessage.arrayLength = 1;
 	m_rate = 0;
 
   // TODO initialize I2C driver here
@@ -182,13 +181,6 @@ void TemperatureSensor::sampleSensorData()
   // call helper function to make the final Tobj calculation
   
   m_temperatureMessage.Tobj = calculateTemp(&tDieKelvin, &vObjcorr);
-}
-
-const void* TemperatureSensor::readSensorData(uint16_t *actualSize)
-{
-	*actualSize = sizeof(SensorMessage) + sizeof(m_temperatureMessage) - sizeof(uint8_t *);
-
-	return (const void *) &m_sensorMessage;
 }
 
 double TemperatureSensor::getTemperatureReading()

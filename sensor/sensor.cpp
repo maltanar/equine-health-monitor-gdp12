@@ -11,7 +11,7 @@ Sensor::Sensor(DeviceType sensorType, unsigned int sensorDataLen,
   m_sensorDataLength = sensorDataLen;
   m_period = period;
   m_sensorMessage.sensorType = m_sensorType;
-  m_sensorMessage.arrayLength = 0;
+  m_sensorMessage.arrayLength = 1;
 }
 
 DeviceType Sensor::getDeviceType()
@@ -40,4 +40,15 @@ void Sensor::setPeriod(SensorPeriod ms)
 SensorPeriod Sensor::getPeriod()
 {
   return m_period;
+}
+
+const void* Sensor::readSensorData(uint16_t *actualSize)
+{
+	// assuming the sensor data length and sample count are set correctly,
+	// we can formulate the actual size of the collected samples
+	*actualSize = sizeof(SensorMessage)	// overhead due to SensorMessage fields
+				 + (m_sensorDataLength * m_sensorMessage.arrayLength)	// sampleSize * numSamples
+				 - sizeof(uint8_t *);	// minus the actual sensor data pointer
+	
+	return (const void *) &m_sensorMessage;	
 }

@@ -37,7 +37,6 @@ public:
   // pure virtual functions representing common functionality, which need to be 
   // overridden for all sensors
   void sampleSensorData();
-  const void* readSensorData(uint16_t *actualSize);
   
   // GPS driver control
   void setParseOnReceive(bool enable);

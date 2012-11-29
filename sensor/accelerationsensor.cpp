@@ -3,7 +3,7 @@
 #include "debug_output_control.h"
 
 AccelerationSensor::AccelerationSensor(SensorPeriod period)	:
-  Sensor(typeAccelerometer, 6, period)
+  Sensor(typeAccelerometer, sizeof(AccelerometerMessage), period)
 {
 	m_ofsX = m_ofsY = m_ofsZ = 0;
 	

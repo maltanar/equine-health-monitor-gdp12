@@ -29,11 +29,11 @@ public:
   virtual char setSleepState(bool sleepState);
   virtual void setPeriod(SensorPeriod ms);
   virtual SensorPeriod getPeriod();
+  virtual const void* readSensorData(uint16_t *actualSize);
   
   // pure virtual functions representing common functionality, which need to be 
   // overridden for all sensors
   virtual void sampleSensorData() = 0;
-  virtual const void* readSensorData(uint16_t *actualSize) = 0;
   
 protected:
   DeviceType m_sensorType;

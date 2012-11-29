@@ -19,10 +19,8 @@ void gpsSignalFrameHandler(uint8_t *buf)
 }
 
 GPSSensor::GPSSensor() :
-  Sensor(typeGPS, 8, 1000)
+  Sensor(typeGPS, sizeof(GPSMessage), 1000)
 {
-	// GPS does not pack messages together, always 1 sample in the message
-	m_sensorMessage.arrayLength = 1;
 	m_sensorMessage.sensorMsgArray = (uint8_t *) &m_gpsMessage;
 	
 	// initialize the GPS message to all 0xFF's
@@ -91,13 +89,6 @@ void GPSSensor::sampleSensorData()
   // GPS sends data to us at a fixed rate, so there is no real way of "sampling"
   // instead, parse the stored string data
   processNMEAMessage(m_msgBuffer);
-}
-
-const void* GPSSensor::readSensorData(uint16_t *actualSize)
-{
-  *actualSize = sizeof(SensorMessage) + sizeof(GPSMessage) - sizeof(uint8_t *);
-  
-  return (const void *) &m_sensorMessage;
 }
 
 void GPSSensor::queryFirmwareVersion()
