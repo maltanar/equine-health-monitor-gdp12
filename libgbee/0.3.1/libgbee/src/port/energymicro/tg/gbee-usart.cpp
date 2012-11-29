@@ -36,7 +36,7 @@ static uint8_t msgbuf[80];
 
 int gbeeUsartEnable(const char *deviceName)
 {
-  port = UARTManager::getInstance()->getPort(UARTManagerPortUSART1);
+  port = UARTManager::getInstance()->getPort(XBEE_USART_PORT);
   port->initialize(msgbuf, 80, UARTPort::uartPortBaudRate9600,
                    UARTPort::uartPortDataBits8, UARTPort::uartPortParityNone,
                    UARTPort::uartPortStopBits1);

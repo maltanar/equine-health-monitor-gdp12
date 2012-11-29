@@ -114,8 +114,6 @@ const void* AccelerationSensor::readSensorData(uint16_t *actualSize)
 {
 	// call parent implementation
 	const void* ret = Sensor::readSensorData(actualSize);
-	
-	AccelerometerMessage accMsg ;
 	  	
 	// if we had not reached the full sample cycle, discard the old ones
 	// this is because we cannot afford a cyclic buffer and memory reordering

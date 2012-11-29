@@ -36,7 +36,7 @@ GPSSensor::GPSSensor() :
 	
 	
   // initialize UART
-  m_port= UARTManager::getInstance()->getPort(UARTManagerPortLEUART0);
+  m_port= UARTManager::getInstance()->getPort(GPS_USART_PORT);
   
   m_port->initialize(m_msgBuffer, GPS_MSGBUFFER_SIZE, 
                      UARTPort::uartPortBaudRate9600, 
