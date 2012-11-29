@@ -2053,6 +2053,9 @@
     <file>
       <name>$PROJ_DIR$\integration.cpp</name>
     </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\ports_gg990f1024.h</name>
+    </file>
   </group>
 </project>
 
