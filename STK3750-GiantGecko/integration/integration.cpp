@@ -57,11 +57,10 @@ int main(void)
 	DVK_init(DVK_Init_SPI);
 	TRACE_SWOSetup();
 	
-	// store the alarm manager instance
+	// store the alarm manager instance, paused on creation
 	alarmManager = AlarmManager::getInstance();
 	
 	// create the sensor objects and alarms
-	// TODO add inactive alarm creation mode to start alarms simultaneously?
 	TemperatureSensor * tmp = new TemperatureSensor(1000);
 	printf("TS device id %x manid %x \n", tmp->getDeviceID(), tmp->getManufacturerID());
 	sensors[SENSOR_TEMP_INDEX] = tmp;
@@ -76,8 +75,11 @@ int main(void)
 	//((GPSSensor*)sensors[SENSOR_GPS_INDEX])->setParseOnReceive(true);
 	acquireNewData[SENSOR_GPS_INDEX] = false;
 	sensorAlarmId[SENSOR_GPS_INDEX] = alarmManager->createAlarm(SENSOR_GPS_READ_PERIOD, false, &dataReadHandler);
-	uint16_t size;
 	
+	// start counting!
+	alarmManager->resume();
+	
+	uint16_t size;
 	SensorMessage *msg;
 	GPSMessage *gps;
 	TemperatureMessage *tempMsg;
@@ -126,6 +128,7 @@ int main(void)
 					break;
 				  default:
 				}
+				msg->endTimestampS = alarmManager->getUnixTime();
 				acquireNewData[i] = false;
 				break;
 			}
