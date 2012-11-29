@@ -40,6 +40,7 @@ protected:
   unsigned int m_sensorDataLength;
   bool m_sleeping;
   SensorPeriod m_period;
+  SensorMessage m_sensorMessage;
     
     
 };

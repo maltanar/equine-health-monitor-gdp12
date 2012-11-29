@@ -10,6 +10,8 @@ Sensor::Sensor(DeviceType sensorType, unsigned int sensorDataLen,
   m_sensorType = sensorType;
   m_sensorDataLength = sensorDataLen;
   m_period = period;
+  m_sensorMessage.sensorType = m_sensorType;
+  m_sensorMessage.arrayLength = 0;
 }
 
 DeviceType Sensor::getDeviceType()
@@ -32,6 +34,7 @@ unsigned int Sensor::getSensorDataLength()
 void Sensor::setPeriod(SensorPeriod ms)
 {
   m_period = ms;
+  m_sensorMessage.sampleIntervalMs = ms;
 }
 
 SensorPeriod Sensor::getPeriod()
