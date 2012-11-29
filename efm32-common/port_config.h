@@ -10,6 +10,9 @@
 #elif defined(EFM32TG840F32)
 #include "ports_tg840f32.h"
 
+#elif defined(EFM32GG332F1024)
+#include "ports_gg332f1024.h"
+
 #else
 #error "port_config.h: EFM32 part number undefined!"
 #endif
