@@ -150,3 +150,11 @@ void RTC_Trigger(uint32_t msec, void (*cb)(void))
   /* Enable interrupt on COMP0 */
   RTC_IntEnable(RTC_IF_COMP0);
 }
+
+/***************************************************************************//**
+* @brief Get value of RTC counter register in miliseconds
+ ******************************************************************************/
+uint32_t RTC_CounterGetMs(void)
+{
+	return (RTC_CounterGet() * 1000) / RTC_FREQ;
+}

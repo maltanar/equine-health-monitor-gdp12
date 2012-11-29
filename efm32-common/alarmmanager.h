@@ -28,36 +28,48 @@ typedef struct {
 
 class AlarmManager {
 public:
-  // singleton instance accessor
-  static AlarmManager* getInstance()
-  {
-    static AlarmManager instance;
-    return &instance;
-  }
+	// singleton instance accessor
+	static AlarmManager* getInstance()
+	{
+		static AlarmManager instance;
+		return &instance;
+	}
   
-  AlarmID createAlarm(uint8_t timeoutCount, bool oneShot, AlarmEventHandler handler);
-  void stopAlarm(AlarmID alarmID);
-  void setAlarmTimeout(AlarmID alarmID, uint8_t timeoutCount);
-  
-  // RTC callback will need access to tick(), so declare as friend
-  friend void AlarmManager_RTCCallback();
+	AlarmID createAlarm(uint8_t timeoutCount, bool oneShot, AlarmEventHandler handler);
+	void stopAlarm(AlarmID alarmID);
+	void setAlarmTimeout(AlarmID alarmID, uint8_t timeoutCount);
+
+	// pause mode for AlarmManager: does not stop the tick counter, merely
+	// prevents alarms from counting down and triggering, Unix timekeeping still
+	// enabled
+	bool isPaused();
+	void pause();
+	void resume();
+
+	void setUnixTime(uint32_t secondsSinceEpoch);
+	uint32_t getUnixTime();
+	uint16_t getMsCounter();
+	uint64_t getMsTimestamp();
+
+	// RTC callback will need access to tick(), so declare as friend
+	friend void AlarmManager_RTCCallback();
 
 private:
-  // ------ start of singleton pattern specific section ------
-  AlarmManager();  
-  AlarmManager(AlarmManager const&);               // do not implement
-  void operator=(AlarmManager const&);        // do not implement
-  // ------ end of singleton pattern specific section --------  
-  
-  uint16_t m_tickMs;				// number of miliseconds for an alarm tick
-  uint8_t m_activeAlarmCount;		// number of active alarms
-  bool m_alarmTickActive;			// whether the alarm module tick is currently active
-  									// (requires at least one active alarm)
-  AlarmSlot m_alarms[MAX_ALARMS];
-  
-  void checkStartStopNeeded();		// do we need to stop or start the RTC?
-  void tick();						// handle alarm tick event
-    
+	// ------ start of singleton pattern specific section ------
+	AlarmManager();  
+	AlarmManager(AlarmManager const&);               // do not implement
+	void operator=(AlarmManager const&);        // do not implement
+	// ------ end of singleton pattern specific section --------  
+
+	uint16_t m_tickMs;				// number of miliseconds for an alarm tick
+	uint8_t m_activeAlarmCount;		// number of active alarms
+	bool m_isPaused;				// prevent alarms from counting down
+	AlarmSlot m_alarms[MAX_ALARMS];
+	uint32_t m_unixTime;				// Unix time, number of seconds since
+									// the Unix epoch
+
+	void tick();						// handle alarm tick event
+
 };
 
 #endif  // __ALARM_H

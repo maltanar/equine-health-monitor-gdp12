@@ -54,6 +54,7 @@ extern "C" {
 void RTC_Delay(uint32_t msec);
 void RTC_IRQHandler(void);
 void RTC_Trigger(uint32_t msec, void (*cb)(void));
+uint32_t RTC_CounterGetMs(void);
 
 #ifdef __cplusplus
 }

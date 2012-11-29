@@ -10,9 +10,10 @@ void AlarmManager_RTCCallback()
 
 AlarmManager::AlarmManager()
 {
+	m_unixTime = 0;
 	m_tickMs = ALARM_TICK_DEFAULT_MS;
-	m_alarmTickActive = false;
 	m_activeAlarmCount = 0;
+	m_isPaused = true;	// AlarmManager is paused on creation
 
 	// initialize the RTC and the structures
 	for(int i = 0; i < MAX_ALARMS; i++)
@@ -23,70 +24,51 @@ AlarmManager::AlarmManager()
 		m_alarms[i].handler = NULL;
 	}
 
+	// trigger the RTC
+	RTC_Trigger(m_tickMs, &AlarmManager_RTCCallback);
 	module_debug_alarm("initialized");
 }
 
 // tick handler - decrement alarm countdowns and execute the handlers for the
 // triggered ones
 void AlarmManager::tick()
-{
-	// RTC_Trigger is single shot, so after getting the ISR it is no longer
-	// active
-	m_alarmTickActive = false;
+{	
+	// update the Unix time field
+	m_unixTime += m_tickMs / 1000;
+	module_debug_alarm("unix time: %d", m_unixTime);
 	
-	for(int i = 0; i < MAX_ALARMS; i++)
+	if(!m_isPaused)	// pausing prevents alarm counters from counting down
 	{
-		if(m_alarms[i].active)
+		for(int i = 0; i < MAX_ALARMS; i++)
 		{
-			m_alarms[i].counter--;
-
-			if(m_alarms[i].counter == 0)
+			if(m_alarms[i].active)
 			{
-				module_debug_alarm("%d triggered!", i);
+				m_alarms[i].counter--;
 
-				// call handler for triggered alarm
-				(m_alarms[i].handler)(i);
-
-				if(m_alarms[i].period == 0)
+				if(m_alarms[i].counter == 0)
 				{
-					// deactivate alarm if one-shot mode was selected
-					m_alarms[i].active = false;
-					m_alarms[i].handler = NULL;
-					m_activeAlarmCount--;
-				} else {
-					// re-set timeout to period, period will be 0 for one-shots
-					m_alarms[i].counter = m_alarms[i].period;
+					module_debug_alarm("%d triggered!", i);
+
+					// call handler for triggered alarm
+					(m_alarms[i].handler)(i);
+
+					if(m_alarms[i].period == 0)
+					{
+						// deactivate alarm if one-shot mode was selected
+						m_alarms[i].active = false;
+						m_alarms[i].handler = NULL;
+						m_activeAlarmCount--;
+					} else {
+						// re-set timeout to period, period will be 0 for one-shots
+						m_alarms[i].counter = m_alarms[i].period;
+					}
 				}
 			}
 		}
 	}
 	
-	// either re-trigger the RTC or leave untouched if no alarms left
-	checkStartStopNeeded();	
-}
-
-void AlarmManager::checkStartStopNeeded()
-{
-	// make sure we start the alarm timer if this is the first active alarm
-	if(!m_alarmTickActive && m_activeAlarmCount > 0)
-	{
-		//module_debug_alarm("Starting alarm timer");
-
-		RTC_Trigger(m_tickMs, &AlarmManager_RTCCallback);
-
-		m_alarmTickActive = true;
-
-		return; 
-	} 
-	else if(m_alarmTickActive && m_activeAlarmCount == 0)
-	{
-		module_debug_alarm("Stopping alarm timer");
-		// RTC is only activated by re-triggering anyway, so nothing to do here
-		// except setting the state variable
-		m_alarmTickActive = false;
-
-		return;
-	}
+	// re-trigger the RTC
+	RTC_Trigger(m_tickMs, &AlarmManager_RTCCallback);
 }
 
 
@@ -115,9 +97,6 @@ AlarmID AlarmManager::createAlarm(uint8_t timeoutCount, bool oneShot,
 		  
 		  module_debug_alarm("Created with id %d and timeout %d, period %d", i, 
 							 timeoutCount, m_alarms[i].period);
-		  
-		  // may be necessary to start the timer here
-		  checkStartStopNeeded();
 		  
 		  // return the slot number as alarm ID
 		  return i;
@@ -152,6 +131,37 @@ void AlarmManager::setAlarmTimeout(AlarmID alarmID, uint8_t timeoutCount)
 		m_alarms[alarmID].counter = timeoutCount;
 	else
 		stopAlarm(alarmID);
-	
-	checkStartStopNeeded();
+}
+
+void AlarmManager::setUnixTime(uint32_t secondsSinceEpoch)
+{
+	module_debug_alarm("settings unix time to %d", secondsSinceEpoch);
+	m_unixTime = secondsSinceEpoch;
+}
+
+uint32_t AlarmManager::getUnixTime()
+{
+	return m_unixTime;
+}
+
+uint16_t AlarmManager::getMsCounter()
+{
+	return RTC_CounterGetMs();
+}
+
+void AlarmManager::pause()
+{
+	m_isPaused = true;
+	module_debug_alarm("paused");
+}
+
+void AlarmManager::resume()
+{
+	m_isPaused = false;	
+	module_debug_alarm("resumed");
+}
+
+uint64_t AlarmManager::getMsTimestamp()
+{
+	return m_tickMs * m_unixTime + getMsCounter();
 }
