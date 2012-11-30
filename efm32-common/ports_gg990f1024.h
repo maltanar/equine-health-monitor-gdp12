@@ -18,7 +18,7 @@
 #define XBEE_USART_PORT		UARTManagerPortUSART1
 #define ANT_USART_PORT		UARTManagerPortLEUART1
 #define MIC_USART_PORT		UARTManagerPortUSART?	// TODO
-#define SD_USART_PORT		UARTManagerPortUSART?	// TODO
+#define SD_USART_PORT		UARTManagerPortUSART0
 // -------------------------------------------------------------------------
 // End Section: Peripheral port mappings -----------------------------------
 // -------------------------------------------------------------------------
@@ -111,6 +111,7 @@ static const UARTPortConfig UARTManagerPortConfigs[UART_MANAGER_PORT_COUNT] =
     .txPin = 4,
     .rxPort = gpioPortD,
     .rxPin = 5,
+	.async = true,
     .lowEnergy = true
   },
   // port configuration for LEUART1, location 1
@@ -124,6 +125,7 @@ static const UARTPortConfig UARTManagerPortConfigs[UART_MANAGER_PORT_COUNT] =
     .txPin = 5,
     .rxPort = gpioPortA,
     .rxPin = 6,
+	.async = true,
     .lowEnergy = true
   },
   // port configuration for USART1, location 1
@@ -137,6 +139,7 @@ static const UARTPortConfig UARTManagerPortConfigs[UART_MANAGER_PORT_COUNT] =
     .txPin = 0,
     .rxPort = gpioPortD,
     .rxPin = 1,
+	.async = true,
     .lowEnergy = false
   }
 };

@@ -305,6 +305,7 @@
           <state>$PROJ_DIR$\..\..\ehm-common\</state>
           <state>$PROJ_DIR$\..\..\efm32-common\</state>
           <state>$PROJ_DIR$\..\..\sensor</state>
+          <state>$PROJ_DIR$\..\..\fatfs</state>
           <state>$PROJ_DIR$</state>
         </option>
         <option>
@@ -1097,6 +1098,7 @@
         <option>
           <name>CCDefines</name>
           <state>EFM32GG990F1024</state>
+          <state>DEBUG_EFM</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -1157,7 +1159,7 @@
         <option>
           <name>CCAllowList</name>
           <version>1</version>
-          <state>1111111</state>
+          <state>0000000</state>
         </option>
         <option>
           <name>CCDebugInfo</name>
@@ -1236,6 +1238,7 @@
           <state>$PROJ_DIR$\..\..\ehm-common\</state>
           <state>$PROJ_DIR$\..\..\efm32-common\</state>
           <state>$PROJ_DIR$\..\..\sensor</state>
+          <state>$PROJ_DIR$\..\..\fatfs</state>
           <state>$PROJ_DIR$</state>
         </option>
         <option>
@@ -1256,7 +1259,7 @@
         </option>
         <option>
           <name>CCOptLevel</name>
-          <state>3</state>
+          <state>0</state>
         </option>
         <option>
           <name>CCOptStrategy</name>
@@ -1265,7 +1268,7 @@
         </option>
         <option>
           <name>CCOptLevelSlave</name>
-          <state>3</state>
+          <state>0</state>
         </option>
         <option>
           <name>CompilerMisraRules98</name>
@@ -1381,7 +1384,7 @@
         </option>
         <option>
           <name>ADebug</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>AltRegisterNames</name>
@@ -1965,6 +1968,33 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_usart.c</name>
+    </file>
+  </group>
+  <group>
+    <name>fatfs</name>
+    <file>
+      <name>$PROJ_DIR$\..\..\fatfs\diskio.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\fatfs\diskio.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\fatfs\ff.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\fatfs\ff.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\fatfs\ffconf.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\fatfs\integer.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\fatfs\microsd.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\fatfs\microsd.h</name>
     </file>
   </group>
   <group>
