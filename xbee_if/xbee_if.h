@@ -25,7 +25,7 @@
 #include <inttypes.h>
 
 #define XBEE_MSG_LENGTH 84
-#define XBEE_ADDR_CACHE_SIZE 2
+#define XBEE_ADDR_CACHE_SIZE 4
 
 #define MSG_HEADER_LENGTH 4
 /* define position of values in the header */
@@ -42,7 +42,7 @@ typedef enum {
 	B38400,
 	B57600,
 	B115200 = 7
-}xbee_baud_rate ;
+} xbee_baud_rate ;
 
 class XBee_Message;
 
@@ -52,6 +52,8 @@ public:
 	XBee_Address(const string &node, uint16_t addr16, uint32_t addr64h, uint32_t addr64l);
 	XBee_Address(const GBeeRxPacket *rx);
 	XBee_Address(const string &node, const uint8_t *payload);
+
+	uint64_t get_addr64() const;
 
 	string node;
 	uint16_t addr16;
@@ -106,7 +108,7 @@ public:
 	uint8_t xbee_send_data(XBee_Message &msg);
 	XBee_Message* xbee_receive_message();
 	const XBee_Address* xbee_get_address(const string &node);
-	int xbee_bytes_available();
+	int xbee_bytes_available() const;
 private:
 	XBee(const XBee&);
 	XBee& operator=(const XBee&);
@@ -132,9 +134,9 @@ public:
 	XBee_Message& operator=(const XBee_Message &msg);
 	~XBee_Message();
 
-	const XBee_Address& get_address();
+	const XBee_Address& get_address() const;
 	uint8_t* get_payload(uint16_t *length);
-	bool is_complete();
+	bool is_complete() const;
 private:
 	bool append_msg(const XBee_Message &msg);
 	bool append_msg(const GBeeRxPacket *message);

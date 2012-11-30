@@ -50,6 +50,11 @@ XBee_Address::XBee_Address(const GBeeRxPacket *rx) :
 	addr64l = 	GBEE_ULONG(rx->srcAddr64l);
 }
 
+/* creates one uint64_t value from the addr64h and addr64l members */
+uint64_t XBee_Address::get_addr64() const {
+	return (addr64h << 32) | addr64l;
+}
+
 /* constructor that decodes the data returned as an reply to the AT "DN"
  * command by an XBee device */
 XBee_Address::XBee_Address(const string &node, const uint8_t *payload) :
@@ -287,7 +292,7 @@ XBee_Message::~XBee_Message() {
 		delete[] message_buffer;
 }
 
-const XBee_Address& XBee_Message::get_address() {
+const XBee_Address& XBee_Message::get_address() const {
 	return address;
 }
 
@@ -296,7 +301,7 @@ uint8_t* XBee_Message::get_payload(uint16_t *length) {
 	return payload;
 }
 
-bool XBee_Message::is_complete() {
+bool XBee_Message::is_complete() const {
 	return message_complete;
 }
 
@@ -343,8 +348,8 @@ bool XBee_Message::append_msg(const XBee_Message &msg) {
 	return true;
 }
 
-bool XBee_Message::append_msg(const GBeeRxPacket *data) {
-	XBee_Message tmp_msg(data);
+bool XBee_Message::append_msg(const GBeeRxPacket *msg) {
+	XBee_Message tmp_msg(msg);
 	return append_msg(tmp_msg);
 }
 
@@ -622,9 +627,7 @@ uint8_t XBee::xbee_send_at_command(XBee_At_Command& cmd){
 				/* if the frameId is larger than expected nothing can be done */
 				if (frame_id < at_frame->frameId)
 					break;
-				/* if it's smaller, wait for a second and try again */
-				RTC_Trigger(1000, NULL);
-    			EMU_EnterEM2(true);
+				/* if it's smaller, try again */
 				continue;
 			}
 			/* copy the response payload into the XBee_At_Command object.
