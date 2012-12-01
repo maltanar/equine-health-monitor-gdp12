@@ -733,7 +733,7 @@ const XBee_Address* XBee::xbee_get_address(const string &node) {
 
 /* checks the buffer of the serial device for available data, and returns the
  * number of pending bytes */
-int XBee::xbee_bytes_available() {
+int XBee::xbee_bytes_available() const {
   return 0;
 }
 
