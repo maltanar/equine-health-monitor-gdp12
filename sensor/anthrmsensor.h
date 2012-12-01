@@ -6,7 +6,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "uartport.h"
+#include "leuartport.h"
 #include "ANT/antplus.h"
 #include "ANT/hrm_rx.h"
 #include "sensor.h"
@@ -17,7 +17,7 @@ static const uint8_t aucNetworkKey[] = ANTPLUS_NETWORK_KEY;
 
 // stuff we borrow from the ANT HRM RX example -----------------------------
 #define ANT_SERIAL_QUEUE_BUFFER_LENGTH     ((uint8_t) 21)                                  // 15 assumes that an exteneded message is the longest that will be recieved.                                               
-#define ANT_SERIAL_QUEUE_RX_SIZE           ((uint8_t) 4)                                   // Same for TX and RX buffers
+#define ANT_SERIAL_QUEUE_RX_SIZE           ((uint8_t) 2)                                   // Same for TX and RX buffers
 #define ANT_SERIAL_QUEUE_TX_SIZE           ((uint8_t) 2)                                   // Same for TX and RX buffers
 
 typedef struct
@@ -117,7 +117,7 @@ private:
 	uint8_t m_ucTheLength;
 	uint8_t m_ucIndex;
 	uint8_t* m_pucTheBuffer;
-	UARTPort * m_port;                            // the UART IF for the ANT HRM
+	LEUARTPort * m_port;                            // the UART IF for the ANT HRM
 	HeartRateMessage m_hrmMessage;
 	
 	// device channel, transmission type and number

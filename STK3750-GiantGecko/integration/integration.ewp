@@ -87,7 +87,7 @@
         </option>
         <option>
           <name>OGLastSavedByProductVersion</name>
-          <state>6.40.5.54273</state>
+          <state>6.40.2.53991</state>
         </option>
         <option>
           <name>GeneralEnableMisra</name>
@@ -1916,22 +1916,34 @@
       <name>$PROJ_DIR$\..\..\efm32-common\i2cmanager.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\leuartport.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\leuartport.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\efm32-common\rtc.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\efm32-common\rtc.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\efm32-common\uartmanager.cpp</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\efm32-common\uartmanager.h</name>
-    </file>
-    <file>
       <name>$PROJ_DIR$\..\..\efm32-common\uartport.cpp</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\efm32-common\uartport.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\usartmanager.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\usartmanager.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\usartport.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\usartport.h</name>
     </file>
   </group>
   <group>

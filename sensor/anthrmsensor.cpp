@@ -1,6 +1,6 @@
 #include "em_emu.h"
 #include "em_gpio.h"
-#include "uartmanager.h"
+#include "usartmanager.h"
 #include "anthrmsensor.h"
 #include "ANT/antmessage.h"
 #include "debug_output_control.h"
@@ -55,12 +55,10 @@ ANTHRMSensor::ANTHRMSensor() :
 	
     // initialize UART
     // TODO UARTManagerPortLEUART0 should be defined in part-specific config!
-    m_port = UARTManager::getInstance()->getPort(UARTManagerPortLEUART0);
+    m_port = (LEUARTPort *) USARTManager::getInstance()->getPort(ANT_USART_PORT);
 
     m_port->initialize((uint8_t *) NULL, 0, 
-                     UARTPort::uartPortBaudRate4800, 
-                     UARTPort::uartPortDataBits8, UARTPort::uartPortParityNone, 
-                     UARTPort::uartPortStopBits1);
+                     LEUARTPort::leuartPortBaudRate4800);
 	
 	// set the rx hook we use to trap incoming characters
 	m_port->setRxHook(&ANTRxHook);

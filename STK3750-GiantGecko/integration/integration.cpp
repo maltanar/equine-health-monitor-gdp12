@@ -12,7 +12,7 @@
 #include "gbee.h"
 #include "gbee-util.h"
 #include "xbee_if.h"
-#include "uartmanager.h"
+#include "usartmanager.h"
 #include "rtc.h"
 #include "alarmmanager.h"
 
@@ -259,14 +259,14 @@ int main(void)
 	acquireNewData[SENSOR_TEMP_INDEX] = false;
 	sensorAlarmId[SENSOR_TEMP_INDEX] = alarmManager->createAlarm(SENSOR_TEMP_READ_PERIOD, false, &dataReadHandler);
 	
-	/*sensors[SENSOR_ACCL_INDEX] = new AccelerationSensor(100);
+	sensors[SENSOR_ACCL_INDEX] = new AccelerationSensor(100);
 	acquireNewData[SENSOR_ACCL_INDEX] = false;
 	sensorAlarmId[SENSOR_ACCL_INDEX] = alarmManager->createAlarm(SENSOR_ACCL_READ_PERIOD, false, &dataReadHandler);
 	
 	sensors[SENSOR_GPS_INDEX]  = GPSSensor::getInstance();
 	//((GPSSensor*)sensors[SENSOR_GPS_INDEX])->setParseOnReceive(true);
 	acquireNewData[SENSOR_GPS_INDEX] = false;
-	sensorAlarmId[SENSOR_GPS_INDEX] = alarmManager->createAlarm(SENSOR_GPS_READ_PERIOD, false, &dataReadHandler);*/
+	sensorAlarmId[SENSOR_GPS_INDEX] = alarmManager->createAlarm(SENSOR_GPS_READ_PERIOD, false, &dataReadHandler);
 	
 	// start counting!
 	alarmManager->resume();

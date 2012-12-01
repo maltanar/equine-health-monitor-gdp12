@@ -87,7 +87,7 @@
         </option>
         <option>
           <name>OGLastSavedByProductVersion</name>
-          <state>6.40.5.54273</state>
+          <state>6.40.2.53991</state>
         </option>
         <option>
           <name>GeneralEnableMisra</name>
@@ -1017,7 +1017,7 @@
         </option>
         <option>
           <name>OGLastSavedByProductVersion</name>
-          <state>6.40.5.54273</state>
+          <state>6.40.2.53991</state>
         </option>
         <option>
           <name>GeneralEnableMisra</name>
@@ -1228,12 +1228,15 @@
         </option>
         <option>
           <name>CCIncludePath2</name>
-          <state>$PROJ_DIR$\..\common\CMSIS\Include</state>
+          <state>$PROJ_DIR$\..\..\efm32-common\CMSIS\Include</state>
           <state>$PROJ_DIR$\..\common\EFM32TG\Include</state>
-          <state>$PROJ_DIR$\..\common\emlib\inc</state>
+          <state>$PROJ_DIR$\..\..\efm32-common\emlib\inc</state>
           <state>$PROJ_DIR$\..\common\drivers</state>
           <state>$PROJ_DIR$\..\common\bsp</state>
+          <state>$PROJ_DIR$\..\..\efm32-common</state>
           <state>$PROJ_DIR$</state>
+          <state>$PROJ_DIR$\..\..\ehm-common</state>
+          <state>$PROJ_DIR$\..\..\sensor</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -1288,7 +1291,7 @@
         </option>
         <option>
           <name>IccLang</name>
-          <state>1</state>
+          <state>2</state>
         </option>
         <option>
           <name>IccCDialect</name>
@@ -1786,7 +1789,7 @@
         </option>
         <option>
           <name>IlinkOptExceptionsAllow</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>IlinkOptExceptionsForce</name>
@@ -1798,7 +1801,7 @@
         </option>
         <option>
           <name>IlinkOptMergeDuplSections</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IlinkOptUseVfe</name>
@@ -1806,7 +1809,7 @@
         </option>
         <option>
           <name>IlinkOptForceVfe</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IlinkStackAnalysisEnable</name>
@@ -1872,6 +1875,30 @@
       <file>
         <name>$PROJ_DIR$\..\..\sensor\ANT\hrm_rx.h</name>
       </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\efm32-common\leuartport.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\efm32-common\leuartport.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\efm32-common\uartport.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\efm32-common\uartport.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\efm32-common\usartmanager.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\efm32-common\usartmanager.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\efm32-common\usartport.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\efm32-common\usartport.h</name>
+      </file>
     </group>
     <file>
       <name>$PROJ_DIR$\..\..\sensor\anthrmsensor.cpp</name>
@@ -1889,13 +1916,13 @@
       <name>$PROJ_DIR$\main.cpp</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\ports_tg840f32.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\sensor\sensor.cpp</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\sensor\sensor.h</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\efm32-common\uartmanager.cpp</name>
     </file>
   </group>
   <group>
@@ -1919,12 +1946,6 @@
       <name>Drivers</name>
       <file>
         <name>$PROJ_DIR$\..\common\drivers\rtc.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\..\efm32-common\uartport.cpp</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\..\efm32-common\uartport.h</name>
       </file>
     </group>
     <group>

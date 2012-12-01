@@ -27,7 +27,7 @@
 #include "gbee-usart.h"
 #include <string.h>
 #include <stdio.h>
-#include "uartmanager.h"
+#include "usartmanager.h"
 
 UARTPort * port = NULL;
 static uint8_t msgbuf[80];
@@ -36,7 +36,7 @@ static uint8_t msgbuf[80];
 
 int gbeeUsartEnable(const char *deviceName)
 {
-  port = UARTManager::getInstance()->getPort(XBEE_USART_PORT);
+  port = (UARTPort *) USARTManager::getInstance()->getPort(XBEE_USART_PORT);
   port->initialize(msgbuf, 80, UARTPort::uartPortBaudRate9600,
                    UARTPort::uartPortDataBits8, UARTPort::uartPortParityNone,
                    UARTPort::uartPortStopBits1);

@@ -4,7 +4,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include "em_emu.h"
-#include "uartmanager.h"
+#include "usartmanager.h"
+#include "leuartport.h"
 #include "gpssensor.h"
 #include "debug_output_control.h"
 
@@ -36,18 +37,16 @@ GPSSensor::GPSSensor() :
 	
 	
   // initialize UART
-  m_port= UARTManager::getInstance()->getPort(GPS_USART_PORT);
+  m_port = (LEUARTPort *) USARTManager::getInstance()->getPort(GPS_USART_PORT);
   
   m_port->initialize(m_msgBuffer, GPS_MSGBUFFER_SIZE, 
-                     UARTPort::uartPortBaudRate9600, 
-                     UARTPort::uartPortDataBits8, UARTPort::uartPortParityNone, 
-                     UARTPort::uartPortStopBits1);
+                     LEUARTPort::leuartPortBaudRate9600);
   
   // TODO should we perform a sanity check on the GPS module here?
   
 #ifdef USE_GPS_DMA
   // configure DMA 
-  m_port->setupSignalFrameDMA(DMA_CHANNEL_GPS, '\n');
+  ((LEUARTPort *)m_port)->setupSignalFrameDMA(DMA_CHANNEL_GPS, '\n');
 #endif
   
   // TODO GPS is responding weirdly to these control msgs, but why?
@@ -64,9 +63,9 @@ GPSSensor::GPSSensor() :
 void GPSSensor::setParseOnReceive(bool enable)
 {
 	if(enable)
-		m_port->setSignalFrameHook(&gpsSignalFrameHandler);
+		((LEUARTPort *)m_port)->setSignalFrameHook(&gpsSignalFrameHandler);
 	else
-		m_port->setSignalFrameHook(NULL);
+		((LEUARTPort *)m_port)->setSignalFrameHook(NULL);
 }
 
 char GPSSensor::setSleepState(bool sleepState)
