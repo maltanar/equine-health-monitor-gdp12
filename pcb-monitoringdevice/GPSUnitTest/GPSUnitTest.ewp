@@ -87,7 +87,7 @@
         </option>
         <option>
           <name>OGLastSavedByProductVersion</name>
-          <state>6.40.5.54273</state>
+          <state>6.40.2.53991</state>
         </option>
         <option>
           <name>GeneralEnableMisra</name>
@@ -1106,7 +1106,7 @@
       <name>$PROJ_DIR$\debug_output_control.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\integration.cpp</name>
+      <name>$PROJ_DIR$\GPSUnitTest.cpp</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\efm32-common\port_config.h</name>
