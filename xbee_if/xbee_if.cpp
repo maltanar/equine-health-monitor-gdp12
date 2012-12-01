@@ -52,7 +52,7 @@ XBee_Address::XBee_Address(const GBeeRxPacket *rx) :
 
 /* creates one uint64_t value from the addr64h and addr64l members */
 uint64_t XBee_Address::get_addr64() const {
-	return (addr64h << 32) | addr64l;
+	return ((uint64_t)addr64h << 32) | (uint64_t)addr64l;
 }
 
 /* constructor that decodes the data returned as an reply to the AT "DN"
@@ -203,7 +203,8 @@ XBee_Message::XBee_Message(const XBee_Address &addr, const uint8_t *msg_payload,
 		module_debug_xbee("Error: Message size > 20kB not supported\n");
 	/* allocate memory to copy the payload into the object */
 	payload = new uint8_t[payload_len];
-	memcpy(payload, msg_payload, payload_len);
+	if (msg_payload)
+		memcpy(payload, msg_payload, payload_len);
 	/* allocate memory for the message buffer */
 	message_buffer = allocate_msg_buffer(payload_len);
 }
@@ -220,7 +221,8 @@ XBee_Message::XBee_Message(const GBeeRxPacket *message):
 
 	/* allocate memory to copy the payload into the object */
 	payload = new uint8_t[payload_len];
-	memcpy(payload, &message->data[MSG_HEADER_LENGTH], payload_len);
+	if (payload != NULL)
+		memcpy(payload, &message->data[MSG_HEADER_LENGTH], payload_len);
 
 	/* determine if the message is complete, or just a part of a longer
 	 * message */
@@ -798,4 +800,87 @@ uint8_t* XBee::at_cmd_str(const string at_cmd_str) {
 	static uint8_t at_cmd[2];
 	memcpy(at_cmd, at_cmd_str.c_str(), 2);
 	return &at_cmd[0];
+}
+
+/* Function will serialize data in the MessagePacket structure into continuous
+ * memory area, that has to be preallocated and passed to the function 
+ * in: Pointer to MessagePacket structure 
+ * in/out: preallocated pointer tp memory
+ * in: length of the MessagePacket to serialize */ 
+void serialize(MessagePacket *msg, uint8_t *data, uint16_t length) {
+	MessagePacket *serialized_msg = (MessagePacket *)data;
+	SensorMessage *ser_sensor_msg = NULL;
+	ConfigMessage *ser_config_msg = NULL;
+	DebugMessage *ser_debug_msg = NULL;
+	
+	/* copy the header information of the MessagePacket structure and
+	 * set the destination of the payload pointer to the next element in the mem-space */
+	serialized_msg->mainType = msg->mainType;
+	serialized_msg->payload = (uint8_t *)&serialized_msg->payload + sizeof(void *);
+
+	/* copy the header information of the main message groups
+	 * and set the sensorMsgArray pointer to the next element in the mem-space */
+	switch (msg->mainType) {
+	case msgSensorData:
+		ser_sensor_msg = (SensorMessage *)serialized_msg->payload;
+		memcpy(serialized_msg->payload, msg->payload, sizeof(SensorMessage)); 
+		ser_sensor_msg->sensorMsgArray = (uint8_t *)&ser_sensor_msg->sensorMsgArray + sizeof(void *); 
+		break;
+	case msgSensorConfig:
+		ser_config_msg = (ConfigMessage *)serialized_msg->payload;
+		memcpy(serialized_msg->payload, msg->payload, sizeof(ConfigMessage)); 
+		ser_config_msg->configMsgArray = (uint8_t *)&ser_config_msg->configMsgArray + sizeof(void *);
+		break;
+	case msgDebug:
+		ser_debug_msg = (DebugMessage *)serialized_msg->payload;
+		memcpy(serialized_msg->payload, msg->payload, sizeof(DebugMessage));
+		ser_debug_msg->debugData = (uint8_t *)&ser_debug_msg->debugData + sizeof(void *); 
+		break;
+	}
+	
+	/* copy the message type specific payload */
+	if (msg->mainType == msgSensorData) {
+		/* calculate the position of the first item in the sensorMsgArray
+		 * within the list */
+		SensorMessage *sensor_msg = (SensorMessage *)msg->payload;
+
+		/* copy the sensorMsgArray into the serialized data structure */
+		switch (sensor_msg->sensorType) {
+		case typeHeartRate:
+			memcpy(ser_sensor_msg->sensorMsgArray, sensor_msg->sensorMsgArray, 
+				sensor_msg->arrayLength*sizeof(HeartRateMessage));
+			break;
+		case typeRawTemperature:
+			memcpy(ser_sensor_msg->sensorMsgArray, sensor_msg->sensorMsgArray, 
+				sensor_msg->arrayLength*sizeof(RawTemperatureMessage));
+			break;
+		case typeAccelerometer:
+			memcpy(ser_sensor_msg->sensorMsgArray, sensor_msg->sensorMsgArray, 
+				sensor_msg->arrayLength*sizeof(AccelerometerMessage));
+			break;
+		case typeGPS:
+			memcpy(ser_sensor_msg->sensorMsgArray, sensor_msg->sensorMsgArray, 
+				sensor_msg->arrayLength*sizeof(GPSMessage));
+		break;
+		default:
+			printf("Cannot serialize messages with sensorType %u\n", sensor_msg->sensorType);
+		}
+	} else if (msg->mainType == msgSensorConfig) {
+		/* calculate the position of the first item in the configMsgArray
+		 * within the list */
+		ConfigMessage *config_msg = (ConfigMessage *)msg->payload;
+		
+		/* copy the configMsgArray into the serialized data structure */
+		memcpy(ser_config_msg->configMsgArray, config_msg->configMsgArray, 
+				config_msg->arrayLength*sizeof(ConfigSensor));
+	} else if (msg->mainType == msgDebug) {
+		int debugMsgHeaderLength = sizeof(MessagePacket) + sizeof(DebugMessage);
+		DebugMessage *debug_msg = (DebugMessage *)msg->payload;
+		
+		/* copy the debug string into the serialized data structure,
+		 * for now the length of the copy operation is based on the
+		 * given length parameter (instead of interpreting the string looking
+		 * for \0) */
+		memcpy(ser_debug_msg->debugData, debug_msg->debugData, length - debugMsgHeaderLength);
+	}
 }

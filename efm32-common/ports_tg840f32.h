@@ -14,11 +14,11 @@
 // -------------------------------------------------------------------------
 // Section: Peripheral port mappings ---------------------------------------
 // -------------------------------------------------------------------------
-#define GPS_USART_PORT		UARTManagerPortLEUART0
-#define ANT_USART_PORT		UARTManagerPortLEUART0
-#define XBEE_USART_PORT		UARTManagerPortUSART1
-#define MIC_USART_PORT		UARTManagerPortUSART?	// TODO
-#define SD_USART_PORT		UARTManagerPortUSART?	// TODO
+#define GPS_USART_PORT		USARTManagerPortLEUART0
+#define ANT_USART_PORT		USARTManagerPortLEUART0
+#define XBEE_USART_PORT		USARTManagerPortUSART1
+#define MIC_USART_PORT		USARTManagerPortUSART?	// TODO
+#define SD_USART_PORT		USARTManagerPortUSART?	// TODO
 // -------------------------------------------------------------------------
 // End Section: Peripheral port mappings -----------------------------------
 // -------------------------------------------------------------------------
@@ -99,12 +99,12 @@ const I2CPortConfig I2CPortConf =
 
 
 // -------------------------------------------------------------------------
-// Section: USART and LEUART port config -----------------------------------
+// Section: UART and LEUART port config -----------------------------------
 // -------------------------------------------------------------------------
 
-#define UART_MANAGER_PORT_COUNT         2
+#define USART_MANAGER_PORT_COUNT         2
 
-const UARTPortConfig UARTManagerPortConfigs[UART_MANAGER_PORT_COUNT] =
+const USARTPortConfig USARTManagerPortConfigs[USART_MANAGER_PORT_COUNT] =
 {
   // port configuration for LEUART0, location 0
   {
@@ -137,12 +137,12 @@ const UARTPortConfig UARTManagerPortConfigs[UART_MANAGER_PORT_COUNT] =
 };
 
 typedef enum {
-  UARTManagerPortLEUART0 = 0,
-  UARTManagerPortUSART1 = 1
-} UARTManagerPort;
+  USARTManagerPortLEUART0 = 0,
+  USARTManagerPortUSART1 = 1
+} USARTManagerPort;
 
 // -------------------------------------------------------------------------
-// End Section: USART and LEUART port config -------------------------------
+// End Section: UART and LEUART port config -------------------------------
 // -------------------------------------------------------------------------
 
 #endif	// __PORTS_TG840F32_H

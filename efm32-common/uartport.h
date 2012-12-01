@@ -8,28 +8,9 @@
 #include <stdbool.h>
 #include <em_cmu.h>
 #include <em_gpio.h>
+#include "usartport.h"
 
-typedef struct {
-  CMU_Clock_TypeDef clockPoint;
-  IRQn irqNumber;
-  USART_TypeDef * usartBase;
-  uint32_t routeLocation;
-  GPIO_Port_TypeDef txPort;
-  uint8_t txPin;
-  GPIO_Port_TypeDef rxPort;
-  uint8_t rxPin;
-  GPIO_Port_TypeDef sclkPort;
-  uint8_t sclkPin;
-  GPIO_Port_TypeDef csPort;
-  uint8_t csPin;
-  bool async;
-  bool lowEnergy;
-} UARTPortConfig;
-
-typedef bool(*RxHook)(uint8_t c);
-typedef void(*SigFrameHook)(uint8_t *buf);
-
-class UARTPort {
+class UARTPort : public USARTPort {
 public:
   enum BaudRate {
     uartPortBaudRate4800 = 4800,
@@ -57,18 +38,13 @@ public:
   bool initialize(uint8_t *rxBuffer, uint8_t rxBufferSize, BaudRate baudRate, 
                   DataBits dataBits, Parity parity, StopBits stopBits);
   
-  void setupSignalFrameDMA(uint8_t dmaChannel, uint8_t signalFrameChar);
-  
-  void setRxHook(RxHook h);
-  void setSignalFrameHook(SigFrameHook h);
-  
   int writeChar(char c);
   int readChar();
   void flushRxBuffer();
   
-  // declare UARTManager as friend class, to be able to use factory pattern
+  // declare USARTManager as friend class, to be able to use factory pattern
   // and access private interrupt handling functions
-  friend class UARTManager;
+  friend class USARTManager;
   
 private: 
   volatile int m_rxReadIndex;
@@ -78,13 +54,9 @@ private:
   uint8_t m_rxBufferSize;
   uint8_t m_dmaChannel;
   uint8_t m_signalFrameChar;
-  bool m_initialized;
-  RxHook m_rxHook;
-  SigFrameHook m_sfHook;
-  const UARTPortConfig * m_portConfig;
 
   // ------ start of pattern specific section --------
-  UARTPort(const UARTPortConfig *cfg);
+  UARTPort(const USARTPortConfig *cfg);
   UARTPort(UARTPort const&);                // do not implement
   void operator=(UARTPort const&);        // do not implement
   // ------ end of pattern specific section --------
@@ -92,4 +64,4 @@ private:
   void handleInterrupt();
 };
 
-#endif  // UART_H
+#endif  // UARTPORT_H

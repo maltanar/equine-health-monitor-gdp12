@@ -14,11 +14,11 @@
 // -------------------------------------------------------------------------
 // Section: Peripheral port mappings ---------------------------------------
 // -------------------------------------------------------------------------
-#define GPS_USART_PORT		UARTManagerPortLEUART0
-#define XBEE_USART_PORT		UARTManagerPortUSART1
-#define ANT_USART_PORT		UARTManagerPortLEUART1
-#define MIC_USART_PORT		UARTManagerPortUSART?	// TODO
-#define SD_USART_PORT		UARTManagerPortUSART?	// TODO
+#define GPS_USART_PORT		USARTManagerPortLEUART0
+#define XBEE_USART_PORT		USARTManagerPortUSART1
+#define ANT_USART_PORT		USARTManagerPortLEUART1
+#define MIC_USART_PORT		USARTManagerPortUSART?	// TODO
+#define SD_USART_PORT		USARTManagerPortUSART0
 // -------------------------------------------------------------------------
 // End Section: Peripheral port mappings -----------------------------------
 // -------------------------------------------------------------------------
@@ -93,12 +93,12 @@ const I2CPortConfig I2CPortConf =
 
 
 // -------------------------------------------------------------------------
-// Section: USART and LEUART port config -----------------------------------
+// Section: UART and LEUART port config -----------------------------------
 // -------------------------------------------------------------------------
 
-#define UART_MANAGER_PORT_COUNT         3
+#define USART_MANAGER_PORT_COUNT         3
 
-static const UARTPortConfig UARTManagerPortConfigs[UART_MANAGER_PORT_COUNT] =
+static const USARTPortConfig USARTManagerPortConfigs[USART_MANAGER_PORT_COUNT] =
 {
   // port configuration for LEUART0, location 0
   {
@@ -111,6 +111,7 @@ static const UARTPortConfig UARTManagerPortConfigs[UART_MANAGER_PORT_COUNT] =
     .txPin = 4,
     .rxPort = gpioPortD,
     .rxPin = 5,
+	.async = true,
     .lowEnergy = true
   },
   // port configuration for LEUART1, location 1
@@ -124,6 +125,7 @@ static const UARTPortConfig UARTManagerPortConfigs[UART_MANAGER_PORT_COUNT] =
     .txPin = 5,
     .rxPort = gpioPortA,
     .rxPin = 6,
+	.async = true,
     .lowEnergy = true
   },
   // port configuration for USART1, location 1
@@ -137,18 +139,19 @@ static const UARTPortConfig UARTManagerPortConfigs[UART_MANAGER_PORT_COUNT] =
     .txPin = 0,
     .rxPort = gpioPortD,
     .rxPin = 1,
+	.async = true,
     .lowEnergy = false
   }
 };
 
 typedef enum {
-  UARTManagerPortLEUART0 = 0,
-  UARTManagerPortLEUART1 = 1,
-  UARTManagerPortUSART1 = 2
-} UARTManagerPort;
+  USARTManagerPortLEUART0 = 0,
+  USARTManagerPortLEUART1 = 1,
+  USARTManagerPortUSART1 = 2
+} USARTManagerPort;
 
 // -------------------------------------------------------------------------
-// End Section: USART and LEUART port config -------------------------------
+// End Section: UART and LEUART port config -------------------------------
 // -------------------------------------------------------------------------
 
 #endif	// __PORTS_GG990F1024_H

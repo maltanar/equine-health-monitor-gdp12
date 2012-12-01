@@ -14,11 +14,11 @@
 // -------------------------------------------------------------------------
 // Section: Peripheral port mappings ---------------------------------------
 // -------------------------------------------------------------------------
-#define GPS_USART_PORT		UARTManagerPortLEUART0
-#define ANT_USART_PORT		UARTManagerPortLEUART1
-#define XBEE_USART_PORT		UARTManagerPortUSART0
-#define MIC_USART_PORT		UARTManagerPortUSART1
-#define SD_USART_PORT		UARTManagerPortUSART2
+#define GPS_USART_PORT		USARTManagerPortLEUART0
+#define ANT_USART_PORT		USARTManagerPortLEUART1
+#define XBEE_USART_PORT		USARTManagerPortUSART0
+#define MIC_USART_PORT		USARTManagerPortUSART1
+#define SD_USART_PORT		USARTManagerPortUSART2
 // -------------------------------------------------------------------------
 // End Section: Peripheral port mappings -----------------------------------
 // -------------------------------------------------------------------------
@@ -90,12 +90,12 @@ const I2CPortConfig I2CPortConf =
 
 
 // -------------------------------------------------------------------------
-// Section: USART and LEUART port config -----------------------------------
+// Section: UART and LEUART port config -----------------------------------
 // -------------------------------------------------------------------------
 
-#define UART_MANAGER_PORT_COUNT         5
+#define USART_MANAGER_PORT_COUNT         5
 
-static const UARTPortConfig UARTManagerPortConfigs[UART_MANAGER_PORT_COUNT] =
+static const USARTPortConfig USARTManagerPortConfigs[USART_MANAGER_PORT_COUNT] =
 {
   // port configuration for LEUART0, location 2
   {
@@ -178,15 +178,15 @@ static const UARTPortConfig UARTManagerPortConfigs[UART_MANAGER_PORT_COUNT] =
 };
 
 typedef enum {
-  UARTManagerPortLEUART0	= 0,
-  UARTManagerPortLEUART1	= 1,
-  UARTManagerPortUSART0		= 2,
-  UARTManagerPortUSART1		= 3,
-  UARTManagerPortUSART2		= 4,
-} UARTManagerPort;
+  USARTManagerPortLEUART0	= 0,
+  USARTManagerPortLEUART1	= 1,
+  USARTManagerPortUSART0	= 2,
+  USARTManagerPortUSART1	= 3,
+  USARTManagerPortUSART2	= 4,
+} USARTManagerPort;
 
 // -------------------------------------------------------------------------
-// End Section: USART and LEUART port config -------------------------------
+// End Section: UART and LEUART port config -------------------------------
 // -------------------------------------------------------------------------
 
 #endif	// __PORTS_GG332F1024_H

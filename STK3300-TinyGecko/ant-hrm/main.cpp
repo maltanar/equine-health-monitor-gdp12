@@ -5,8 +5,9 @@
 #include "em_leuart.h"
 #include "em_emu.h"
 #include "em_gpio.h"
-#include "uartmanager.h"
+#include "usartmanager.h"
 #include "anthrmsensor.h"
+#include "rtc.h"
 
 extern "C" {
 void TRACE_SWOSetup();
@@ -17,10 +18,12 @@ void frameHandler(uint8_t *buf)
   // GPSSensor::getInstance()->sampleSensorData();
 }
 
-void rxHook(int c)
+bool rxHook(uint8_t c)
 {
   /*if(c == '\n')
     GPSSensor::getInstance()->sampleSensorData();*/
+  return true;
+    
 }
 
 int main()
@@ -29,15 +32,21 @@ int main()
   TRACE_SWOSetup();
   ANTHRMSensor * hrm = ANTHRMSensor::getInstance();
   
-  //UARTManager::getInstance()->getPort(UARTManagerPortLEUART0)->setSignalFrameHook(&frameHandler);
-  //UARTManager::getInstance()->getPort(UARTManagerPortLEUART0)->setRxHook(&rxHook);
+  //USARTManager::getInstance()->getPort(USARTManagerPortLEUART0)->setSignalFrameHook(&frameHandler);
+  //USARTManager::getInstance()->getPort(USARTManagerPortLEUART0)->setRxHook(&rxHook);
   
-  bool OK = hrm->initializeNetwork();
+  bool OK = false; 
+  
   
 	while(1)
 	{
 		if(OK)
 			hrm->transaction();
+                else {
+                  OK = hrm->initializeNetwork();
+                  RTC_Trigger(500, NULL);
+                    
+                }
 		
 		EMU_EnterEM2(true);
 	}
