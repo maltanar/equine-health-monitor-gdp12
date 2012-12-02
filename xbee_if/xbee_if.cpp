@@ -802,85 +802,167 @@ uint8_t* XBee::at_cmd_str(const string at_cmd_str) {
 	return &at_cmd[0];
 }
 
+/* Function will de-serialize data into a MessagePacket structure.
+ * data[in]: const Pointer to memory to de-serialize
+ * msg[out]: Pointer to preallocated MessagePacket struct of sufficient size 
+ * 
+ * Hint: use size returned by XBee_Message->get_payload(&size) and add 
+ * sizeof(MessagePacket) + sizeof(void*) to get the exact required size*/
+void deserialize(const uint8_t *data, MessagePacket *msg) {
+	/* MessageType is always the first byte of the serialized data */
+	msg->mainType = (MessageType)data[0];
+	msg->payload = (uint8_t *)&msg->payload + sizeof(msg->payload);
+	
+	/* Copy the message group specific fields into the MessagePacket */
+	SensorMessage *sensor_msg = NULL; 
+	ConfigMessage *config_msg = NULL;
+	DebugMessage *debug_msg = NULL;
+
+	switch (msg->mainType) {
+	case msgSensorData:
+		sensor_msg = (SensorMessage *)msg->payload;
+		memcpy(msg->payload, &data[1], sizeof(SensorMessage));
+		sensor_msg->sensorMsgArray = (uint8_t *)&sensor_msg->sensorMsgArray + sizeof(void *);
+		break;
+	case msgSensorConfig:
+		config_msg = (ConfigMessage *)msg->payload;
+		memcpy(msg->payload, &data[1], sizeof(ConfigMessage));
+		config_msg->configMsgArray = (uint8_t *)&config_msg->configMsgArray + sizeof(void *);
+		break;
+	case msgDebug:
+		debug_msg = (DebugMessage *)msg->payload;
+		memcpy(msg->payload, &data[1], sizeof(DebugMessage));
+		debug_msg->debugData = (uint8_t *)&debug_msg->debugData + sizeof(void *);
+		break;
+	}
+	/* copy the message type specific payload */
+	if (msg->mainType == msgSensorData) {
+		/* calculate the address offset for the sensorMsgArray in the
+		 * serialized data. The offset can be found by adding the size of
+		 * the structs that come before the sensorMsgArray and deducting
+		 * the size of the pointer members of the struct, because they 
+		 * are not serialized. In this case there is one pointer member that
+		 * needs to be deducted (*sensorMsgArray in SensorMessage) 
+		 * !sizeof(MessagePacket) returns 8, but we do not serialize the pointer
+		 * member and can pack the mainType into the first byte of the data,
+		 * hence the "+1" instead of sizeof(MessagePacket) */
+		int sensorMsgArrayOffset = 1 + sizeof(SensorMessage) - sizeof(void *);
+		
+		/* copy the sensorMsgArray into the serialized data structure */
+		switch (sensor_msg->sensorType) {
+		case typeHeartRate:
+			memcpy(sensor_msg->sensorMsgArray, &data[sensorMsgArrayOffset], 
+				sensor_msg->arrayLength*sizeof(HeartRateMessage));
+			break;
+		case typeRawTemperature:
+			memcpy(sensor_msg->sensorMsgArray, &data[sensorMsgArrayOffset], 
+				sensor_msg->arrayLength*sizeof(RawTemperatureMessage));
+			break;
+		case typeAccelerometer:
+			memcpy(sensor_msg->sensorMsgArray, &data[sensorMsgArrayOffset], 
+				sensor_msg->arrayLength*sizeof(AccelerometerMessage));
+			break;
+		case typeGPS:
+			memcpy(sensor_msg->sensorMsgArray, &data[sensorMsgArrayOffset], 
+				sensor_msg->arrayLength*sizeof(GPSMessage));
+		break;
+		default:
+			printf("Cannot de-serialize messages with sensorType %u\n", sensor_msg->sensorType);
+		}
+	} else if (msg->mainType == msgSensorConfig) {
+		/* calculate the address offset for the configMsgArray in the
+		 * serialized data. See above for explanation */
+		int configMsgArrayOffset = 1 + sizeof(ConfigMessage) - sizeof(void *);
+		
+		/* copy the configMsgArray into the serialized data structure */
+		memcpy(config_msg->configMsgArray, &data[configMsgArrayOffset], 
+				config_msg->arrayLength*sizeof(ConfigSensor));
+	} else if (msg->mainType == msgDebug) {
+		/* calculate the address offset for the debugData in the
+		 * serialized data. See above for explanation */
+		int debugDataOffset = 1 + sizeof(DebugMessage) - sizeof(void *);
+		
+		/* copy the debug string into the de-serialized data structure,
+		 * for now the length of the copy operation is based the first
+		 * occurrence of a terminating null byte */
+		strcpy((char *)debug_msg->debugData, (const char *)&data[debugDataOffset]);
+		}
+}
+
 /* Function will serialize data in the MessagePacket structure into continuous
  * memory area, that has to be preallocated and passed to the function 
- * in: Pointer to MessagePacket structure 
- * in/out: preallocated pointer tp memory
- * in: length of the MessagePacket to serialize */ 
-void serialize(MessagePacket *msg, uint8_t *data, uint16_t length) {
-	MessagePacket *serialized_msg = (MessagePacket *)data;
-	SensorMessage *ser_sensor_msg = NULL;
-	ConfigMessage *ser_config_msg = NULL;
-	DebugMessage *ser_debug_msg = NULL;
+ * msg[in]: Pointer to MessagePacket structure 
+ * data[out]: Pointer to preallocated memory
+ * returns: length of *data */ 
+uint16_t serialize(const MessagePacket *msg, uint8_t *data) {
+	uint16_t size = 0;
 	
 	/* copy the header information of the MessagePacket structure and
 	 * set the destination of the payload pointer to the next element in the mem-space */
-	serialized_msg->mainType = msg->mainType;
-	serialized_msg->payload = (uint8_t *)&serialized_msg->payload + sizeof(void *);
+	data[size++] = (uint8_t)msg->mainType;
 
 	/* copy the header information of the main message groups
 	 * and set the sensorMsgArray pointer to the next element in the mem-space */
 	switch (msg->mainType) {
 	case msgSensorData:
-		ser_sensor_msg = (SensorMessage *)serialized_msg->payload;
-		memcpy(serialized_msg->payload, msg->payload, sizeof(SensorMessage)); 
-		ser_sensor_msg->sensorMsgArray = (uint8_t *)&ser_sensor_msg->sensorMsgArray + sizeof(void *); 
+		memcpy(&data[size], msg->payload, sizeof(SensorMessage) - sizeof(void *)); 
+		size += sizeof(SensorMessage) - sizeof(void *);
 		break;
 	case msgSensorConfig:
-		ser_config_msg = (ConfigMessage *)serialized_msg->payload;
-		memcpy(serialized_msg->payload, msg->payload, sizeof(ConfigMessage)); 
-		ser_config_msg->configMsgArray = (uint8_t *)&ser_config_msg->configMsgArray + sizeof(void *);
+		memcpy(&data[size], msg->payload, sizeof(ConfigMessage) - sizeof(void *)); 
+		size += sizeof(ConfigMessage) - sizeof(void *);
 		break;
 	case msgDebug:
-		ser_debug_msg = (DebugMessage *)serialized_msg->payload;
-		memcpy(serialized_msg->payload, msg->payload, sizeof(DebugMessage));
-		ser_debug_msg->debugData = (uint8_t *)&ser_debug_msg->debugData + sizeof(void *); 
+		memcpy(&data[size], msg->payload, sizeof(DebugMessage) - sizeof(void *));
+		size += sizeof(DebugMessage) - sizeof(void *);
 		break;
 	}
 	
 	/* copy the message type specific payload */
 	if (msg->mainType == msgSensorData) {
-		/* calculate the position of the first item in the sensorMsgArray
-		 * within the list */
-		SensorMessage *sensor_msg = (SensorMessage *)msg->payload;
-
+		const SensorMessage *sensor_msg = (const SensorMessage *)msg->payload;
+		
+		printf("SensorMsg: arrayLength %u\n", sensor_msg->arrayLength);
 		/* copy the sensorMsgArray into the serialized data structure */
 		switch (sensor_msg->sensorType) {
 		case typeHeartRate:
-			memcpy(ser_sensor_msg->sensorMsgArray, sensor_msg->sensorMsgArray, 
+			memcpy(&data[size], sensor_msg->sensorMsgArray, 
 				sensor_msg->arrayLength*sizeof(HeartRateMessage));
+			size += sensor_msg->arrayLength*sizeof(HeartRateMessage);
 			break;
 		case typeRawTemperature:
-			memcpy(ser_sensor_msg->sensorMsgArray, sensor_msg->sensorMsgArray, 
+			memcpy(&data[size], sensor_msg->sensorMsgArray, 
 				sensor_msg->arrayLength*sizeof(RawTemperatureMessage));
+			size += sensor_msg->arrayLength*sizeof(RawTemperatureMessage);
 			break;
 		case typeAccelerometer:
-			memcpy(ser_sensor_msg->sensorMsgArray, sensor_msg->sensorMsgArray, 
+			memcpy(&data[size], sensor_msg->sensorMsgArray, 
 				sensor_msg->arrayLength*sizeof(AccelerometerMessage));
+			size += sensor_msg->arrayLength*sizeof(AccelerometerMessage);
 			break;
 		case typeGPS:
-			memcpy(ser_sensor_msg->sensorMsgArray, sensor_msg->sensorMsgArray, 
+			memcpy(&data[size], sensor_msg->sensorMsgArray, 
 				sensor_msg->arrayLength*sizeof(GPSMessage));
+			size += sensor_msg->arrayLength*sizeof(GPSMessage);
 		break;
 		default:
 			printf("Cannot serialize messages with sensorType %u\n", sensor_msg->sensorType);
 		}
 	} else if (msg->mainType == msgSensorConfig) {
-		/* calculate the position of the first item in the configMsgArray
-		 * within the list */
-		ConfigMessage *config_msg = (ConfigMessage *)msg->payload;
+		const ConfigMessage *config_msg = (const ConfigMessage *)msg->payload;
 		
 		/* copy the configMsgArray into the serialized data structure */
-		memcpy(ser_config_msg->configMsgArray, config_msg->configMsgArray, 
+		memcpy(&data[size], config_msg->configMsgArray, 
 				config_msg->arrayLength*sizeof(ConfigSensor));
+		size += config_msg->arrayLength*sizeof(ConfigSensor);
 	} else if (msg->mainType == msgDebug) {
-		int debugMsgHeaderLength = sizeof(MessagePacket) + sizeof(DebugMessage);
 		DebugMessage *debug_msg = (DebugMessage *)msg->payload;
 		
-		/* copy the debug string into the serialized data structure,
-		 * for now the length of the copy operation is based on the
-		 * given length parameter (instead of interpreting the string looking
-		 * for \0) */
-		memcpy(ser_debug_msg->debugData, debug_msg->debugData, length - debugMsgHeaderLength);
+		/* copy the debug string into the de-serialized data structure,
+		 * for now the length of the copy operation is based the first
+		 * occurrence of a terminating null byte */
+		strcpy((char *)&data[size], (const char *)debug_msg->debugData);
+		size += strlen((const char *)debug_msg->debugData);
 	}
+	return size;
 }
