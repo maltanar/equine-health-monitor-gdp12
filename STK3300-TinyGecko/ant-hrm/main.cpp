@@ -7,7 +7,7 @@
 #include "em_gpio.h"
 #include "usartmanager.h"
 #include "anthrmsensor.h"
-#include "rtc.h"
+#include "alarmmanager.h"
 
 extern "C" {
 void TRACE_SWOSetup();
@@ -28,26 +28,25 @@ bool rxHook(uint8_t c)
 
 int main()
 {
-  CHIP_Init();
-  TRACE_SWOSetup();
-  ANTHRMSensor * hrm = ANTHRMSensor::getInstance();
-  
-  //USARTManager::getInstance()->getPort(USARTManagerPortLEUART0)->setSignalFrameHook(&frameHandler);
-  //USARTManager::getInstance()->getPort(USARTManagerPortLEUART0)->setRxHook(&rxHook);
-  
-  bool OK = false; 
-  
-  
+	CHIP_Init();
+	TRACE_SWOSetup();
+	ANTHRMSensor * hrm = ANTHRMSensor::getInstance();
+	AlarmManager * alm = AlarmManager::getInstance();
+
+	//USARTManager::getInstance()->getPort(USARTManagerPortLEUART0)->setSignalFrameHook(&frameHandler);
+	//USARTManager::getInstance()->getPort(USARTManagerPortLEUART0)->setRxHook(&rxHook);
+
+	bool OK = false; 
+
 	while(1)
 	{
 		if(OK)
 			hrm->transaction();
-                else {
-                  OK = hrm->initializeNetwork();
-                  RTC_Trigger(500, NULL);
-                    
-                }
+		else {
+		  OK = hrm->initializeNetwork();			
+		}
 		
-		EMU_EnterEM2(true);
+		alm->lowPowerDelay(500, sleepModeEM2);
+			
 	}
 }

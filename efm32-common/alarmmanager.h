@@ -26,15 +26,15 @@ typedef struct {
 								// upon alarm timeout
 } AlarmSlot;
 
-class AlarmManager {
-public:
-	typedef enum 
-	{
-		sleepModeEM0,
-		sleepModeEM1,
-		sleepModeEM2
-	} DelaySleepMode;
+typedef enum 
+{
+	sleepModeEM0,
+	sleepModeEM1,
+	sleepModeEM2
+} DelaySleepMode;
 
+
+class AlarmManager {
 public:
 	// singleton instance accessor
 	static AlarmManager* getInstance()

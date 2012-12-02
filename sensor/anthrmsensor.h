@@ -16,7 +16,7 @@
 static const uint8_t aucNetworkKey[] = ANTPLUS_NETWORK_KEY;
 
 // stuff we borrow from the ANT HRM RX example -----------------------------
-#define ANT_SERIAL_QUEUE_BUFFER_LENGTH     ((uint8_t) 21)                                  // 15 assumes that an exteneded message is the longest that will be recieved.                                               
+#define ANT_SERIAL_QUEUE_BUFFER_LENGTH     ((uint8_t) 15)                                  // 15 assumes that an exteneded message is the longest that will be recieved.                                               
 #define ANT_SERIAL_QUEUE_RX_SIZE           ((uint8_t) 2)                                   // Same for TX and RX buffers
 #define ANT_SERIAL_QUEUE_TX_SIZE           ((uint8_t) 2)                                   // Same for TX and RX buffers
 
@@ -71,33 +71,34 @@ typedef enum
 
 class ANTHRMSensor : public Sensor {
 public:
-  // singleton instance accessor
-  static ANTHRMSensor* getInstance()
-  {
-    static ANTHRMSensor instance;
-    return &instance;
-  }
-  
-  // ANTRxHook needs access to private functions
-  friend bool ANTRxHook(uint8_t c);
-  
-  // virtual functions which can be overridden if the sensor supports
-  // the functionality
-  char setSleepState(bool sleepState);
-  void setPeriod(SensorPeriod ms);
-  
-  // pure virtual functions representing common functionality, which need to be 
-  // overridden for all sensors
-  void sampleSensorData();
-  const void* readSensorData(uint16_t *actualSize);
-  
-  // ANT HRM module control commands
-  // TODO reset
-  // TODO device ID
-  // TODO connection status
-  void sendPendingTx();
-  bool initializeNetwork();
-  void transaction();
+	// singleton instance accessor
+	static ANTHRMSensor* getInstance()
+	{
+		static ANTHRMSensor instance;
+		return &instance;
+	}
+
+	// ANTRxHook needs access to private functions
+	friend bool ANTRxHook(uint8_t c);
+
+	// virtual functions which can be overridden if the sensor supports
+	// the functionality
+	char setSleepState(bool sleepState);
+	void setPeriod(SensorPeriod ms);
+
+	// pure virtual functions representing common functionality, which need to be 
+	// overridden for all sensors
+	void sampleSensorData();
+	const void* readSensorData(uint16_t *actualSize);
+
+	// ANT HRM module control commands
+	// TODO reset
+	// TODO device ID
+	// TODO connection status
+	void sendPendingTx();
+	bool initializeNetwork(bool hardReset = false);
+	void transaction();
+	void hardReset();
   
 private:
 	// ------ start of singleton pattern specific section ------

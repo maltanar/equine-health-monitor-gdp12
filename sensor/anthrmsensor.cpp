@@ -1,9 +1,17 @@
 #include "em_emu.h"
 #include "em_gpio.h"
 #include "usartmanager.h"
+#include "alarmmanager.h"
 #include "anthrmsensor.h"
 #include "ANT/antmessage.h"
 #include "debug_output_control.h"
+
+// either GPIO_ANT_RST or GPIO_ANT_VCC must be defined to reset the ANT
+#ifdef GPIO_ANT_RST
+#define ANT_RESET	GPIO_ANT_RST
+#else
+#define ANT_RESET	GPIO_ANT_VCC
+#endif
 
 bool ANTRxHook(uint8_t c)
 {
@@ -65,14 +73,25 @@ ANTHRMSensor::ANTHRMSensor() :
 	
 	// initialize other GPIO pins used to control the ANT
 	GPIO_PinModeSet(GPIO_ANT_RTS, gpioModeInput, 0);
-	// RST won't exist for final project but just for prototyping stage
-	// so only configure it if it exists
-#ifdef GPIO_ANT_RST
-	GPIO_PinModeSet(GPIO_ANT_RST, gpioModePushPull, 1);
-#endif
+	GPIO_PinModeSet(ANT_RESET, gpioModePushPull, 1);
+
+	
+	
 	// TODO configure sleep pin here
     
     setPeriod(ANTHRM_DEFAULT_RATE);
+}
+
+void ANTHRMSensor::hardReset()
+{
+	module_debug_ant("hard reset!");
+	// we implement hard reset for the ANT module in two ways:
+	// - if the GPIO RST pin is defined, pull that low for some time
+	// - if not (f.ex for the PCB all reset lines are connected together)
+	//   use the power pin instead
+	GPIO_PinOutClear(ANT_RESET);
+	AlarmManager::getInstance()->lowPowerDelay(10, sleepModeEM1);
+	GPIO_PinOutSet(ANT_RESET);
 }
 
 char ANTHRMSensor::setSleepState(bool sleepState)
@@ -335,10 +354,20 @@ bool ANTHRMSensor::waitForResponse(uint8_t channel, uint8_t responseID,
 	return true;
 }
 
-bool ANTHRMSensor::initializeNetwork()
+bool ANTHRMSensor::initializeNetwork(bool doHardReset)
 {
+	bool resetOK;
+	
+	if(!doHardReset)
+		resetOK = ANT_Reset();
+	else 
+	{
+		hardReset();
+		resetOK = waitForResponse(0, ANT_MESG_STARTUP_ID, ANT_MESG_SYSTEM_RESET_ID);
+	}
+  
 	// reset the module with software command
-	if(!ANT_Reset()) {
+	if(!resetOK) {
 		module_debug_ant("initializeNetwork: reset failed");
 		return false;
 	}
