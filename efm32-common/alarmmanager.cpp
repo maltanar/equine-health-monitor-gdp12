@@ -24,7 +24,7 @@ void RTC_IRQHandler(void)
 	if(rtcIF & RTC_IF_COMP1) 
 	{
 		// Enable interrupt on COMP0
-  		RTC_IntDisable(RTC_IF_COMP0);
+  		RTC_IntDisable(RTC_IF_COMP1);
 		AlarmManager::getInstance()->m_delayWait = false;
 	}
 }
@@ -47,7 +47,7 @@ void AlarmManager::rtcSetup(void)
   init.comp0Top = true; /* Count to cc0 before wrapping */
   RTC_Init(&init);
 
-  // Disable interrupt generation from RTC0
+  // Disable interrupt generation from RTC
   RTC_IntDisable(_RTC_IF_MASK);
   
   // Enable interrupts
@@ -65,6 +65,7 @@ void AlarmManager::rtcSetup(void)
 
   // Enable interrupt on COMP0
   RTC_IntEnable(RTC_IF_COMP0);
+  RTC_IntDisable(RTC_IF_COMP1);
 }
 
 void AlarmManager::lowPowerDelay(uint16_t ms, DelaySleepMode mode)
