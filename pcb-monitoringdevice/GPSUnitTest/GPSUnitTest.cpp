@@ -2,18 +2,14 @@
 // EMECS Group Design Project
 
 #include <stdint.h>
+#include <stdio.h>
 #include <stdbool.h>
 #include "efm32.h"
 #include "em_cmu.h"
 #include "em_emu.h"
 #include "em_gpio.h"
 #include "trace.h"
-#include "gbee.h"
-#include "gbee-util.h"
-#include "xbee_if.h"
-#include "uartmanager.h"
 #include "rtc.h"
-//#include "alarmmanager.h"
 
 // include files for sensors
 #include "gpssensor.h"
@@ -37,22 +33,21 @@ int main(void)
 	
 	while (1)
 	{
-		EMU_EnterEM2(true);
-		
-			//if(gps_AcquireNewData)
-			//{
-				printf("sample and read for gps sensor \n");
-				gps_Sensor->sampleSensorData();
-				
-				msg = (SensorMessage *) gps_Sensor->readSensorData(&size);
-				  
-				  // case SENSOR_GPS_INDEX:
-					// // if parseOnReceive is set, no need to sample ourselves?
-					gps = (GPSMessage *) msg->sensorMsgArray;
-					printf("GPS: %d %d %d, %d %d %d \n", gps->latitude.degree,
-						   gps->latitude.minute, gps->latitude.second, 
-						   gps->longitude.degree, gps->longitude.minute, 
-						   gps->longitude.second);
+          // uncomment the line below if the device does not wake from EM2
+          // RTC_Trigger(1000, NULL);
+          EMU_EnterEM2(true);
+
+          printf("sample and read for gps sensor \n");
+          gps_Sensor->sampleSensorData();
+          
+          msg = (SensorMessage *) gps_Sensor->readSensorData(&size);
+            
+
+                  gps = (GPSMessage *) msg->sensorMsgArray;
+                  printf("GPS: %d %d %d, %d %d %d \n", gps->latitude.degree,
+                             gps->latitude.minute, gps->latitude.second, 
+                             gps->longitude.degree, gps->longitude.minute, 
+                             gps->longitude.second);
 	
 	}
 
