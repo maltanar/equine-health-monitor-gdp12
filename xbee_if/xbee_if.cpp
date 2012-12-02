@@ -20,7 +20,6 @@
 #include "gbee.h"
 #include "gbee-util.h"
 #include "debug_output_control.h"
-#include "rtc.h"
 #include "em_emu.h"
 #include <string.h>
 

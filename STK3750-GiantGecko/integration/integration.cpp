@@ -13,7 +13,6 @@
 #include "gbee-util.h"
 #include "xbee_if.h"
 #include "usartmanager.h"
-#include "rtc.h"
 #include "alarmmanager.h"
 #include "fatfs.h"
 
@@ -128,7 +127,7 @@ int main(void)
 						   gps->longitude.degree, gps->longitude.minute, 
 						   gps->longitude.second);
 					pkt.payload = (uint8_t *) msg;
-					serialize(&pkt, serializeBuffer, 0);
+					//serialize(&pkt, serializeBuffer, 0);
 					printf("\n\n");
 					for(int j = 0; j < 30; j++)
 						printf("%x ", serializeBuffer[j]);
