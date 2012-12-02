@@ -103,7 +103,7 @@ typedef PACKEDSTRUCT {
 
 typedef PACKEDSTRUCT {
 	double Vobj;
-	double Tenv;
+	double Tdie;
 } RawTemperatureMessage;
 
 typedef PACKEDSTRUCT {
