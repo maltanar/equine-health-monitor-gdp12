@@ -44,9 +44,10 @@ typedef enum {
 	B115200 = 7
 } xbee_baud_rate ;
 
-/* independent serialization function for MessagePacket structures. 
- * Not sure about the correct place for this function. */
-void serialize(MessagePacket *msg, uint8_t *data, uint16_t length);
+/* independent de-/serialization functions for MessagePacket structures. 
+ * Not sure about the correct place for these functions. */
+uint16_t serialize(const MessagePacket *msg, uint8_t *data);
+void deserialize(const uint8_t *data, MessagePacket *msg);
 
 class XBee_Message;
 
