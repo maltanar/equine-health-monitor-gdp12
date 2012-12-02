@@ -6,18 +6,40 @@
 // TODO remove comment below after completing SPIPort framework
 //#include "spiport.h"
 
-// TODO move definitions below to part-specific header file ------------------
+#ifdef ROUTE_ISR_LEUART0
 void LEUART0_IRQHandler()
 {
   USARTManager::getInstance()->routeInterrupt(USARTManagerPortLEUART0);
 }
+#endif
 
+#ifdef ROUTE_ISR_LEUART1
+void LEUART1_IRQHandler()
+{
+  USARTManager::getInstance()->routeInterrupt(USARTManagerPortLEUART1);
+}
+#endif
+
+#ifdef ROUTE_ISR_USART0_RX
+void USART0_RX_IRQHandler()
+{
+  USARTManager::getInstance()->routeInterrupt(USARTManagerPortUSART0);
+}
+#endif
+
+#ifdef ROUTE_ISR_USART1_RX
 void USART1_RX_IRQHandler()
 {
   USARTManager::getInstance()->routeInterrupt(USARTManagerPortUSART1);
 }
+#endif
 
-// TODO move definitions above to part-specific header file ------------------
+#ifdef ROUTE_ISR_USART2_RX
+void USART2_RX_IRQHandler()
+{
+  USARTManager::getInstance()->routeInterrupt(USARTManagerPortUSART2);
+}
+#endif
 
 USARTManager::USARTManager()
 {
