@@ -28,6 +28,14 @@ typedef struct {
 
 class AlarmManager {
 public:
+	typedef enum 
+	{
+		sleepModeEM0,
+		sleepModeEM1,
+		sleepModeEM2
+	} DelaySleepMode;
+
+public:
 	// singleton instance accessor
 	static AlarmManager* getInstance()
 	{
@@ -45,6 +53,8 @@ public:
 	bool isPaused();
 	void pause();
 	void resume();
+	
+	void lowPowerDelay(uint16_t ms, DelaySleepMode mode = sleepModeEM0);
 
 	void setUnixTime(uint32_t secondsSinceEpoch);
 	uint32_t getUnixTime();
@@ -52,7 +62,7 @@ public:
 	uint64_t getMsTimestamp();
 
 	// RTC callback will need access to tick(), so declare as friend
-	friend void AlarmManager_RTCCallback();
+	friend void RTC_IRQHandler(void);
 
 private:
 	// ------ start of singleton pattern specific section ------
@@ -65,10 +75,12 @@ private:
 	uint8_t m_activeAlarmCount;		// number of active alarms
 	bool m_isPaused;				// prevent alarms from counting down
 	AlarmSlot m_alarms[MAX_ALARMS];
+	bool m_delayWait;				// poll flag for the low-power delay
 	uint32_t m_unixTime;				// Unix time, number of seconds since
 									// the Unix epoch
 
 	void tick();						// handle alarm tick event
+	void rtcSetup();			// setup RTC	
 
 };
 

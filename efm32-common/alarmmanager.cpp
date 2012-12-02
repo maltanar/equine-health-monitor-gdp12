@@ -1,17 +1,128 @@
+#include <stddef.h>
+#include <stdbool.h>
+#include "efm32.h"
+#include "em_rtc.h"
+#include "em_cmu.h"
+#include "em_emu.h"
+#include "em_rtc.h"
 #include "alarmmanager.h"
-#include "rtc.h"
 #include "debug_output_control.h"
 
-// ISR for RTC callback event - provides the alarm tick
-void AlarmManager_RTCCallback()
+#define RTC_FREQ    32768               // RTC clock at 32.768 kHz
+	 
+void RTC_IRQHandler(void)
 {
-	AlarmManager::getInstance()->tick();
+	// retrieve the RTC interrupt flags
+	uint32_t rtcIF = RTC_IntGet();
+	
+	// clear the interrupt sources
+	RTC_IntClear(rtcIF);
+	
+	if(rtcIF & RTC_IF_COMP0)
+		AlarmManager::getInstance()->tick();
+	
+	if(rtcIF & RTC_IF_COMP1) 
+	{
+		// Enable interrupt on COMP0
+  		RTC_IntDisable(RTC_IF_COMP0);
+		AlarmManager::getInstance()->m_delayWait = false;
+	}
+}
+
+void AlarmManager::rtcSetup(void)
+{
+  RTC_Init_TypeDef init;
+
+  // Ensure LE modules are accessible
+  CMU_ClockEnable(cmuClock_CORELE, true);
+
+  // Enable LFRCO as LFACLK in CMU (will also enable oscillator if not enabled)
+  CMU_ClockSelectSet(cmuClock_LFA, cmuSelect_LFRCO);
+
+  // Enable clock to RTC module
+  CMU_ClockEnable(cmuClock_RTC, true);
+
+  init.enable   = false;
+  init.debugRun = false;
+  init.comp0Top = true; /* Count to cc0 before wrapping */
+  RTC_Init(&init);
+
+  // Disable interrupt generation from RTC0
+  RTC_IntDisable(_RTC_IF_MASK);
+  
+  // Enable interrupts
+  NVIC_ClearPendingIRQ(RTC_IRQn);
+  NVIC_EnableIRQ(RTC_IRQn);
+
+  // Clear interrupt source
+  RTC_IntClear(RTC_IF_COMP0);
+
+  // Calculate trigger value in ticks based on 32768Hz clock
+  RTC_CompareSet(0, (RTC_FREQ * m_tickMs) / 1000);
+
+  // Enable RTC
+  RTC_Enable(true);
+
+  // Enable interrupt on COMP0
+  RTC_IntEnable(RTC_IF_COMP0);
+}
+
+void AlarmManager::lowPowerDelay(uint16_t ms, DelaySleepMode mode)
+{
+	if(m_delayWait)
+	{
+		module_debug_alarm("LP delay already active!");
+		return;
+	}
+	
+	if(ms >= m_tickMs)
+	{
+		module_debug_alarm("low power delay cannot be smaller than tick period!");
+		return;
+	}
+	
+	// do comparisons / calculations in terms of RTC ticks to use less
+	// operations
+	uint32_t current = RTC_CounterGet();
+	uint32_t delayBase = (RTC_FREQ * ms) / 1000;
+	uint32_t period = (RTC_FREQ * m_tickMs) / 1000;
+	
+	RTC_IntClear(RTC_IF_COMP1);
+	
+	// use RTC COMP1 to set up interrupt at end of delay
+	if(current + delayBase <= period)
+		RTC_CompareSet(1, current + delayBase);
+	else
+		RTC_CompareSet(1, delayBase - (period - current));
+	
+	// Enable interrupt on COMP1
+  	RTC_IntEnable(RTC_IF_COMP1);
+	
+	// set delay wait flag to true, will be set to false inside interrupt
+	m_delayWait = true;
+		
+	while(m_delayWait)
+		switch(mode)
+		{
+		case sleepModeEM0:
+			// EM0 sleep is no sleep
+			break;
+		case sleepModeEM1:
+			// enter EM1
+			EMU_EnterEM1();
+			break;
+		case sleepModeEM2:
+			// enter EM2, restore clocks on wakeup
+			EMU_EnterEM2(true);
+			break;
+		}
 }
 
 AlarmManager::AlarmManager()
 {
 	m_unixTime = 0;
 	m_tickMs = ALARM_TICK_DEFAULT_MS;
+	m_delayWait = false;
 	m_activeAlarmCount = 0;
 	m_isPaused = true;	// AlarmManager is paused on creation
 
@@ -24,8 +135,8 @@ AlarmManager::AlarmManager()
 		m_alarms[i].handler = NULL;
 	}
 
-	// trigger the RTC
-	RTC_Trigger(m_tickMs, &AlarmManager_RTCCallback);
+	// setup the RTC to generate alarm ticks
+	rtcSetup();
 	module_debug_alarm("initialized");
 }
 
@@ -66,9 +177,6 @@ void AlarmManager::tick()
 			}
 		}
 	}
-	
-	// re-trigger the RTC
-	RTC_Trigger(m_tickMs, &AlarmManager_RTCCallback);
 }
 
 
@@ -146,7 +254,7 @@ uint32_t AlarmManager::getUnixTime()
 
 uint16_t AlarmManager::getMsCounter()
 {
-	return RTC_CounterGetMs();
+	return (RTC_CounterGet() * 1000) / RTC_FREQ;
 }
 
 void AlarmManager::pause()
