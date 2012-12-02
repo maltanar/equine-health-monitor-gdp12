@@ -62,3 +62,10 @@
 #else
 #define module_debug_xbee(fmt, ...)
 #endif
+
+#ifdef ENABLE_DEBUG_OUTPUT_FATFS
+#define module_debug_fatfs(fmt, ...)   printf("FATFS: "fmt"\n", ##__VA_ARGS__)
+#else
+#define module_debug_fatfs(fmt, ...)
+#endif
+
