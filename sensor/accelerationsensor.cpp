@@ -2,8 +2,10 @@
 #include "i2cbus.h"
 #include "debug_output_control.h"
 
-AccelerationSensor::AccelerationSensor(SensorPeriod period)	:
-  Sensor(typeAccelerometer, sizeof(AccelerometerMessage), period)
+#define ACCL_DEFAULT_PERIOD	100
+
+AccelerationSensor::AccelerationSensor()	:
+  Sensor(typeAccelerometer, sizeof(AccelerometerMessage), ACCL_DEFAULT_PERIOD)
 {
 	m_sensorMessage.arrayLength = 0;
 	m_sensorMessage.sensorMsgArray = (uint8_t *) m_accSampleBuffer;
@@ -28,7 +30,7 @@ AccelerationSensor::AccelerationSensor(SensorPeriod period)	:
 	// range bits are set to 11, justify bit 0
 	// TODO decide how much range vs precision we need
 	writeRegister( ADXL350_REG_DATAF, 0x03); 
-	setPeriod(period);
+	setPeriod(ACCL_DEFAULT_PERIOD);
 	// wake up device and enable measurements
 	setSleepState(false);
 	

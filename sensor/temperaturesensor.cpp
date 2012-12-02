@@ -34,9 +34,10 @@
 // this is set by the value of the ADR* pins
 // which are always 0 for the breakout board
 #define TMP006_I2C_ADDR     0x80
+#define TMP006_DEFAULT_PERIOD	1000
 
-TemperatureSensor::TemperatureSensor(SensorPeriod period)
- : Sensor(typeTemperature, sizeof(TemperatureMessage), period)
+TemperatureSensor::TemperatureSensor()
+ : Sensor(typeTemperature, sizeof(TemperatureMessage), TMP006_DEFAULT_PERIOD)
 {
 	// configure for outputting single reading
 	m_temperatureMessage.Tobj = 0;
@@ -58,7 +59,7 @@ TemperatureSensor::TemperatureSensor(SensorPeriod period)
     module_debug_temp("TMP006 manufacturer/device id OK: %x / %x", mid, did);
 
   // set conversion rate
-  setPeriod(period);
+  setPeriod(TMP006_DEFAULT_PERIOD);
 
 }
 

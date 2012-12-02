@@ -15,7 +15,12 @@
 // Sensor implementation for the TMP006 sensor
 class TemperatureSensor : public Sensor {
 public:
-  TemperatureSensor(SensorPeriod period);
+  // singleton instance accessor
+  static TemperatureSensor* getInstance()
+  {
+    static TemperatureSensor instance;
+    return &instance;
+  }
 
   // virtual functions which can be overridden if the sensor supports
   // the functionality
@@ -34,6 +39,12 @@ public:
   uint16_t getDeviceID();       // should return 0x0067
   
 protected:
+  // ------ start of singleton pattern specific section ------
+  TemperatureSensor();  
+  TemperatureSensor(TemperatureSensor const&);                // do not implement
+  void operator=(TemperatureSensor const&);        // do not implement
+  // ------ end of singleton pattern specific section --------
+  
   TemperatureMessage m_temperatureMessage;	// calculated temperature reading 
   int16_t m_rate;             // conversion rate flags for internal config
   
