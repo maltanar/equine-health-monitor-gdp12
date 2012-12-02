@@ -1907,6 +1907,12 @@
       <name>$PROJ_DIR$\..\..\efm32-common\dmamanager.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\hardfault.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\hardfault.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\efm32-common\i2cbus.cpp</name>
     </file>
     <file>
@@ -1989,6 +1995,9 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\fatfs\diskio.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\fatfs\fatfs.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\fatfs\ff.c</name>
