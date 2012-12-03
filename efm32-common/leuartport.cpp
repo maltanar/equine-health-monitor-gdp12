@@ -25,6 +25,7 @@ bool LEUARTPort::initialize(uint8_t *rxBuffer, uint8_t rxBufferSize,
 	m_rxCount = 0;
 	m_rxBufferSize = rxBufferSize;
 	m_rxBuffer         = rxBuffer;
+	m_sfHook = 0;
 
 	// Configure GPIO pins 
 	CMU_ClockEnable(cmuClock_GPIO, true);
