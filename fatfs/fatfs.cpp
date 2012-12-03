@@ -38,13 +38,16 @@ uint64_t FATFS_speedTest(uint32_t kilobytesToWrite)
 	FIL logfile;
 	FRESULT fr;
 	
+	// remove possible existing test file
 	fr = f_unlink(filename);
-	if(fr != FR_OK)
-		module_debug_fatfs("f_unlink failed!");
+	
+	// open the file in write + create always mode
 	fr = f_open(&logfile, filename, FA_WRITE | FA_CREATE_ALWAYS);
 	if(fr != FR_OK)
 		module_debug_fatfs("f_open failed!");
+	// get start timestamp
 	uint64_t start = AlarmManager::getInstance()->getMsTimestamp();
+	// write the number of desired kilobytes
 	for(int i = 0; i < kilobytesToWrite; i++)
 		for(int j = 0; j < 256; j++)
 		{
@@ -58,9 +61,11 @@ uint64_t FATFS_speedTest(uint32_t kilobytesToWrite)
 			bwTotal += bw;
 		}
   done:
+	// get end timestamp
 	uint64_t end = AlarmManager::getInstance()->getMsTimestamp();
 	fr = f_close(&logfile);
-	
+	fr = f_unlink(filename);
+	// subtract start from end to get elapsed time
 	end -= start;
 	
 	module_debug_fatfs("took %lld ms", end);
