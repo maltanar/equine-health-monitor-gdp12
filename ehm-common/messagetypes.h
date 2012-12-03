@@ -28,7 +28,6 @@ typedef enum {
 typedef enum  {
 	typeGPS,
 	typeAccelerometer,
-	typeTemperature,
 	typeRawTemperature,
 	typeHeartRate,
 	typeZigBee,
@@ -40,6 +39,7 @@ typedef enum  {
 // devices and the base station
 typedef PACKEDSTRUCT {
 	MessageType mainType;
+	uint32_t relTimestampS;
 	uint8_t *payload;
 } MessagePacket;
 
@@ -61,6 +61,7 @@ typedef PACKEDSTRUCT {
 } ConfigMessage;
 
 typedef PACKEDSTRUCT {
+	uint32_t timestampS;
 	uint8_t *debugData;
 } DebugMessage;
 
@@ -71,10 +72,6 @@ typedef PACKEDSTRUCT {
 	uint16_t sampleIntervalMs;
 	uint16_t samplePeriodMs;
 } ConfigSensor;
-
-typedef PACKEDSTRUCT {
-	uint8_t *data;
-} ConfigNode;
 
 // definition of subtypes for SensorMessage
 typedef PACKEDSTRUCT {
@@ -98,12 +95,8 @@ typedef PACKEDSTRUCT {
 } AccelerometerMessage;
 
 typedef PACKEDSTRUCT {
-	double Tobj;
-} TemperatureMessage;
-
-typedef PACKEDSTRUCT {
 	double Vobj;
-	double Tdie;
+	double Tenv;
 } RawTemperatureMessage;
 
 typedef PACKEDSTRUCT {
