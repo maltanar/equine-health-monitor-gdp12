@@ -9,7 +9,7 @@
 // EM2 for low power sleep while still maintaining timekeeping
 
 #define ALARM_TICK_DEFAULT_MS           1000
-#define	MAX_ALARMS						8
+#define	MAX_ALARMS						10
 #define ALARM_INVALID_ID				MAX_ALARMS
 
 

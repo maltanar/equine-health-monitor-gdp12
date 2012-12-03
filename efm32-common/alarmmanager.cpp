@@ -214,7 +214,8 @@ AlarmID AlarmManager::createAlarm(uint8_t timeoutCount, bool oneShot,
   
   // if we fall through the loop that means no alarm slots are available
   // return a specific value to indicate failure
-  return ALARM_INVALID_ID;
+	module_debug_alarm("could not create alarm!");
+	return ALARM_INVALID_ID;
 }
 
 void AlarmManager::stopAlarm(AlarmID alarmID)
