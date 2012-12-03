@@ -10,7 +10,7 @@
 / * Redistributions of source code must retain the above copyright notice.
 /
 /-------------------------------------------------------------------------*/
-
+#define UINT32_MAX	0xffffffff
 #include "diskio.h"
 #include "microsd.h"
 
@@ -176,7 +176,7 @@ DRESULT disk_ioctl (
 )
 {
 	DRESULT res;
-	BYTE n, csd[16], *ptr = buff;
+	BYTE n, csd[16], *ptr = (BYTE*) buff;
 	DWORD csize;
 
 
@@ -245,13 +245,13 @@ DRESULT disk_ioctl (
 
 		case MMC_GET_CSD :	/* Receive CSD as a data block (16 bytes) */
 			if ((send_cmd(CMD9, 0) == 0)	/* READ_CSD */
-				&& rcvr_datablock(buff, 16))
+				&& rcvr_datablock((BYTE*)buff, 16))
 				res = RES_OK;
 			break;
 
 		case MMC_GET_CID :	/* Receive CID as a data block (16 bytes) */
 			if ((send_cmd(CMD10, 0) == 0)	/* READ_CID */
-				&& rcvr_datablock(buff, 16))
+				&& rcvr_datablock((BYTE*)buff, 16))
 				res = RES_OK;
 			break;
 
@@ -266,7 +266,7 @@ DRESULT disk_ioctl (
 		case MMC_GET_SDSTAT :	/* Receive SD statsu as a data block (64 bytes) */
 			if (send_cmd(ACMD13, 0) == 0) {	/* SD_STATUS */
 				xfer_spi(0xff);
-				if (rcvr_datablock(buff, 64))
+				if (rcvr_datablock((BYTE*)buff, 64))
 					res = RES_OK;
 			}
 			break;

@@ -37,10 +37,17 @@
 #include "diskio.h"
 #include "microsd.h"
 #include "em_cmu.h"
+#include "em_gpio.h"
 #include "em_usart.h"
 
-#define CS_LOW()   GPIO->P[4].DOUTCLR = 0x10;  /**< Chip Selection in SPI mode. Enable when card is selected. */
-#define CS_HIGH()  GPIO->P[4].DOUTSET = 0x10;  /**< Chip Selection in SPI mode. Enable when card is deselected. */
+//#define MICROSD_USARTCFG	(USARTManagerPortConfigs[SD_USART_PORT])
+//#define MICROSD_USART		(MICROSD_USARTCFG.usartBase)
+	
+//#define CS_LOW()   GPIO->P[4].DOUTCLR = 0x10;  /**< Chip Selection in SPI mode. Enable when card is selected. */
+//#define CS_HIGH()  GPIO->P[4].DOUTSET = 0x10;  /**< Chip Selection in SPI mode. Enable when card is deselected. */
+
+#define CS_LOW()   GPIO_PinOutClear(MICROSD_USARTCFG.csPort, MICROSD_USARTCFG.csPin)
+#define CS_HIGH()  GPIO_PinOutClear(MICROSD_USARTCFG.csPort, MICROSD_USARTCFG.csPin)
 
 extern DSTATUS Stat;    /**< Disk status */
 extern UINT    Timer1;  /**< 1000Hz decrement timer */
@@ -51,7 +58,6 @@ static BYTE wait_ready(void);
 /**************************************************************************//**
  * @brief
  *	Initialize SPI setting.
- *  The MicroSD card is connected to USART0, location #2.
  *  The FatFS system controls the SPI CS directly through the macros
  *  CS_HIGH() and CS_LOW().
  *****************************************************************************/
@@ -60,11 +66,10 @@ void MICROSD_init(void)
   USART_TypeDef *spi;
 
   /* Enabling clock to USART 0 */
-  CMU_ClockEnable(cmuClock_USART0, true);
+  CMU_ClockEnable(MICROSD_USARTCFG.clockPoint, true);
   CMU_ClockEnable(cmuClock_GPIO, true);
 
-  /* Setup SPI at USART0 */
-  spi = USART0;
+  spi = MICROSD_USART;
 
   /* Setting baudrate */
   FCLK_SLOW()
@@ -76,7 +81,9 @@ void MICROSD_init(void)
   spi->CMD = USART_CMD_CLEARRX | USART_CMD_CLEARTX;
   spi->IEN = 0;
   /* Enabling pins and setting location, SPI CS not enable */
-  spi->ROUTE = USART_ROUTE_TXPEN | USART_ROUTE_RXPEN | USART_ROUTE_CLKPEN | USART_ROUTE_LOCATION_LOC1;
+  spi->ROUTE = USART_ROUTE_TXPEN | USART_ROUTE_RXPEN | USART_ROUTE_CLKPEN | 
+	  			(MICROSD_USARTCFG.routeLocation << _USART_ROUTE_LOCATION_SHIFT);
+  
   /* Enabling TX and RX */
   spi->CMD = USART_CMD_TXEN | USART_CMD_RXEN;
 
@@ -86,11 +93,11 @@ void MICROSD_init(void)
   /* Clear previous interrupts */
   spi->IFC = _USART_IFC_MASK;
 
-  /* IO configuration (USART 0, Location #1) */
-  GPIO_PinModeSet(gpioPortE, 7, gpioModePushPull, 0);  /* MOSI */
-  GPIO_PinModeSet(gpioPortE, 6, gpioModeInputPull, 1); /* MISO */
-  GPIO_PinModeSet(gpioPortE, 4, gpioModePushPull, 0);  /* CS */
-  GPIO_PinModeSet(gpioPortE, 5, gpioModePushPull, 0);  /* Clock */
+  /* IO configuration */
+  GPIO_PinModeSet(MICROSD_USARTCFG.txPort, MICROSD_USARTCFG.txPin, gpioModePushPull, 0);  /* MOSI */
+  GPIO_PinModeSet(MICROSD_USARTCFG.rxPort, MICROSD_USARTCFG.rxPin, gpioModeInputPull, 1); /* MISO */
+  GPIO_PinModeSet(MICROSD_USARTCFG.csPort, MICROSD_USARTCFG.csPin, gpioModePushPull, 0);  /* CS */
+  GPIO_PinModeSet(MICROSD_USARTCFG.sclkPort, MICROSD_USARTCFG.sclkPin, gpioModePushPull, 0);  /* Clock */
 }
 
 /**************************************************************************//**
@@ -100,13 +107,13 @@ void MICROSD_init(void)
  *****************************************************************************/
 void MICROSD_deinit(void)
 {
-  USART0->CTRL = 0;
+  MICROSD_USART->CTRL = 0;
 
-  /* IO configuration (USART 0, Location #0) */
-  GPIO_PinModeSet(gpioPortE, 7, gpioModeDisabled, 0);  /* MOSI */
-  GPIO_PinModeSet(gpioPortE, 6, gpioModeDisabled, 0);  /* MISO */
-  GPIO_PinModeSet(gpioPortE, 4, gpioModeDisabled, 0);  /* CS */
-  GPIO_PinModeSet(gpioPortE, 5, gpioModeDisabled, 0);  /* Clock */
+  /* IO configuration */
+  GPIO_PinModeSet(MICROSD_USARTCFG.txPort, MICROSD_USARTCFG.txPin, gpioModeDisabled, 0);  /* MOSI */
+  GPIO_PinModeSet(MICROSD_USARTCFG.rxPort, MICROSD_USARTCFG.rxPin, gpioModeDisabled, 0); /* MISO */
+  GPIO_PinModeSet(MICROSD_USARTCFG.csPort, MICROSD_USARTCFG.csPin, gpioModeDisabled, 0);  /* CS */
+  GPIO_PinModeSet(MICROSD_USARTCFG.sclkPort, MICROSD_USARTCFG.sclkPin, gpioModeDisabled, 0);  /* Clock */
 }
 
 /**************************************************************************//**
@@ -121,7 +128,7 @@ void MICROSD_deinit(void)
  *****************************************************************************/
 uint8_t xfer_spi(uint8_t data)
 {
-  USART_TypeDef *spi = USART0;
+  USART_TypeDef *spi = MICROSD_USART;
 
   spi->TXDATA = data;
   while (!(spi->STATUS & USART_STATUS_TXC))
@@ -176,7 +183,7 @@ int select(void)
 void power_on(void)
 {
   /* Enable SPI */
-  CMU_ClockEnable(cmuClock_USART0, true);
+  CMU_ClockEnable(MICROSD_USARTCFG.clockPoint, true);
 }
 
 /**************************************************************************//**
@@ -188,8 +195,8 @@ void power_off(void)
   /* Wait for card ready */
   select();
   deselect();
-  /* Disable USART0 */
-  CMU_ClockEnable(cmuClock_USART0, false);
+  /* Disable USART */
+  CMU_ClockEnable(MICROSD_USARTCFG.clockPoint, false);
   /* Set STA_NOINIT */
   Stat |= STA_NOINIT;
 }
@@ -220,7 +227,7 @@ int rcvr_datablock(BYTE *buff, UINT btr)
     /* Invalid data token */
     return 0;
 
-  USART_TypeDef *spi = USART0;
+  USART_TypeDef *spi = MICROSD_USART;
   /* Clear send and receive buffer */
   spi->CMD = USART_CMD_CLEARRX | USART_CMD_CLEARTX;
   /* Store old configuration. */
@@ -242,7 +249,7 @@ int rcvr_datablock(BYTE *buff, UINT btr)
   {
     spi->TXDOUBLE = 0xffff;
     while (!(spi->STATUS & USART_STATUS_RXFULL)) ;
-    *buff_16++ = (uint16_t) USART0->RXDOUBLE;
+    *buff_16++ = (uint16_t) MICROSD_USART->RXDOUBLE;
   } while (btr -= 2);
 
   /* Next two bytes is the CRC which we discard. */

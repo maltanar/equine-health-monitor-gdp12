@@ -9,6 +9,7 @@
 #include <em_cmu.h>
 #include <em_gpio.h>
 
+
 typedef struct {
   CMU_Clock_TypeDef clockPoint;
   IRQn irqNumber;

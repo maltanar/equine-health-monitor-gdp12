@@ -96,7 +96,7 @@ const I2CPortConfig I2CPortConf =
 // Section: UART and LEUART port config -----------------------------------
 // -------------------------------------------------------------------------
 
-#define USART_MANAGER_PORT_COUNT         3
+#define USART_MANAGER_PORT_COUNT         4
 
 static const USARTPortConfig USARTManagerPortConfigs[USART_MANAGER_PORT_COUNT] =
 {
@@ -128,6 +128,24 @@ static const USARTPortConfig USARTManagerPortConfigs[USART_MANAGER_PORT_COUNT] =
 	.async = true,
     .lowEnergy = true
   },
+  // port configuration for USART0, location 1
+  {
+    .clockPoint = cmuClock_USART0 ,
+    .irqNumber = USART0_RX_IRQn,
+    .usartBase = (USART_TypeDef *) USART0,
+    // TODO route location & pins should be runtime configurable?
+    .routeLocation = 1,
+    .txPort = gpioPortE,
+    .txPin = 7,
+    .rxPort = gpioPortE,
+    .rxPin = 6,
+	.csPort = gpioPortE,
+	.csPin = 4,
+	.sclkPort = gpioPortE,
+	.sclkPin = 5,
+	.async = true,
+    .lowEnergy = false
+  },
   // port configuration for USART1, location 1
   {
     .clockPoint = cmuClock_USART1 ,
@@ -147,7 +165,8 @@ static const USARTPortConfig USARTManagerPortConfigs[USART_MANAGER_PORT_COUNT] =
 typedef enum {
   USARTManagerPortLEUART0 = 0,
   USARTManagerPortLEUART1 = 1,
-  USARTManagerPortUSART1 = 2
+  USARTManagerPortUSART0 = 2,
+  USARTManagerPortUSART1 = 3
 } USARTManagerPort;
 
 // -------------------------------------------------------------------------

@@ -69,3 +69,9 @@
 #define module_debug_fatfs(fmt, ...)
 #endif
 
+#ifdef ENABLE_DEBUG_OUTPUT_STRG
+#define module_debug_strg(fmt, ...)   printf("STRG: "fmt"\n", ##__VA_ARGS__)
+#else
+#define module_debug_strg(fmt, ...)
+#endif
+

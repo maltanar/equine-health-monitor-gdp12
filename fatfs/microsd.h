@@ -38,16 +38,8 @@
 #include "efm32.h"
 #include "em_gpio.h"
 #include "integer.h"
+#include "port_config.h"
 
-/***************************************************************************//**
- * @addtogroup Drivers
- * @{
- ******************************************************************************/
-
-/***************************************************************************//**
- * @addtogroup MicroSd
- * @{
- ******************************************************************************/
 
 #ifdef __cplusplus
 extern "C" {
@@ -78,8 +70,11 @@ void MICROSD_deinit(void);
 #define CMD55     (55)        /**< APP_CMD */
 #define CMD58     (58)        /**< READ_OCR */
 
-#define FCLK_SLOW() (USART0->CLKDIV = 256 * (48000000 / (2 * 100000) - 1));  /**< 100K at 48MHz */
-#define FCLK_FAST() (USART0->CLKDIV = 256 * (48000000 / (2 * 7000000) - 1)); /**< 7MHz at 48MHz */
+#define MICROSD_USARTCFG	(USARTManagerPortConfigs[SD_USART_PORT])
+#define MICROSD_USART		(MICROSD_USARTCFG.usartBase)
+
+#define FCLK_SLOW() (MICROSD_USART->CLKDIV = 256 * (48000000 / (2 * 100000) - 1));  /**< 100K at 48MHz */
+#define FCLK_FAST() (MICROSD_USART->CLKDIV = 256 * (48000000 / (2 * 7000000) - 1)); /**< 7MHz at 48MHz */
 
 void deselect(void);
 void power_on(void);
