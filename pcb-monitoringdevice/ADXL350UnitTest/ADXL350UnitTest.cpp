@@ -29,6 +29,7 @@ int main(void)
     SensorMessage *msg;
     AccelerometerMessage *acclMsg;
     int acclSampleCount = 0;
+	
     
     while (1)
     {
