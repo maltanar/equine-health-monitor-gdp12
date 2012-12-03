@@ -1991,7 +1991,7 @@
       <name>$PROJ_DIR$\..\..\fatfs\diskio.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\fatfs\fatfs.c</name>
+      <name>$PROJ_DIR$\..\..\fatfs\fatfs.cpp</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\fatfs\ff.c</name>

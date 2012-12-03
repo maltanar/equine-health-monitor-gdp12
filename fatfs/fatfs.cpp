@@ -1,6 +1,7 @@
 #include "fatfs.h"
 #include "microsd.h"
 #include "diskio.h"
+#include "alarmmanager.h"
 
 #include "debug_output_control.h"
 
@@ -23,14 +24,55 @@ DWORD get_fattime(void)
   return (28 << 25) | (2 << 21) | (1 << 16);
 }
 
-bool isFilesystemAvailable()
+bool FATFS_isFilesystemAvailable()
 {
 	return m_fsAvailable;
 }
 
+uint64_t FATFS_speedTest(uint32_t kilobytesToWrite)
+{
+	const char *filename = "stst.raw";
+	uint32_t data = 0xDEADBEEF;
+	UINT bw;
+	uint32_t bwTotal = 0;
+	FIL logfile;
+	FRESULT fr;
+	
+	fr = f_unlink(filename);
+	if(fr != FR_OK)
+		module_debug_fatfs("f_unlink failed!");
+	fr = f_open(&logfile, filename, FA_WRITE | FA_CREATE_ALWAYS);
+	if(fr != FR_OK)
+		module_debug_fatfs("f_open failed!");
+	uint64_t start = AlarmManager::getInstance()->getMsTimestamp();
+	for(int i = 0; i < kilobytesToWrite; i++)
+		for(int j = 0; j < 256; j++)
+		{
+			bw = 0;
+			fr = f_write(&logfile, &data, 4, &bw);
+			if(fr != FR_OK || bw != 4)
+			{
+				module_debug_fatfs("f_write failed! %x %d", fr, bw);
+				goto done;
+			}
+			bwTotal += bw;
+		}
+  done:
+	uint64_t end = AlarmManager::getInstance()->getMsTimestamp();
+	fr = f_close(&logfile);
+	
+	end -= start;
+	
+	module_debug_fatfs("took %lld ms", end);
+	module_debug_fatfs("bytes written %d ", bwTotal);
+	module_debug_fatfs("bw: %f b/s", (float)bwTotal / ((float)(end)/1000));
+	
+	return end;
+}
+
 // test whether the filesystem works by writing some data to a file and reading
 // it back
-bool testFilesystem()
+bool FATFS_testFilesystem()
 {
 	FRESULT res;
 	FIL fsrc;
@@ -125,7 +167,7 @@ bool testFilesystem()
 	return true;
 }
 
-void initializeFilesystem()
+void FATFS_initializeFilesystem()
 {
 	DSTATUS resCard;			/* SDcard status */
 	FRESULT	fr;					// return value from f_* calls
@@ -168,5 +210,5 @@ void initializeFilesystem()
 	
 	// otherwise, we successfully mounted the filesystem
 	// run a simple test before marking it as available
-	m_fsAvailable = testFilesystem();
+	m_fsAvailable = FATFS_testFilesystem();
 }

@@ -55,6 +55,8 @@ void dataReadHandler(AlarmID id)
  *****************************************************************************/
 int main(void)
 {
+	FIL logfile;
+	
 	/* Configure board. Select either EBI or SPI mode. */
 	DVK_init(DVK_Init_SPI);
 	TRACE_SWOSetup();
@@ -67,7 +69,12 @@ int main(void)
 	/* Enable SPI access to MicroSD card */
   	DVK_peripheralAccess(DVK_MICROSD, true);
 	
-	initializeFilesystem();
+	FATFS_initializeFilesystem();
+	FATFS_speedTest(1);
+	
+	FATFS_speedTest(512);
+	
+	FATFS_speedTest(1024);
 	
 	// store the alarm manager instance, paused on creation
 	alarmManager = AlarmManager::getInstance();
@@ -98,11 +105,10 @@ int main(void)
 	AccelerometerMessage *acclMsg;
 	MessagePacket pkt;
 	pkt.mainType = msgSensorData;
-	UINT bw;
 	
 	int acclSampleCount = 0;
 	uint8_t serializeBuffer[100];
-	FIL logfile;
+	
 	
 	// serialize(MessagePacket *msg, uint8_t *data, uint16_t length)
 	
@@ -126,16 +132,6 @@ int main(void)
 						   gps->latitude.minute, gps->latitude.second, 
 						   gps->longitude.degree, gps->longitude.minute, 
 						   gps->longitude.second);
-					pkt.payload = (uint8_t *) msg;
-					//serialize(&pkt, serializeBuffer, 0);
-					printf("\n\n");
-					for(int j = 0; j < 30; j++)
-						printf("%x ", serializeBuffer[j]);
-					printf("\n\n");
-					f_open(&logfile, "gps.raw", FA_WRITE | FA_CREATE_ALWAYS);
-					f_write(&logfile, serializeBuffer, 100, &bw);
-					f_close(&logfile);
-					printf("wrote %d bytes", bw);
 					break;
 				  case SENSOR_TEMP_INDEX:
 					tempMsg = (TemperatureMessage *) msg->sensorMsgArray;
