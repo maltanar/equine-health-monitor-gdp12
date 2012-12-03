@@ -16,9 +16,9 @@
 static const uint8_t aucNetworkKey[] = ANTPLUS_NETWORK_KEY;
 
 // stuff we borrow from the ANT HRM RX example -----------------------------
-#define ANT_SERIAL_QUEUE_BUFFER_LENGTH     ((uint8_t) 21)                                  // 15 assumes that an exteneded message is the longest that will be recieved.                                               
+#define ANT_SERIAL_QUEUE_BUFFER_LENGTH     ((uint8_t) 15)                                  // 15 assumes that an exteneded message is the longest that will be recieved.                                               
 #define ANT_SERIAL_QUEUE_RX_SIZE           ((uint8_t) 2)                                   // Same for TX and RX buffers
-#define ANT_SERIAL_QUEUE_TX_SIZE           ((uint8_t) 2)                                   // Same for TX and RX buffers
+#define ANT_TXBUFSIZE						15
 
 typedef struct
 {
@@ -71,33 +71,36 @@ typedef enum
 
 class ANTHRMSensor : public Sensor {
 public:
-  // singleton instance accessor
-  static ANTHRMSensor* getInstance()
-  {
-    static ANTHRMSensor instance;
-    return &instance;
-  }
-  
-  // ANTRxHook needs access to private functions
-  friend bool ANTRxHook(uint8_t c);
-  
-  // virtual functions which can be overridden if the sensor supports
-  // the functionality
-  char setSleepState(bool sleepState);
-  void setPeriod(SensorPeriod ms);
-  
-  // pure virtual functions representing common functionality, which need to be 
-  // overridden for all sensors
-  void sampleSensorData();
-  const void* readSensorData(uint16_t *actualSize);
-  
-  // ANT HRM module control commands
-  // TODO reset
-  // TODO device ID
-  // TODO connection status
-  void sendPendingTx();
-  bool initializeNetwork();
-  void transaction();
+	// singleton instance accessor
+	static ANTHRMSensor* getInstance()
+	{
+		static ANTHRMSensor instance;
+		return &instance;
+	}
+
+	// ANTRxHook needs access to private functions
+	friend bool ANTRxHook(uint8_t c);
+
+	// virtual functions which can be overridden if the sensor supports
+	// the functionality
+	char setSleepState(bool sleepState);
+	void setPeriod(SensorPeriod ms);
+
+	// pure virtual functions representing common functionality, which need to be 
+	// overridden for all sensors
+	void sampleSensorData();
+
+	// ANT HRM module control commands
+	// TODO device ID
+	// TODO connection status
+	// TODO clear device pairing / trigger search
+	bool initializeNetwork(bool hardReset = false);
+	void hardReset();
+	bool isConnected();
+	uint16_t getPairedDeviceID();
+	void setPairedDeviceID(uint16_t id);
+	void closeChannel();
+	void openChannel();
   
 private:
 	// ------ start of singleton pattern specific section ------
@@ -105,12 +108,6 @@ private:
 	ANTHRMSensor(ANTHRMSensor const&);              // do not implement
 	void operator=(ANTHRMSensor const&);            // do not implement
 	// ------ end of singleton pattern specific section --------
-	
-	// rx-tx queues and buffers
-	ANTSerialBuffer m_stRxBuffer[ANT_SERIAL_QUEUE_RX_SIZE];
-	ANTSerialBuffer m_stTxBuffer[ANT_SERIAL_QUEUE_TX_SIZE];
-	ANTSerialQueue m_stTheTxQueue;
-	ANTSerialQueue m_stTheRxQueue;
 
 	ANTUartRxState m_rxState;						// stage of ANT message reception
 	uint8_t m_ucCheckSum;
@@ -119,6 +116,11 @@ private:
 	uint8_t* m_pucTheBuffer;
 	LEUARTPort * m_port;                            // the UART IF for the ANT HRM
 	HeartRateMessage m_hrmMessage;
+	bool m_isConnected;
+	
+	// rx-tx queues and buffers
+	ANTSerialBuffer m_stRxBuffer[ANT_SERIAL_QUEUE_RX_SIZE];
+	ANTSerialQueue m_stTheRxQueue;
 	
 	// device channel, transmission type and number
 	uint16_t m_usDeviceNumber;
@@ -128,10 +130,6 @@ private:
 	// page data
 	StatePage m_eThePageState;
 	HRMPage0_Data m_page0Data;
-	HRMPage1_Data m_page1Data;
-	HRMPage2_Data m_page2Data;
-	HRMPage3_Data m_page3Data;
-	HRMPage4_Data m_page4Data;
 
 	// process one char received from UART
 	void processUARTRxChar(uint8_t c);
@@ -143,9 +141,10 @@ private:
 	// internal event management
 	bool channelEvent(uint8_t * pucEventBuffer_, ANTPLUS_EVENT_RETURN* pstEventStruct_);
 	bool handleResponseEvents(uint8_t * pucBuffer_);
-	bool handleDataMessages(uint8_t* pucBuffer_, ANTPLUS_EVENT_RETURN* pstEventStruct_);
+	void handleDataMessages(uint8_t* pucBuffer_, ANTPLUS_EVENT_RETURN* pstEventStruct_);
 	void decodeDefault(uint8_t* pucPayload_);
-	void processANTHRMRXEvents(ANTPLUS_EVENT_RETURN* pstEvent_);
+	void handleSearchTimeout();
+	//void processANTHRMRXEvents(ANTPLUS_EVENT_RETURN* pstEvent_);
 	
 	
 	// ANT base interface level messages
@@ -154,7 +153,7 @@ private:
 	bool ANT_AssignChannel(uint8_t ucChannelNumber_, uint8_t ucChannelType_, uint8_t ucNetworkNumber_);
 	bool ANT_SearchTimeout(uint8_t ucChannelNumber_, uint8_t ucTimeout_);
 	bool ANT_NetworkKey(uint8_t ucNetworkNumber_, const uint8_t* pucKey_);
-	bool ANT_RequestMessage(uint8_t ucANTChannel_, uint8_t ucRequestedMessage_);
+	bool ANT_RequestMessage(uint8_t ucANTChannel_, uint8_t ucRequestedMessage_, bool blocking = false);
 	bool ANT_ChannelId(uint8_t ucANTChannel_, uint16_t usDeviceNumber_, uint8_t ucDeviceType_, uint8_t ucTransmitType_);
 	bool ANT_ChannelPower(uint8_t ucANTChannel_,  uint8_t ucPower_);  
 	bool ANT_ChannelRFFreq(uint8_t ucANTChannel_, uint8_t ucFreq_);
@@ -169,16 +168,13 @@ private:
 	// wait for given message
 	bool waitForResponse(uint8_t channel, uint8_t responseID, uint8_t messageID);
 	
-	// RX-TX buffer queue management
+	// RX buffer queue management
 	uint8_t * getRxBuffer();
 	void putRxBuffer();
-	uint8_t * getTxBuffer();
-	void putTxBuffer();
 	uint8_t * readRxBuffer();
 	void releaseRxBuffer();
 	uint8_t * readRxTop();
 	void releaseRxTop();
-	void flushTx();
 	void flushRx();
 	
 	// functions to access UART layer

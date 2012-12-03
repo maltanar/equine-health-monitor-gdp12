@@ -676,7 +676,7 @@
         </option>
         <option>
           <name>IlinkMapFile</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IlinkLogFile</name>
@@ -704,7 +704,7 @@
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$TOOLKIT_DIR$\config\linker\EnergyMicro\EFM32TG840F32.icf</state>
+          <state>$PROJ_DIR$\ant-hrm.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -1867,6 +1867,9 @@
     <group>
       <name>ANT</name>
       <file>
+        <name>$PROJ_DIR$\..\..\sensor\ANT\antdefines.h</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\..\sensor\ANT\antmessage.h</name>
       </file>
       <file>
@@ -1900,6 +1903,9 @@
         <name>$PROJ_DIR$\..\..\efm32-common\usartport.h</name>
       </file>
     </group>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\alarmmanager.cpp</name>
+    </file>
     <file>
       <name>$PROJ_DIR$\..\..\sensor\anthrmsensor.cpp</name>
     </file>
@@ -1944,9 +1950,6 @@
     </group>
     <group>
       <name>Drivers</name>
-      <file>
-        <name>$PROJ_DIR$\..\common\drivers\rtc.c</name>
-      </file>
     </group>
     <group>
       <name>emlib</name>

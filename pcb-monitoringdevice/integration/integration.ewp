@@ -87,7 +87,7 @@
         </option>
         <option>
           <name>OGLastSavedByProductVersion</name>
-          <state>6.40.5.54273</state>
+          <state>6.40.2.53991</state>
         </option>
         <option>
           <name>GeneralEnableMisra</name>
@@ -302,6 +302,7 @@
           <state>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\port\energymicro\tg</state>
           <state>$PROJ_DIR$\..\..\xbee_if\</state>
           <state>$PROJ_DIR$\..\..\ehm-common\</state>
+          <state>$PROJ_DIR$\..\..\fatfs\</state>
           <state>$PROJ_DIR$\..\..\efm32-common\</state>
           <state>$PROJ_DIR$\..\..\sensor</state>
           <state>$PROJ_DIR$</state>
@@ -968,22 +969,34 @@
       <name>$PROJ_DIR$\..\..\efm32-common\i2cmanager.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\leuartport.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\leuartport.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\efm32-common\rtc.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\efm32-common\rtc.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\efm32-common\uartmanager.cpp</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\efm32-common\uartmanager.h</name>
-    </file>
-    <file>
       <name>$PROJ_DIR$\..\..\efm32-common\uartport.cpp</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\efm32-common\uartport.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\usartmanager.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\usartmanager.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\usartport.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\usartport.h</name>
     </file>
   </group>
   <group>
@@ -1020,6 +1033,33 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_usart.c</name>
+    </file>
+  </group>
+  <group>
+    <name>fatfs</name>
+    <file>
+      <name>$PROJ_DIR$\..\..\fatfs\diskio.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\fatfs\diskio.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\fatfs\ff.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\fatfs\ff.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\fatfs\ffconf.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\fatfs\integer.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\fatfs\microsd.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\fatfs\microsd.h</name>
     </file>
   </group>
   <group>

@@ -46,7 +46,12 @@ public:
 	fifoModeTrigger	= 0x90			// discard old data based on interrupt
   };
 public:
-  AccelerationSensor(SensorPeriod period);
+  // singleton instance accessor
+  static AccelerationSensor* getInstance()
+  {
+    static AccelerationSensor instance;
+    return &instance;
+  }
   
   // virtual functions which can be overridden if the sensor supports
   // the functionality
@@ -66,6 +71,11 @@ public:
   void discardOldSamples();
   
 protected:
+	// ------ start of singleton pattern specific section ------
+	AccelerationSensor();  
+	AccelerationSensor(AccelerationSensor const&);              // do not implement
+	void operator=(AccelerationSensor const&);            // do not implement
+	// ------ end of singleton pattern specific section --------
   AccelerometerMessage m_accSampleBuffer[ACCL_MAX_SAMPLES];
   
   // internal helper functions to read-write ADXL350 registers

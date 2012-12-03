@@ -34,12 +34,17 @@
 // this is set by the value of the ADR* pins
 // which are always 0 for the breakout board
 #define TMP006_I2C_ADDR     0x80
+#define TMP006_DEFAULT_PERIOD	1000
 
-TemperatureSensor::TemperatureSensor(SensorPeriod period)
- : Sensor(typeTemperature, sizeof(TemperatureMessage), period)
+TemperatureSensor::TemperatureSensor()
+ : Sensor(typeTemperature, sizeof(TMP006MSG), TMP006_DEFAULT_PERIOD)
 {
 	// configure for outputting single reading
+#ifndef TMP006_RAW_READING
 	m_temperatureMessage.Tobj = 0;
+#else
+        m_temperatureMessage.Tdie = m_temperatureMessage.Vobj = 0;
+#endif
 	m_sensorMessage.sensorMsgArray = (uint8_t *) &m_temperatureMessage;
 	m_rate = 0;
 
@@ -58,7 +63,7 @@ TemperatureSensor::TemperatureSensor(SensorPeriod period)
     module_debug_temp("TMP006 manufacturer/device id OK: %x / %x", mid, did);
 
   // set conversion rate
-  setPeriod(period);
+  setPeriod(TMP006_DEFAULT_PERIOD);
 
 }
 
@@ -126,6 +131,7 @@ void TemperatureSensor::writeRegister(unsigned char reg, unsigned int val)
     module_debug_temp("failed to write register %x", reg);
 }
 
+#ifndef TMP006_RAW_READING
 double TemperatureSensor::calculateTemp(double * tDie, double * vObj)
 {
   // Calculate Tobj, based on data/formula from TI
@@ -148,6 +154,7 @@ double TemperatureSensor::calculateTemp(double * tDie, double * vObj)
 
   return Tobj;
 }
+#endif
 
 bool TemperatureSensor::isMeasurementReady()
 {
@@ -160,7 +167,6 @@ bool TemperatureSensor::isMeasurementReady()
 
 void TemperatureSensor::sampleSensorData()
 {
-  double vObjcorr = 0, tDieKelvin = 0;
   int vObj = 0, tDie = 0;
 
   // do not modify previous sample is new data is not ready
@@ -174,18 +180,28 @@ void TemperatureSensor::sampleSensorData()
   // Read the ambient temperature
   tDie = readRegister(TMP006_P_TABT);
 
+#ifndef TMP006_RAW_READING
+  double vObjcorr = 0, tDieKelvin = 0;
   // Convert latest tDie measurement to Kelvin
   tDieKelvin = (((double)(tDie >> 2)) * .03125) + 273.15;
   vObjcorr = ((double)(vObj)) * .00000015625;
 
   // call helper function to make the final Tobj calculation
-  
   m_temperatureMessage.Tobj = calculateTemp(&tDieKelvin, &vObjcorr);
+#else
+  // raw data mode selected, no further processing
+  m_temperatureMessage.Tdie = tDie;
+  m_temperatureMessage.Vobj = vObj;
+#endif  
 }
 
 double TemperatureSensor::getTemperatureReading()
 {
+#ifndef TMP006_RAW_READING
   return m_temperatureMessage.Tobj;
+#else
+  return m_temperatureMessage.Vobj;
+#endif  
 }
 
 char TemperatureSensor::setSleepState(bool sleepState)

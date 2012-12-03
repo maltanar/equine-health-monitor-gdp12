@@ -11,7 +11,6 @@
 #include "gbee.h"
 #include "gbee-util.h"
 #include "xbee_if.h"
-#include "uartmanager.h"
 #include "rtc.h"
 #include "alarmmanager.h"
 
@@ -58,13 +57,13 @@ int main(void)
 	alarmManager = AlarmManager::getInstance();
 	
 	// create the sensor objects and alarms
-	TemperatureSensor * tmp = new TemperatureSensor(1000);
+	TemperatureSensor * tmp = TemperatureSensor::getInstance();
 	printf("TS device id %x manid %x \n", tmp->getDeviceID(), tmp->getManufacturerID());
 	sensors[SENSOR_TEMP_INDEX] = tmp;
 	acquireNewData[SENSOR_TEMP_INDEX] = false;
 	sensorAlarmId[SENSOR_TEMP_INDEX] = alarmManager->createAlarm(SENSOR_TEMP_READ_PERIOD, false, &dataReadHandler);
 	
-	sensors[SENSOR_ACCL_INDEX] = new AccelerationSensor(100);
+	sensors[SENSOR_ACCL_INDEX] = AccelerationSensor::getInstance();
 	acquireNewData[SENSOR_ACCL_INDEX] = false;
 	sensorAlarmId[SENSOR_ACCL_INDEX] = alarmManager->createAlarm(SENSOR_ACCL_READ_PERIOD, false, &dataReadHandler);
 	

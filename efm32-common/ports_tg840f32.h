@@ -145,4 +145,18 @@ typedef enum {
 // End Section: UART and LEUART port config -------------------------------
 // -------------------------------------------------------------------------
 
+// -------------------------------------------------------------------------
+// Section: USART interrupt routing control --------------------------------
+// -------------------------------------------------------------------------
+
+#define	ROUTE_ISR_LEUART0
+#define	NO_ROUTE_ISR_LEUART1
+#define NO_ROUTE_ISR_USART0_RX
+#define ROUTE_ISR_USART1_RX
+#define NO_ROUTE_ISR_USART2_RX
+
+// -------------------------------------------------------------------------
+// End Section: USART interrupt routing control ----------------------------
+// -------------------------------------------------------------------------
+
 #endif	// __PORTS_TG840F32_H

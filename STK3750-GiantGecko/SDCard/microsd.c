@@ -49,7 +49,7 @@
 
 /* IO configuration (USART 2, Location #0) */
 #define disableMOSI()  GPIO_PinModeSet(gpioPortC, 2, gpioModeDisabled, 0);  /* MOSI */
-#define disableMISO() GPIO_PinModeSet(gpioPortC, 3, gpioModeDisabled, 1);  /* MISO */
+#define disableMISO() GPIO_PinModeSet(gpioPortC, 3, gpioModeDisabled, 0);  /* MISO */
 #define disableCS() GPIO_PinModeSet(gpioPortC, 5, gpioModeDisabled, 0);  /* CS */
 #define disableClock() GPIO_PinModeSet(gpioPortC, 4, gpioModeDisabled, 0);  /* Clock */
 

@@ -1928,12 +1928,6 @@
       <name>$PROJ_DIR$\..\..\efm32-common\leuartport.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\efm32-common\rtc.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\efm32-common\rtc.h</name>
-    </file>
-    <file>
       <name>$PROJ_DIR$\..\..\efm32-common\uartport.cpp</name>
     </file>
     <file>

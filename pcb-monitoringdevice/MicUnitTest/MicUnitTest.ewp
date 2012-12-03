@@ -87,7 +87,7 @@
         </option>
         <option>
           <name>OGLastSavedByProductVersion</name>
-          <state>6.40.5.54273</state>
+          <state>6.40.2.53991</state>
         </option>
         <option>
           <name>GeneralEnableMisra</name>
@@ -973,18 +973,6 @@
     <file>
       <name>$PROJ_DIR$\..\..\efm32-common\rtc.h</name>
     </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\efm32-common\uartmanager.cpp</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\efm32-common\uartmanager.h</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\efm32-common\uartport.cpp</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\efm32-common\uartport.h</name>
-    </file>
   </group>
   <group>
     <name>emlib</name>
@@ -1023,81 +1011,12 @@
     </file>
   </group>
   <group>
-    <name>libgbee</name>
-    <group>
-      <name>port</name>
-      <file>
-        <name>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\port\energymicro\tg\gbee-heap.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\port\energymicro\tg\gbee-heap.h</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\port\energymicro\tg\gbee-port.cpp</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\port\energymicro\tg\gbee-port.h</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\port\energymicro\tg\gbee-tick.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\port\energymicro\tg\gbee-tick.h</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\port\energymicro\tg\gbee-usart.cpp</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\port\energymicro\tg\gbee-usart.h</name>
-      </file>
-    </group>
-    <file>
-      <name>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\gbee-port-interface.h</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\gbee-util.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\gbee-util.h</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\gbee.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\libgbee\0.3.1\libgbee\src\gbee.h</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\xbee_if\xbee_if.cpp</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\xbee_if\xbee_if.h</name>
-    </file>
-  </group>
-  <group>
     <name>sensor</name>
-    <file>
-      <name>$PROJ_DIR$\..\..\sensor\accelerationsensor.cpp</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\sensor\accelerationsensor.h</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\sensor\gpssensor.cpp</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\sensor\gpssensor.h</name>
-    </file>
     <file>
       <name>$PROJ_DIR$\..\..\sensor\sensor.cpp</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\sensor\sensor.h</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\sensor\temperaturesensor.cpp</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\sensor\temperaturesensor.h</name>
     </file>
   </group>
   <group>
@@ -1106,7 +1025,7 @@
       <name>$PROJ_DIR$\debug_output_control.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\integration.cpp</name>
+      <name>$PROJ_DIR$\MicUnitTest.cpp</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\efm32-common\port_config.h</name>
