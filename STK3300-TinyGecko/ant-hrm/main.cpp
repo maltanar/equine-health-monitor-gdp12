@@ -37,16 +37,25 @@ int main()
 	//USARTManager::getInstance()->getPort(USARTManagerPortLEUART0)->setRxHook(&rxHook);
 
 	bool OK = false; 
+	
+	SensorMessage * msg;
+	HeartRateMessage * hrm_msg;
+	uint16_t size;
+		
 
 	while(1)
 	{
-		if(OK)
-			hrm->transaction();
-		else {
-		  OK = hrm->initializeNetwork();			
-		}
+		alm->lowPowerDelay(900, sleepModeEM2);
 		
-		alm->lowPowerDelay(500, sleepModeEM2);
+		if(OK) {
+			hrm->sampleSensorData();
+			msg = (SensorMessage *) hrm->readSensorData(&size);
+			hrm_msg = (HeartRateMessage *) msg->sensorMsgArray;
+			printf("measured heart rate: %d bpm \n", hrm_msg->bpm);
+		}
+		else {
+		  OK = hrm->initializeNetwork(true);			
+		}
 			
 	}
 }

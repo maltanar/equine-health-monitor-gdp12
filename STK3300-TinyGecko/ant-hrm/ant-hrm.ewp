@@ -1867,6 +1867,9 @@
     <group>
       <name>ANT</name>
       <file>
+        <name>$PROJ_DIR$\..\..\sensor\ANT\antdefines.h</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\..\sensor\ANT\antmessage.h</name>
       </file>
       <file>
