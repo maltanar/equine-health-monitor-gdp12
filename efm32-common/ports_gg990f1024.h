@@ -143,7 +143,7 @@ static const USARTPortConfig USARTManagerPortConfigs[USART_MANAGER_PORT_COUNT] =
 	.csPin = 4,
 	.sclkPort = gpioPortE,
 	.sclkPin = 5,
-	.async = true,
+	.async = false,
     .lowEnergy = false
   },
   // port configuration for USART1, location 1

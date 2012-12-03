@@ -197,7 +197,7 @@ typedef enum {
 #define	ROUTE_ISR_LEUART1
 #define ROUTE_ISR_USART0_RX
 #define ROUTE_ISR_USART1_RX
-#define ROUTE_ISR_USART2_RX
+#define nROUTE_ISR_USART2_RX
 
 // -------------------------------------------------------------------------
 // End Section: USART interrupt routing control ----------------------------
