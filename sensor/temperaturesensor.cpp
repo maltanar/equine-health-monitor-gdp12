@@ -37,14 +37,11 @@
 #define TMP006_DEFAULT_PERIOD	1000
 
 TemperatureSensor::TemperatureSensor()
- : Sensor(typeTemperature, sizeof(TMP006MSG), TMP006_DEFAULT_PERIOD)
+ : Sensor(typeRawTemperature, sizeof(RawTemperatureMessage), TMP006_DEFAULT_PERIOD)
 {
 	// configure for outputting single reading
-#ifndef TMP006_RAW_READING
-	m_temperatureMessage.Tobj = 0;
-#else
-        m_temperatureMessage.Tdie = m_temperatureMessage.Vobj = 0;
-#endif
+	m_temperatureMessage.Tenv = m_temperatureMessage.Vobj = 0;
+
 	m_sensorMessage.sensorMsgArray = (uint8_t *) &m_temperatureMessage;
 	m_rate = 0;
 
@@ -149,7 +146,7 @@ double TemperatureSensor::calculateTemp(double * tDie, double * vObj)
   double Tobj = pow(pow(*tDie,4) + (fObj/S), (double).25) - 273.15;
 
   module_debug_temp("Vobj: %f", *vObj);
-  module_debug_temp("Tdie: %f", *tDie);
+  module_debug_temp("Tenv: %f", *tDie);
   module_debug_temp("Temp: %f", Tobj);
 
   return Tobj;
@@ -180,28 +177,16 @@ void TemperatureSensor::sampleSensorData()
   // Read the ambient temperature
   tDie = readRegister(TMP006_P_TABT);
 
-#ifndef TMP006_RAW_READING
-  double vObjcorr = 0, tDieKelvin = 0;
-  // Convert latest tDie measurement to Kelvin
-  tDieKelvin = (((double)(tDie >> 2)) * .03125) + 273.15;
-  vObjcorr = ((double)(vObj)) * .00000015625;
-
-  // call helper function to make the final Tobj calculation
-  m_temperatureMessage.Tobj = calculateTemp(&tDieKelvin, &vObjcorr);
-#else
   // raw data mode selected, no further processing
-  m_temperatureMessage.Tdie = tDie;
+  m_temperatureMessage.Tenv = tDie;
   m_temperatureMessage.Vobj = vObj;
-#endif  
+
 }
 
 double TemperatureSensor::getTemperatureReading()
 {
-#ifndef TMP006_RAW_READING
-  return m_temperatureMessage.Tobj;
-#else
   return m_temperatureMessage.Vobj;
-#endif  
+
 }
 
 char TemperatureSensor::setSleepState(bool sleepState)

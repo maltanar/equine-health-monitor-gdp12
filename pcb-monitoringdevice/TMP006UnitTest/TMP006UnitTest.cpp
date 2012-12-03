@@ -30,7 +30,7 @@ int main(void)
 	
 	uint16_t size;
 	SensorMessage *msg;
-	TemperatureMessage *tempMsg;
+	RawTemperatureMessage *tempMsg;
 	
 	while (1)
 	{
@@ -42,8 +42,11 @@ int main(void)
               
                       msg = (SensorMessage *) temp_Sensor->readSensorData(&size);
 
-                      tempMsg = (TemperatureMessage *) msg->sensorMsgArray;
-                       printf("TMP: %f \n", tempMsg->Tobj);
+                      tempMsg = (RawTemperatureMessage *) msg->sensorMsgArray;
+					  double a = (tempMsg->Tenv);
+					  double b = (tempMsg->Vobj);
+					  
+                       printf("TMP: %f \n", tmp->calculateTemp(&a, &b));
 					
 	}
 

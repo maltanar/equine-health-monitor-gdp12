@@ -12,22 +12,6 @@
 #define INVALID_TEMPERATURE     -274
 
 
-// this driver has two modes: raw reading and regular mode
-// - raw reading mode outputs the measured Vobj and Tdie values
-// - regular mode calculates Tobj and outputs this
-// since Tobj calculation involves a lot of double precision floating
-// point calculations, it can consume a lot of cycles to calculate
-// and may be better done on the base station
-#define TMP006_RAW_READING
-
-#ifndef TMP006_RAW_READING
-#define TMP006MSG	TemperatureMessage
-#define TMP006TYP	typeTemperature
-#else
-#define TMP006MSG	RawTemperatureMessage
-#define TMP006TYP	typeRawTemperature
-#endif
-
 // TemperatureSensor class
 // Sensor implementation for the TMP006 sensor
 class TemperatureSensor : public Sensor {
@@ -54,6 +38,8 @@ public:
   // read the manufacturer / device ID registers and return the read value
   uint16_t getManufacturerID(); // should return 0x5449
   uint16_t getDeviceID();       // should return 0x0067
+  // calculate temperature given the current die temp and Vobj measurements
+  double calculateTemp(double * tDie, double * vObj);
   
 protected:
   // ------ start of singleton pattern specific section ------
@@ -62,14 +48,13 @@ protected:
   void operator=(TemperatureSensor const&);        // do not implement
   // ------ end of singleton pattern specific section --------
   
-  TMP006MSG m_temperatureMessage;	// raw or calculated temperature reading 
+  RawTemperatureMessage m_temperatureMessage;	// raw or calculated temperature reading 
   int16_t m_rate;             // conversion rate flags for internal config
   
   // internal helper functions to read-write TMP006 registers
   int16_t readRegister(unsigned char reg);
   void writeRegister(unsigned char reg, unsigned int val);
-  // calculate temperature given the current die temp and Vobj measurements
-  double calculateTemp(double * tDie, double * vObj);
+  
   // return the measurement ready bit from the configuration register
   bool isMeasurementReady();
 
