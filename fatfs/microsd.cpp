@@ -47,7 +47,7 @@
 //#define CS_HIGH()  GPIO->P[4].DOUTSET = 0x10;  /**< Chip Selection in SPI mode. Enable when card is deselected. */
 
 #define CS_LOW()   GPIO_PinOutClear(MICROSD_USARTCFG.csPort, MICROSD_USARTCFG.csPin)
-#define CS_HIGH()  GPIO_PinOutClear(MICROSD_USARTCFG.csPort, MICROSD_USARTCFG.csPin)
+#define CS_HIGH()  GPIO_PinOutSet(MICROSD_USARTCFG.csPort, MICROSD_USARTCFG.csPin)
 
 extern DSTATUS Stat;    /**< Disk status */
 extern UINT    Timer1;  /**< 1000Hz decrement timer */
