@@ -22,6 +22,8 @@ public:
     static TemperatureSensor instance;
     return &instance;
   }
+  
+  static double calculateTemp(double tDieUF, double vObjUF);
 
   // virtual functions which can be overridden if the sensor supports
   // the functionality
@@ -38,8 +40,6 @@ public:
   // read the manufacturer / device ID registers and return the read value
   uint16_t getManufacturerID(); // should return 0x5449
   uint16_t getDeviceID();       // should return 0x0067
-  // calculate temperature given the current die temp and Vobj measurements
-  double calculateTemp(double * tDie, double * vObj);
   
 protected:
   // ------ start of singleton pattern specific section ------
