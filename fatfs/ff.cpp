@@ -2384,7 +2384,7 @@ FRESULT f_read (
 	FRESULT res;
 	DWORD clst, sect, remain;
 	UINT rcnt, cc;
-	BYTE csect, *rbuff = buff;
+	BYTE csect, *rbuff = (BYTE *) buff;
 
 
 	*br = 0;	/* Initialize byte counter */
@@ -2485,7 +2485,7 @@ FRESULT f_write (
 	FRESULT res;
 	DWORD clst, sect;
 	UINT wcnt, cc;
-	const BYTE *wbuff = buff;
+	const BYTE *wbuff = (BYTE *) buff;
 	BYTE csect;
 
 
