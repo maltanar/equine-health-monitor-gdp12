@@ -10,7 +10,7 @@
 MessageStorage::MessageStorage()
 {
 	m_storageRoot = NULL;
-	m_fileOpen = false;
+	m_storageOK = m_fileOpen = false;
 	m_queueCount = 0;
 }
 
@@ -25,22 +25,307 @@ void MessageStorage::initialize(char * storageRoot)
 	strcpy(storageRoot, m_storageRoot);
 	
 	// mount the actual storage device we use for storing data
-	mountStorage();
+	module_debug_strg("mounting storage...");
+	if(mountStorage())
+		module_debug_strg("storage now available!");
+	else
+		module_debug_strg("storage not available!");
 	
-	FATFS_speedTest(256);
-	FATFS_speedTest(512);
-	FATFS_speedTest(1024);
-	
-	// count list of existing files in storage root
+	// count list of existing files in storage root,
+	module_debug_strg("counting files...");
 	m_queueCount = getDirFileCount("");
 }
 
-void MessageStorage::addToStorageQueue(MessagePacket * in_msg)
-{
+
+/* Function will de-serialize data into a MessagePacket structure.
+ * data[in]: const Pointer to memory to de-serialize
+ * msg[out]: Pointer to preallocated MessagePacket struct of sufficient size 
+ * 
+ * Hint: use size returned by XBee_Message->get_payload(&size) and add 
+ * sizeof(MessagePacket) + sizeof(void*) to get the exact required size*/
+void MessageStorage::deserialize(const uint8_t *data, MessagePacket *msg) {
+	/* !sizeof(MessagePacket) returns 12, but we do not serialize the pointer
+	 * member and can pack the mainType into the first byte of the data,
+	 * hence the serialized size of this struct is 5 Byte instead of sizeof(MessagePacket) */
+	#define  MESSAGE_PACKET_SIZE 5
+	
+	/* MessageType is always the first byte of the serialized data */
+	msg->mainType = (MessageType)data[0];
+	msg->relTimestampS = *(uint32_t *)&data[1];
+	msg->payload = (uint8_t *)&msg->payload + sizeof(msg->payload);
+	
+	/* Copy the message group specific fields into the MessagePacket */
+	SensorMessage *sensor_msg = NULL; 
+	ConfigMessage *config_msg = NULL;
+	DebugMessage *debug_msg = NULL;
+
+	switch (msg->mainType) {
+	case msgSensorData:
+		sensor_msg = (SensorMessage *)msg->payload;
+		memcpy(msg->payload, &data[MESSAGE_PACKET_SIZE], sizeof(SensorMessage));
+		sensor_msg->sensorMsgArray = (uint8_t *)&sensor_msg->sensorMsgArray + sizeof(void *);
+		break;
+	case msgSensorConfig:
+		config_msg = (ConfigMessage *)msg->payload;
+		memcpy(msg->payload, &data[MESSAGE_PACKET_SIZE], sizeof(ConfigMessage));
+		config_msg->configMsgArray = (uint8_t *)&config_msg->configMsgArray + sizeof(void *);
+		break;
+	case msgDebug:
+		debug_msg = (DebugMessage *)msg->payload;
+		memcpy(msg->payload, &data[MESSAGE_PACKET_SIZE], sizeof(DebugMessage));
+		debug_msg->debugData = (uint8_t *)&debug_msg->debugData + sizeof(void *);
+		break;
+	}
+
+	/* copy the message type specific payload */
+	if (msg->mainType == msgSensorData) {
+		/* calculate the address offset for the sensorMsgArray in the
+		 * serialized data. The offset can be found by adding the size of
+		 * the structs that come before the sensorMsgArray and deducting
+		 * the size of the pointer members of the struct, because they 
+		 * are not serialized. In this case there is one pointer member that
+		 * needs to be deducted (*sensorMsgArray in SensorMessage) */
+		int sensorMsgArrayOffset = MESSAGE_PACKET_SIZE + sizeof(SensorMessage) - sizeof(void *);
+		
+		/* copy the sensorMsgArray into the serialized data structure */
+		switch (sensor_msg->sensorType) {
+		case typeHeartRate:
+			memcpy(sensor_msg->sensorMsgArray, &data[sensorMsgArrayOffset], 
+				sensor_msg->arrayLength*sizeof(HeartRateMessage));
+			break;
+		case typeRawTemperature:
+			memcpy(sensor_msg->sensorMsgArray, &data[sensorMsgArrayOffset], 
+				sensor_msg->arrayLength*sizeof(RawTemperatureMessage));
+			break;
+		case typeAccelerometer:
+			memcpy(sensor_msg->sensorMsgArray, &data[sensorMsgArrayOffset], 
+				sensor_msg->arrayLength*sizeof(AccelerometerMessage));
+			break;
+		case typeGPS:
+			memcpy(sensor_msg->sensorMsgArray, &data[sensorMsgArrayOffset], 
+				sensor_msg->arrayLength*sizeof(GPSMessage));
+		break;
+		default:
+			printf("Cannot de-serialize messages with sensorType %u\n", sensor_msg->sensorType);
+		}
+	} else if (msg->mainType == msgSensorConfig) {
+		/* calculate the address offset for the configMsgArray in the
+		 * serialized data. See above for explanation */
+		int configMsgArrayOffset = MESSAGE_PACKET_SIZE + sizeof(ConfigMessage) - sizeof(void *);
+		
+		/* copy the configMsgArray into the serialized data structure */
+		memcpy(config_msg->configMsgArray, &data[configMsgArrayOffset], 
+				config_msg->arrayLength*sizeof(ConfigSensor));
+	} else if (msg->mainType == msgDebug) {
+		/* calculate the address offset for the debugData in the
+		 * serialized data. See above for explanation */
+		int debugDataOffset = MESSAGE_PACKET_SIZE + sizeof(DebugMessage) - sizeof(void *);
+		/* copy the debug string into the de-serialized data structure,
+		 * for now the length of the copy operation is based the first
+		 * occurrence of a terminating null byte */
+		strcpy((char *)debug_msg->debugData, (const char *)&data[debugDataOffset]);
+		}
 }
 
-void MessageStorage::getFromStorageQueue(MessagePacket * out_msg, bool removeFromQueue)
+/* Function will serialize data in the MessagePacket structure into continuous
+ * memory area, that has to be preallocated and passed to the function 
+ * msg[in]: Pointer to MessagePacket structure 
+ * data[out]: Pointer to preallocated memory
+ * returns: length of *data */ 
+uint16_t MessageStorage::serialize(const MessagePacket *msg, uint8_t *data) {
+	uint16_t size = 0;
+	
+	/* copy the header information of the MessagePacket structure */
+	data[size++] = (uint8_t)msg->mainType;
+	*(uint32_t *)&data[size] = msg->relTimestampS;
+	size += sizeof(msg->relTimestampS);
+ 
+	/* copy the header information of the main message groups
+	 * and set the sensorMsgArray pointer to the next element in the mem-space */
+	switch (msg->mainType) {
+	case msgSensorData:
+		memcpy(&data[size], msg->payload, sizeof(SensorMessage) - sizeof(void *)); 
+		size += sizeof(SensorMessage) - sizeof(void *);
+		break;
+	case msgSensorConfig:
+		memcpy(&data[size], msg->payload, sizeof(ConfigMessage) - sizeof(void *)); 
+		size += sizeof(ConfigMessage) - sizeof(void *);
+		break;
+	case msgDebug:
+		memcpy(&data[size], msg->payload, sizeof(DebugMessage) - sizeof(void *));
+		size += sizeof(DebugMessage) - sizeof(void *);
+		break;
+	}
+	
+	/* copy the message type specific payload */
+	if (msg->mainType == msgSensorData) {
+		const SensorMessage *sensor_msg = (const SensorMessage *)msg->payload;
+		
+		printf("SensorMsg: arrayLength %u\n", sensor_msg->arrayLength);
+		/* copy the sensorMsgArray into the serialized data structure */
+		switch (sensor_msg->sensorType) {
+		case typeHeartRate:
+			memcpy(&data[size], sensor_msg->sensorMsgArray, 
+				sensor_msg->arrayLength*sizeof(HeartRateMessage));
+			size += sensor_msg->arrayLength*sizeof(HeartRateMessage);
+			break;
+		case typeRawTemperature:
+			memcpy(&data[size], sensor_msg->sensorMsgArray, 
+				sensor_msg->arrayLength*sizeof(RawTemperatureMessage));
+			size += sensor_msg->arrayLength*sizeof(RawTemperatureMessage);
+			break;
+		case typeAccelerometer:
+			memcpy(&data[size], sensor_msg->sensorMsgArray, 
+				sensor_msg->arrayLength*sizeof(AccelerometerMessage));
+			size += sensor_msg->arrayLength*sizeof(AccelerometerMessage);
+			break;
+		case typeGPS:
+			memcpy(&data[size], sensor_msg->sensorMsgArray, 
+				sensor_msg->arrayLength*sizeof(GPSMessage));
+			size += sensor_msg->arrayLength*sizeof(GPSMessage);
+		break;
+		default:
+			printf("Cannot serialize messages with sensorType %u\n", sensor_msg->sensorType);
+		}
+	} else if (msg->mainType == msgSensorConfig) {
+		const ConfigMessage *config_msg = (const ConfigMessage *)msg->payload;
+		
+		/* copy the configMsgArray into the serialized data structure */
+		memcpy(&data[size], config_msg->configMsgArray, 
+				config_msg->arrayLength*sizeof(ConfigSensor));
+		size += config_msg->arrayLength*sizeof(ConfigSensor);
+	} else if (msg->mainType == msgDebug) {
+		DebugMessage *debug_msg = (DebugMessage *)msg->payload;
+		
+		/* copy the debug string into the de-serialized data structure,
+		 * for now the length of the copy operation is based the first
+		 * occurrence of a terminating null byte */
+		strcpy((char *)&data[size], (const char *)debug_msg->debugData);
+		size += strlen((const char *)debug_msg->debugData);
+	}
+	return size;
+}
+
+
+void MessageStorage::addToStorageQueue(MessagePacket * in_msg, unsigned short size)
 {
+	// serialize and enqueue message
+	char * serializedMessage = new char[size];
+	serialize(in_msg, (uint8_t *) serializedMessage);
+	enqueue(serializedMessage, NULL, size);
+}
+
+void MessageStorage::getFromStorageQueue(MessagePacket * out_msg)
+{
+	// dequeue and deserialize message
+	MessageEntry * headEntry = dequeue();
+	
+	if(!headEntry)
+	{
+		module_debug_strg("nothing to get from queue!");
+		return;
+	}
+	
+	char * entryContent = (char *)headEntry->memPtr;	// NULL if file (handled below)
+	
+	// process serialized data depending on storage mode
+	if(headEntry->fileName)
+	{
+		// open file and read contained data
+		entryContent = new char[headEntry->size];
+		openFile(headEntry->fileName, false, true);
+		readFromFile(entryContent, headEntry->size);
+		closeFile();
+	}
+	
+	// make room for the deserialized data
+	out_msg = (MessagePacket *) new char[headEntry->size];
+	
+	deserialize((uint8_t const *)entryContent, out_msg);
+	
+	// free the resources used by the entry
+	freeMessageEntry(headEntry);
+}
+
+void MessageStorage::enqueue(void * memPtr, char * fileName, unsigned short size)
+{
+	// either fileName or memPtr is allowed - an entry cannot have both
+	if((memPtr != NULL && fileName != NULL) || size == 0)
+	{
+		module_debug_strg("invalid enqueue!");
+		return;
+	}
+	
+	// allocate space from heap for the new entry
+	MessageEntry * newEntry = new MessageEntry;
+	
+	newEntry->size = size;
+	newEntry->fileName = fileName;
+	newEntry->memPtr = memPtr;
+	newEntry->nextEntry = NULL;	// always at the end of the queue
+	
+	if(m_queueHead == NULL || m_queueTail == NULL)
+	{
+		// empty queue, this will be the first member
+		m_queueHead = m_queueTail = newEntry;
+	} else {
+		// enqueue at the tail of the queue
+		m_queueTail->nextEntry = newEntry;
+		m_queueTail = newEntry;
+	}
+	
+	// now we have one more entry in the queue
+	m_queueCount++;
+}
+
+MessageStorage::MessageEntry * MessageStorage::dequeue()
+{
+	if(m_queueHead == NULL || m_queueTail == NULL)
+	{
+		module_debug_strg("nothing to dequeue!");
+		return NULL;
+	}
+	
+	// dequeue head of the queue
+	MessageEntry * ret = m_queueHead;
+	
+	// advance head of queue to next element
+	m_queueHead = ret->nextEntry;
+	
+	// detect empty queue
+	if(m_queueHead == NULL)
+		m_queueTail = NULL;
+	
+	return ret;
+}
+
+void MessageStorage::freeMessageEntry(MessageEntry * entry)
+{
+	// check entry validity
+	if((entry->memPtr == NULL && entry->fileName == NULL) ||
+	   (entry->memPtr != NULL && entry->fileName != NULL))
+	{
+		module_debug_strg("freeMessageEntry: invalid entry!");
+		return;
+	}
+	
+	// first free the filename / memory buffers for the entry
+	if(entry->memPtr != NULL)
+	{
+		delete [] entry->memPtr;
+		entry->memPtr = NULL;
+	} 
+	else if(entry->fileName != NULL)
+	{
+		// delete the file
+		deleteFile(entry->fileName);
+		// free the filename buffer
+		delete [] entry->fileName;
+		entry->fileName = NULL;
+	}
+	
+	// finally, deallocate the MessageEntry space itself
+	delete entry;
 }
 
 unsigned int MessageStorage::getStorageQueueCount()
@@ -51,6 +336,10 @@ unsigned int MessageStorage::getStorageQueueCount()
 unsigned int MessageStorage::readRTCStorage()
 {
 	unsigned int rtcVal = 0;
+	
+	if(!m_storageOK)
+		return 0;
+	
 	openFile("rtc", false, true);
 	readFromFile((char *) &rtcVal, sizeof(unsigned int));
 	closeFile();
@@ -60,6 +349,9 @@ unsigned int MessageStorage::readRTCStorage()
 
 void MessageStorage::writeRTCStorage(unsigned int rtcValue)
 {
+	if(!m_storageOK)
+		return;
+	
 	openFile("rtc", true, false);
 	seekToPos(0);
 	writeToFile((char *) &rtcValue, sizeof(unsigned int));
@@ -69,7 +361,7 @@ void MessageStorage::writeRTCStorage(unsigned int rtcValue)
 	
 // internal filesystem access layer functions --------------------------------
 #ifdef EHM_MONITORING_DEVICE
-void MessageStorage::openFile(char * fileName, bool writeAccess, bool readAccess)
+void MessageStorage::openFile(const char * fileName, bool writeAccess, bool readAccess)
 {
 	BYTE access = 0;
 	
@@ -151,6 +443,11 @@ void MessageStorage::readFromFile(char * buffer,  unsigned int count)
 		module_debug_strg("error while reading: %x read %d of %d", m_fr, br, count);	
 }
 
+void MessageStorage::deleteFile(const char * fileName)
+{
+	m_fr = f_unlink(fileName);
+}
+
 unsigned int MessageStorage::getDirFileCount(char *path)
 {
 	unsigned int count = 0;
@@ -167,11 +464,12 @@ unsigned int MessageStorage::getDirFileCount(char *path)
 		while(1)
 		{
 			m_fr = f_readdir(&dir, &fno);
-			if (m_fr != FR_OK || fno.fname[0] == 0)
+			if (m_fr != FR_OK)
 			{
 				module_debug_strg("f_readdir failure %d", m_fr);
 				break;
 			}
+			if(fno.fname[0] == 0) break;
 		  
 		  if (fno.fname[0] == '.') continue;	// skip hidden files
 		  
@@ -192,22 +490,26 @@ unsigned int MessageStorage::getDirFileCount(char *path)
 		module_debug_strg("f_opendir failure %d", m_fr);
 	}
 	
+	module_debug_strg("found %d files", count);
+	
 	return count;
 }
 
-void MessageStorage::mountStorage()
+bool MessageStorage::mountStorage()
 {
 	// only needed for the DVK
 	// Enable SPI access to MicroSD card
 #ifdef __DVK_H
 	DVK_peripheralAccess(DVK_MICROSD, true);
 #endif
-	FATFS_initializeFilesystem();
+	m_storageOK = FATFS_initializeFilesystem();
+	return m_storageOK;
 }
 
 void MessageStorage::unmountStorage()
 {
 	FATFS_deinitializeFilesystem();
+	m_storageOK = false;
 }
 #endif
 // end of internal filesystem access layer functions ------------------------
