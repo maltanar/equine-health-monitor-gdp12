@@ -9,10 +9,11 @@ extern "C" {
 #include "ff.h"
 
 DWORD get_fattime(void);
-uint64_t FATFS_speedTest(uint32_t kilobytesToWrite);
+uint64_t FATFS_speedTest(uint32_t kilobytesToWrite, bool keepTestFile = false);
 bool FATFS_isFilesystemAvailable();
 bool FATFS_testFilesystem();
 void FATFS_initializeFilesystem();
+void FATFS_deinitializeFilesystem();
 
 #ifdef __cplusplus
 }
