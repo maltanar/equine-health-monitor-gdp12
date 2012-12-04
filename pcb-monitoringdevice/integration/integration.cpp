@@ -45,7 +45,7 @@ void dataReadHandler(AlarmID id)
 		if(id == sensorAlarmId[i])
 		{
 			acquireNewData[i] = true;
-			printf("trigger read for sensor %d \n", i);
+			//printf("trigger read for sensor %d \n", i);
 			break;
 		}
 }
@@ -57,7 +57,7 @@ void deviceWakeupHandler(AlarmID id)
 		if(id == wakeupAlarmId[i])
 		{
 			wakeup[i] = true;
-			printf("trigger wakeup for sensor %d \n", i);
+			//printf("trigger wakeup for sensor %d \n", i);
 			break;
 		}
 }
@@ -102,9 +102,9 @@ int main(void)
 	// TODO add support for fixed offsets in alarm creation
 	alarmManager->setAlarmTimeout(sensorAlarmId[SENSOR_TEMP_INDEX], SENSOR_TEMP_READ_PERIOD + 1);
 	
-	/*sensors[SENSOR_ACCL_INDEX] = AccelerationSensor::getInstance();
+	sensors[SENSOR_ACCL_INDEX] = AccelerationSensor::getInstance();
 	acquireNewData[SENSOR_ACCL_INDEX] = false;
-	sensorAlarmId[SENSOR_ACCL_INDEX] = alarmManager->createAlarm(SENSOR_ACCL_READ_PERIOD, false, &dataReadHandler);*/
+	sensorAlarmId[SENSOR_ACCL_INDEX] = alarmManager->createAlarm(SENSOR_ACCL_READ_PERIOD, false, &dataReadHandler);
 	
 	/*sensors[SENSOR_GPS_INDEX]  = GPSSensor::getInstance();
 	acquireNewData[SENSOR_GPS_INDEX] = false;
@@ -133,7 +133,7 @@ int main(void)
 		if(dataSaveFlag)
 		{
 			dataSaveFlag = false;
-			FATFS_speedTest(1);
+			FATFS_speedTest(256);
 		}
 		
 		
