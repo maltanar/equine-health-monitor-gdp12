@@ -38,6 +38,12 @@ uint64_t FATFS_speedTest(uint32_t kilobytesToWrite, bool keepTestFile)
 	FIL logfile;
 	FRESULT fr;
 	
+	if(!m_fsAvailable)
+	{
+		module_debug_fatfs("fatfs not available!");
+		return 0;
+	}
+	
 	// remove possible existing test file
 	fr = f_unlink(filename);
 	
@@ -178,7 +184,7 @@ bool FATFS_testFilesystem()
 	return true;
 }
 
-void FATFS_initializeFilesystem()
+bool FATFS_initializeFilesystem()
 {
 	DSTATUS resCard;			/* SDcard status */
 	FRESULT	fr;					// return value from f_* calls
@@ -208,7 +214,7 @@ void FATFS_initializeFilesystem()
 	}
 
 	if(resCard != 0)
-		return;
+		return false;
 
         
     // mount the filesystem if successful
@@ -216,12 +222,14 @@ void FATFS_initializeFilesystem()
 	if (fr != FR_OK)
 	{
 		module_debug_fatfs("f_mount not successful, %x", fr);
-		return;
+		return false;
 	}
 	
 	// otherwise, we successfully mounted the filesystem
 	// run a simple test before marking it as available
 	m_fsAvailable = FATFS_testFilesystem();
+	
+	return m_fsAvailable;
 }
 
 void FATFS_deinitializeFilesystem()
