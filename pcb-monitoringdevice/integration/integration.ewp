@@ -975,12 +975,6 @@
       <name>$PROJ_DIR$\..\..\efm32-common\leuartport.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\efm32-common\rtc.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\efm32-common\rtc.h</name>
-    </file>
-    <file>
       <name>$PROJ_DIR$\..\..\efm32-common\uartport.cpp</name>
     </file>
     <file>
@@ -1038,13 +1032,19 @@
   <group>
     <name>fatfs</name>
     <file>
-      <name>$PROJ_DIR$\..\..\fatfs\diskio.c</name>
+      <name>$PROJ_DIR$\..\..\fatfs\diskio.cpp</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\fatfs\diskio.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\fatfs\ff.c</name>
+      <name>$PROJ_DIR$\..\..\fatfs\fatfs.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\fatfs\fatfs.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\fatfs\ff.cpp</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\fatfs\ff.h</name>
@@ -1056,7 +1056,7 @@
       <name>$PROJ_DIR$\..\..\fatfs\integer.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\fatfs\microsd.c</name>
+      <name>$PROJ_DIR$\..\..\fatfs\microsd.cpp</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\fatfs\microsd.h</name>

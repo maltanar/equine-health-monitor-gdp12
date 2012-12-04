@@ -29,7 +29,7 @@ bool FATFS_isFilesystemAvailable()
 	return m_fsAvailable;
 }
 
-uint64_t FATFS_speedTest(uint32_t kilobytesToWrite)
+uint64_t FATFS_speedTest(uint32_t kilobytesToWrite, bool keepTestFile)
 {
 	const char *filename = "stst.raw";
 	uint32_t data = 0xDEADBEEF;
@@ -43,8 +43,10 @@ uint64_t FATFS_speedTest(uint32_t kilobytesToWrite)
 	
 	// open the file in write + create always mode
 	fr = f_open(&logfile, filename, FA_WRITE | FA_CREATE_ALWAYS);
-	if(fr != FR_OK)
-		module_debug_fatfs("f_open failed!");
+	if(fr != FR_OK) {
+		module_debug_fatfs("f_open failed! %x", fr);
+		return 0;
+	}
 	// get start timestamp
 	uint64_t start = AlarmManager::getInstance()->getMsTimestamp();
 	// write the number of desired kilobytes
@@ -63,8 +65,10 @@ uint64_t FATFS_speedTest(uint32_t kilobytesToWrite)
   done:
 	// get end timestamp
 	uint64_t end = AlarmManager::getInstance()->getMsTimestamp();
+	fr = f_sync(&logfile);
 	fr = f_close(&logfile);
-	fr = f_unlink(filename);
+	if(!keepTestFile)
+		fr = f_unlink(filename);
 	// subtract start from end to get elapsed time
 	end -= start;
 	
@@ -155,8 +159,10 @@ bool FATFS_testFilesystem()
 		module_debug_fatfs("f_close failed for read step, %x", res);
 		return false;
 	}
-
 	
+	// remove the file
+	res = f_unlink(testFileName);
+
 	// compare the read and written buffers
 	for(int i = 0; i < 21 ; i++)
 	{
@@ -216,4 +222,16 @@ void FATFS_initializeFilesystem()
 	// otherwise, we successfully mounted the filesystem
 	// run a simple test before marking it as available
 	m_fsAvailable = FATFS_testFilesystem();
+}
+
+void FATFS_deinitializeFilesystem()
+{
+	FRESULT fr = f_mount(0, NULL);
+	if (fr != FR_OK)
+	{
+		module_debug_fatfs("f_mount unmount not successful, %x", fr);
+		return;
+	}
+	
+	MICROSD_deinit();
 }
