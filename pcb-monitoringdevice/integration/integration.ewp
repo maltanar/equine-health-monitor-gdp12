@@ -1923,6 +1923,18 @@
     </file>
   </group>
   <group>
+    <name>ehm-common</name>
+    <file>
+      <name>$PROJ_DIR$\..\..\ehm-common\messagestorage.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\ehm-common\messagestorage.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\ehm-common\messagetypes.h</name>
+    </file>
+  </group>
+  <group>
     <name>emlib</name>
     <file>
       <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_assert.c</name>
