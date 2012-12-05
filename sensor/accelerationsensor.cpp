@@ -51,14 +51,14 @@ char AccelerationSensor::setSleepState(bool sleepState)
 	{
 		// disable measurements and put device to sleep
 		// wakeup bits set to 11 for lowest rate possible
-		writeRegister( ADXL350_REG_PWCTL, 0x07);
+		writeRegister( ADXL350_REG_PWCTL, 0x07); // 0b0000 0111
 	} else
 	{
 		// recommended wakeup procedure from the datasheet:
 		// first bring device out of sleep by clearing sleep bit
-		writeRegister( ADXL350_REG_PWCTL, 0x00); 
+		writeRegister( ADXL350_REG_PWCTL, 0x00); // 0b0000 0000
 		// now re-enable measurements
-		writeRegister( ADXL350_REG_PWCTL, 0x08); 
+		writeRegister( ADXL350_REG_PWCTL, 0x08); // 0b0000 1000
 	}
 	
 	return 1;
@@ -67,9 +67,8 @@ char AccelerationSensor::setSleepState(bool sleepState)
 void AccelerationSensor::setPeriod(SensorPeriod ms)
 {
 	Sensor::setPeriod(ms);
-	// low power mode is set, data output rate 3.125 Hz
 	// TODO determine and write correct rate value!
-	writeRegister( ADXL350_REG_BWRAT, 0x16); 
+	writeRegister( ADXL350_REG_BWRAT, 0x1A); // 0b0001 1010
 }
   
 // read the acceleration data from registers & store in memory
