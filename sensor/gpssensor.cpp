@@ -20,7 +20,6 @@ void gpsSignalFrameHandler(uint8_t *buf)
 	GPSSensor::getInstance()->sampleSensorData();
 }
 
-
 // PE8 controls the transistor that turns on/off the GPS Vcc
 #define	GPIO_GPS_VCC_PORT		gpioPortE
 #define	GPIO_GPS_VCC_PIN		8
@@ -110,8 +109,9 @@ void GPSSensor::setParseOnReceive(bool enable)
 
 char GPSSensor::setSleepState(bool sleepState)
 {
-  // TODO implement GPS sleep function
-  return 1;
+	// note: GPS sleep function only possible when power pins are controllable
+	setPower(!sleepState, true);
+	return 1;
 }
 
 void GPSSensor::setPeriod(SensorPeriod ms)
