@@ -29,6 +29,10 @@ public:
     return &instance;
   }
   
+  static void configurePower();
+  static void setPower(bool vccOn, bool vbatOn);
+	  
+  
   // virtual functions which can be overridden if the sensor supports
   // the functionality
   char setSleepState(bool sleepState);

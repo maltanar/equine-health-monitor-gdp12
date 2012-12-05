@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "em_emu.h"
+#include "em_gpio.h"
 #include "usartmanager.h"
 #include "leuartport.h"
 #include "gpssensor.h"
@@ -17,6 +18,37 @@
 void gpsSignalFrameHandler(uint8_t *buf)
 {
 	GPSSensor::getInstance()->sampleSensorData();
+}
+
+
+// PE8 controls the transistor that turns on/off the GPS Vcc
+#define	GPIO_GPS_VCC_PORT		gpioPortE
+#define	GPIO_GPS_VCC_PIN		8
+#define GPIO_GPS_VCC			GPIO_GPS_VCC_PORT, GPIO_GPS_VCC_PIN
+// PA5 controls the transistor that turns on/off the GPS Vbat
+#define	GPIO_GPS_VBAT_PORT		gpioPortA
+#define	GPIO_GPS_VBAT_PIN		5
+#define GPIO_GPS_VBAT			GPIO_GPS_VBAT_PORT, GPIO_GPS_VBAT_PIN
+
+void GPSSensor::configurePower()
+{
+	// configure both power control GPIOs as push-pull outputs
+	GPIO_PinModeSet(GPIO_GPS_VCC, gpioModePushPull, 0);
+	GPIO_PinModeSet(GPIO_GPS_VBAT, gpioModePushPull, 0);
+}
+
+void GPSSensor::setPower(bool vccOn, bool vbatOn)
+{
+	module_debug_gps("vcc %d vbat %d", vccOn, vbatOn);
+	if(!vccOn)
+		GPIO_PinOutSet(GPIO_GPS_VCC);
+	else
+		GPIO_PinOutClear(GPIO_GPS_VCC);
+	
+	if(!vbatOn)
+		GPIO_PinOutSet(GPIO_GPS_VBAT);
+	else
+		GPIO_PinOutClear(GPIO_GPS_VBAT);
 }
 
 GPSSensor::GPSSensor() :
