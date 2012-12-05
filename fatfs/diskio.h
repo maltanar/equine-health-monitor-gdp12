@@ -33,6 +33,7 @@ extern bool diskAlarmTimeout;
 /* Prototypes for disk control functions */
 
 void setDiskAlarm(uint8_t timeout);
+void stopDiskAlarm();
 int assign_drives (int, int);
 DSTATUS disk_initialize (BYTE);
 DSTATUS disk_status (BYTE);

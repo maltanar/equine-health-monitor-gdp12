@@ -149,6 +149,7 @@ static BYTE wait_ready(void)
   do
     res = xfer_spi(0xff);
   while ((res != 0xFF) && !diskAlarmTimeout);
+  stopDiskAlarm();
   return res;
 }
 
@@ -222,10 +223,13 @@ int rcvr_datablock(BYTE *buff, UINT btr)
   do
     token = xfer_spi(0xff);
   while ((token == 0xFF) && (!diskAlarmTimeout));
+  stopDiskAlarm();
 
   if (token != 0xFE)
+  {
     /* Invalid data token */
     return 0;
+  }
 
   USART_TypeDef *spi = MICROSD_USART;
   /* Clear send and receive buffer */

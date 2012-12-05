@@ -18,6 +18,7 @@
 volatile DSTATUS Stat = STA_NOINIT;	/* Disk status */
 UINT CardType;
 bool diskAlarmTimeout;
+AlarmID diskAlarmID;
 
 
 void diskAlarmHandler(AlarmID id)
@@ -28,8 +29,12 @@ void diskAlarmHandler(AlarmID id)
 void setDiskAlarm(uint8_t timeout)
 {
 	diskAlarmTimeout = false;
-	AlarmManager::getInstance()->createAlarm(timeout, true, &diskAlarmHandler);
-	AlarmManager::getInstance()->resume();
+	diskAlarmID = AlarmManager::getInstance()->createAlarm(timeout, true, &diskAlarmHandler);
+}
+
+void stopDiskAlarm()
+{
+	AlarmManager::getInstance()->stopAlarm(diskAlarmID);
 }
 								 
 
@@ -82,6 +87,7 @@ DSTATUS disk_initialize (
 	}
 	CardType = ty;
 	deselect();
+	stopDiskAlarm();
 
 	if (ty) {			/* Initialization succeded */
 		Stat &= ~STA_NOINIT;	/* Clear STA_NOINIT */
