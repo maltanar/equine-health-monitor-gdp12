@@ -47,8 +47,7 @@ const void* Sensor::readSensorData(uint16_t *actualSize)
 	// assuming the sensor data length and sample count are set correctly,
 	// we can formulate the actual size of the collected samples
 	*actualSize = sizeof(SensorMessage)	// overhead due to SensorMessage fields
-				 + (m_sensorDataLength * m_sensorMessage.arrayLength)	// sampleSize * numSamples
-				 - sizeof(uint8_t *);	// minus the actual sensor data pointer
+				 + (m_sensorDataLength * m_sensorMessage.arrayLength);	// sampleSize * numSamples
 	
 	return (const void *) &m_sensorMessage;	
 }
