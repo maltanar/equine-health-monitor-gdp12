@@ -698,11 +698,11 @@
         </option>
         <option>
           <name>IlinkIcfOverride</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$TOOLKIT_DIR$\config\linker\EnergyMicro\EFM32GG332F1024.icf</state>
+          <state>$PROJ_DIR$\integration.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -2063,6 +2063,12 @@
       <name>$PROJ_DIR$\..\..\sensor\accelerationsensor.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\sensor\anthrmsensor.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\sensor\anthrmsensor.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\sensor\gpssensor.cpp</name>
     </file>
     <file>
@@ -2085,6 +2091,9 @@
     <name>Source</name>
     <file>
       <name>$PROJ_DIR$\debug_output_control.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\dlmalloc.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\integration.cpp</name>

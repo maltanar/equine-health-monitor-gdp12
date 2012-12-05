@@ -29,9 +29,14 @@
 #define	SENSOR_ACCL_INDEX	1
 #define	SENSOR_GPS_INDEX	2
 
-#define	SENSOR_TEMP_READ_PERIOD	5
+#define	SENSOR_TEMP_READ_PERIOD	2
 #define	SENSOR_ACCL_READ_PERIOD	1
-#define	SENSOR_GPS_READ_PERIOD	10
+#define	SENSOR_GPS_READ_PERIOD	5
+
+extern "C"
+{
+extern void __iar_dlmalloc_stats();
+}
 
 
 // local variables for the module
@@ -124,12 +129,12 @@ int main(void)
 	printf("TS device id %x manid %x \n", tmp->getDeviceID(), tmp->getManufacturerID());
 	tmp->setSleepState(true);
 	sensors[SENSOR_TEMP_INDEX] = tmp;
-	wakeupAlarmId[SENSOR_TEMP_INDEX] = alarmManager->createAlarm(SENSOR_TEMP_READ_PERIOD, false, &deviceWakeupHandler);
+	/*wakeupAlarmId[SENSOR_TEMP_INDEX] = alarmManager->createAlarm(SENSOR_TEMP_READ_PERIOD, false, &deviceWakeupHandler);
 	sensorAlarmId[SENSOR_TEMP_INDEX] = alarmManager->createAlarm(SENSOR_TEMP_READ_PERIOD, false, &dataReadHandler);
 	// offset the data acquire alarm by 1
 	// TODO add support for fixed offsets in alarm creation
 	alarmManager->setAlarmTimeout(sensorAlarmId[SENSOR_TEMP_INDEX], SENSOR_TEMP_READ_PERIOD + 1);
-	
+	*/
 	
 	AccelerationSensor * acc = AccelerationSensor::getInstance();
 	acc->setSleepState(true);
@@ -149,25 +154,79 @@ int main(void)
 	// TODO add support for fixed offsets in alarm creation
 	alarmManager->setAlarmTimeout(sensorAlarmId[SENSOR_GPS_INDEX], SENSOR_GPS_READ_PERIOD + 2);
 	
+	// save or send data every 10 seconds
+	alarmManager->createAlarm(10, false, &dataSave);
+	
+	GPIO_PinModeSet(GPIO_XBEE_VCC, gpioModePushPull, 0);	// XBee power
+	GPIO_PinModeSet(GPIO_XBEE_DTR, gpioModePushPull, 0);	// XBee sleep
+	
+	GPIO_PinOutSet(GPIO_XBEE_VCC);
+	alarmManager->lowPowerDelay(150);
+	GPIO_PinOutClear(GPIO_XBEE_VCC);
+	
+	// set configuration options for XBee device
+    uint8_t pan_id[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0xAB, 0xBC, 0xCD};
+    
+	XBee_Config config("", "denver", false, pan_id, 0, B9600, 1);
+
+    // initialize XBee device
+    XBee interface(config);
+
+    uint8_t error_code = interface.xbee_init();
+	
+    if (error_code != GBEE_NO_ERROR) {
+         printf("Error: unable to configure device, code: %02x\n", error_code);
+		 return 0;
+    }
+	
+	printf("Starting period sample and send... \n");
+	
+	//GPIO_PinOutSet(GPIO_XBEE_DTR);
+	
+	
 	// start counting!
 	alarmManager->resume();
 	
 	uint16_t size;
 	SensorMessage *msg;
 	GPSMessage *gpsMsg;
+	MessagePacket pkt;
+	
+	pkt.mainType = msgSensorData;
+	
 	RawTemperatureMessage *tempMsg;
 	AccelerometerMessage *acclMsg;
-	int acclSampleCount = 0;
 
 	
 	while (1)
 	{
 		EMU_EnterEM2(true);
 		
+		//__iar_dlmalloc_stats();
+		
 		if(dataSaveFlag)
 		{
 			dataSaveFlag = false;
 			saveRTC();
+			
+			//GPIO_PinOutClear(GPIO_XBEE_DTR);
+			printf("Xbee status: %d \n", interface.xbee_status());
+			if(interface.xbee_status() == 0x00)
+			{
+				char * buf = NULL;
+				while(buf = msgStore->getFromStorageQueueRaw(&size))
+				{
+					printf("sending msg, size %d \n", size);
+					uint8_t ret = interface.xbee_send_data("coordinator", (const uint8_t *) buf, size);
+					printf("return value %d \n", ret);
+					free(buf);
+				}
+			}
+			else
+				msgStore->flushAllToDisk();
+			
+			//GPIO_PinOutSet(GPIO_XBEE_DTR);
+			
 			//FATFS_speedTest(1);
 		}
 		
@@ -176,7 +235,7 @@ int main(void)
 		{
 			if(wakeup[i])
 			{
-				printf("wakeup for sensor %d time %lld \n", i, alarmManager->getMsTimestamp());
+				printf("wakeup for sensor %d time %u \n", i, alarmManager->getUnixTime());
 				sensors[i]->setSleepState(false);
 				// TODO set allowable sleep state to that which is required
 				// by the sensor in order not to miss its data
@@ -185,13 +244,16 @@ int main(void)
 			
 			if(acquireNewData[i])
 			{
-				printf("sample and read for sensor %d time %lld \n", i, alarmManager->getMsTimestamp());
+				pkt.relTimestampS = alarmManager->getUnixTime();
+				printf("sample and read for sensor %d time %u \n", i, pkt.relTimestampS);
 				
 				
 				if(i != SENSOR_ACCL_INDEX)
 				{
 					sensors[i]->sampleSensorData();
 					msg = (SensorMessage *) sensors[i]->readSensorData(&size);
+					pkt.payload = (uint8_t *) msg;
+					msgStore->addToStorageQueue(&pkt, size + sizeof(MessagePacket));
 				} else {
 					for(int c = 0; c < ACCL_MAX_SAMPLES; c++)
 					{
@@ -224,7 +286,8 @@ int main(void)
 						printf("sample %d : %d %d %d \n", i, acclMsg->x,
 							   acclMsg->y, acclMsg->z);
 					}
-						acclSampleCount = 0;
+					pkt.payload = (uint8_t *) msg;
+					msgStore->addToStorageQueue(&pkt, size + sizeof(MessagePacket));
 					break;
 				  default:
 					;

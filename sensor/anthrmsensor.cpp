@@ -69,6 +69,7 @@ ANTHRMSensor::ANTHRMSensor() :
 	// initialize other GPIO pins used to control the ANT
 	GPIO_PinModeSet(GPIO_ANT_RTS, gpioModeInput, 0);
 	GPIO_PinModeSet(ANT_RESET, gpioModePushPull, 1);
+	GPIO_PinModeSet(GPIO_ANT_SLEEP, gpioModePushPull, 0);
 
 	
 	
@@ -84,9 +85,19 @@ void ANTHRMSensor::hardReset()
 	// - if the GPIO RST pin is defined, pull that low for some time
 	// - if not (f.ex for the PCB all reset lines are connected together)
 	//   use the power pin instead
+#ifndef GPIO_ANT_VCC
 	GPIO_PinOutClear(ANT_RESET);
 	AlarmManager::getInstance()->lowPowerDelay(10, sleepModeEM1);
 	GPIO_PinOutSet(ANT_RESET);
+#else
+	GPIO_PinOutSet(ANT_RESET);
+	AlarmManager::getInstance()->lowPowerDelay(999, sleepModeEM1);
+	AlarmManager::getInstance()->lowPowerDelay(999, sleepModeEM1);
+	AlarmManager::getInstance()->lowPowerDelay(999, sleepModeEM1);
+	AlarmManager::getInstance()->lowPowerDelay(999, sleepModeEM1);
+	AlarmManager::getInstance()->lowPowerDelay(999, sleepModeEM1);
+	GPIO_PinOutClear(ANT_RESET);
+#endif
 }
 
 char ANTHRMSensor::setSleepState(bool sleepState)

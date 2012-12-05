@@ -1,5 +1,7 @@
 #include "messagestorage.h"
 #include <string.h>
+#include <stdlib.h>
+#include "alarmmanager.h"
 
 #ifdef EHM_MONITORING_DEVICE
 #include "debug_output_control.h"
@@ -11,7 +13,9 @@ MessageStorage::MessageStorage()
 {
 	m_storageRoot = NULL;
 	m_storageOK = m_fileOpen = false;
+	m_nextMessageSeqNumber = 1;
 	m_queueCount = 0;
+	m_queueCountMem = 0;
 }
 
 void MessageStorage::initialize(char * storageRoot)
@@ -33,7 +37,9 @@ void MessageStorage::initialize(char * storageRoot)
 	
 	// count list of existing files in storage root,
 	module_debug_strg("counting files...");
-	m_queueCount = getDirFileCount("");
+	
+	// TODO reenable file counting
+	/*m_queueCount = */getDirFileCount("");
 }
 
 
@@ -156,7 +162,6 @@ uint16_t MessageStorage::serialize(const MessagePacket *msg, uint8_t *data) {
 		size += sizeof(DebugMessage) - sizeof(void *);
 		break;
 	}
-	
 	/* copy the message type specific payload */
 	if (msg->mainType == msgSensorData) {
 		const SensorMessage *sensor_msg = (const SensorMessage *)msg->payload;
@@ -210,12 +215,62 @@ uint16_t MessageStorage::serialize(const MessagePacket *msg, uint8_t *data) {
 void MessageStorage::addToStorageQueue(MessagePacket * in_msg, unsigned short size)
 {
 	// serialize and enqueue message
-	char * serializedMessage = new char[size];
-	serialize(in_msg, (uint8_t *) serializedMessage);
+	char * serializedMessage = (char *) malloc(size);
+
+	if(!serializedMessage)
+	{
+		module_debug_strg("failed to allocate serialization space!");
+		return;
+	}
+	
+	uint16_t serializedSize = serialize(in_msg, (uint8_t *) serializedMessage);
 	enqueue(serializedMessage, NULL, size);
+	m_queueCountMem++;
 }
 
-void MessageStorage::getFromStorageQueue(MessagePacket * out_msg)
+char * MessageStorage::getFromStorageQueueRaw(unsigned short * size)
+{
+	module_debug_strg("getFromStorageQueueRaw");
+	// dequeue and deserialize message
+	MessageEntry * headEntry = dequeue();
+	
+	if(!headEntry)
+	{
+		module_debug_strg("nothing to get from queue!");
+		return NULL;
+	}
+	
+	char * entryContent = (char *) headEntry->memPtr;	// NULL if file (handled below)
+	
+	// process serialized data depending on storage mode
+	if(headEntry->fileName)
+	{
+		module_debug_strg("reading from file: %d", headEntry->fileName);
+		// open file and read contained data
+		char fnBuffer[13];
+		entryContent = (char *) malloc(headEntry->size);
+		sprintf(fnBuffer, "%d", headEntry->fileName);
+		openFile(fnBuffer, false, true);
+		readFromFile(entryContent, headEntry->size);
+		closeFile();
+	}
+	
+	// make room for the deserialized data
+	char * out_msg = (char*) malloc(headEntry->size);
+	
+	*size = headEntry->size;
+	
+	memcpy(out_msg, entryContent, headEntry->size);
+	
+	// free the resources used by the entry
+	freeMessageEntry(headEntry);
+	
+	return out_msg;	
+}
+
+
+// TODO derive this from func above!
+MessagePacket *  MessageStorage::getFromStorageQueue()
 {
 	// dequeue and deserialize message
 	MessageEntry * headEntry = dequeue();
@@ -223,41 +278,56 @@ void MessageStorage::getFromStorageQueue(MessagePacket * out_msg)
 	if(!headEntry)
 	{
 		module_debug_strg("nothing to get from queue!");
-		return;
+		return NULL;
 	}
 	
-	char * entryContent = (char *)headEntry->memPtr;	// NULL if file (handled below)
+	char * entryContent = (char *) headEntry->memPtr;	// NULL if file (handled below)
 	
 	// process serialized data depending on storage mode
 	if(headEntry->fileName)
 	{
 		// open file and read contained data
-		entryContent = new char[headEntry->size];
-		openFile(headEntry->fileName, false, true);
+		char fnBuffer[13];
+		entryContent = (char *) malloc(headEntry->size);
+		sprintf(fnBuffer, "%d", headEntry->fileName);
+		openFile(fnBuffer, false, true);
 		readFromFile(entryContent, headEntry->size);
 		closeFile();
 	}
 	
 	// make room for the deserialized data
-	out_msg = (MessagePacket *) new char[headEntry->size];
+	MessagePacket * out_msg = (MessagePacket *) malloc(headEntry->size);
 	
 	deserialize((uint8_t const *)entryContent, out_msg);
 	
 	// free the resources used by the entry
 	freeMessageEntry(headEntry);
+	
+	return out_msg;
 }
 
-void MessageStorage::enqueue(void * memPtr, char * fileName, unsigned short size)
+// TODO also serialize message queue structure for long time ZigBee-less
+// operation!
+
+void MessageStorage::enqueue(void * memPtr, unsigned int fileName, unsigned short size)
 {
 	// either fileName or memPtr is allowed - an entry cannot have both
-	if((memPtr != NULL && fileName != NULL) || size == 0)
+	if((memPtr != NULL && fileName != 0) || size == 0)
 	{
 		module_debug_strg("invalid enqueue!");
 		return;
 	}
 	
+	module_debug_strg("enqueue");
 	// allocate space from heap for the new entry
-	MessageEntry * newEntry = new MessageEntry;
+	MessageEntry * newEntry = (MessageEntry *) malloc(sizeof(MessageEntry));
+
+	
+	if(!newEntry)
+	{
+		module_debug_strg("failed to allocate new entry!");
+		return;
+	}
 	
 	newEntry->size = size;
 	newEntry->fileName = fileName;
@@ -278,6 +348,63 @@ void MessageStorage::enqueue(void * memPtr, char * fileName, unsigned short size
 	m_queueCount++;
 }
 
+void MessageStorage::flushEntryToDisk(MessageEntry * entry)
+{
+	// check if this is a valid mem entry
+	if(!entry)
+		return;
+	
+	if(entry->memPtr == NULL || entry->fileName != NULL)
+	{
+		module_debug_strg("cannot flush non-mem entry!");
+		return;
+	}
+	
+	module_debug_strg("flushing...");
+	
+	// move mem entry to disk and free the occupied mem
+	// file name will be the current Unix time
+	entry->fileName = m_nextMessageSeqNumber++;
+	
+	char fnBuffer[13];
+	sprintf(fnBuffer, "%d", entry->fileName);
+	
+	// TODO handle msg seq nr overflow
+	
+	module_debug_strg("flush to disk: %s", fnBuffer);
+	
+	// create new file and write data
+	openFile(fnBuffer, true, false);
+	writeToFile((char*) entry->memPtr, entry->size);
+	closeFile();
+	
+	// free occupied entry memory and set memPtr to NULL
+	free(entry->memPtr);
+	
+		
+	entry->memPtr = NULL;
+	
+	m_queueCountMem--;
+	
+}
+
+void MessageStorage::flushAllToDisk()
+{
+	module_debug_strg("start flushAllToDisk! qc = %d qcm %d", m_queueCount,
+					  m_queueCountMem);
+	// TODO traversing through all entries is nonoptimal, keep separate track?
+	MessageEntry * entry = m_queueHead;
+	while(m_queueCountMem && (entry != NULL))
+	{
+		if(entry->memPtr)
+			flushEntryToDisk(entry);
+		
+		entry = entry->nextEntry;
+	}
+	module_debug_strg("end flushAllToDisk! qc = %d qcm %d", m_queueCount,
+					  m_queueCountMem);
+}
+
 MessageStorage::MessageEntry * MessageStorage::dequeue()
 {
 	if(m_queueHead == NULL || m_queueTail == NULL)
@@ -291,6 +418,8 @@ MessageStorage::MessageEntry * MessageStorage::dequeue()
 	
 	// advance head of queue to next element
 	m_queueHead = ret->nextEntry;
+	
+	m_queueCount--;
 	
 	// detect empty queue
 	if(m_queueHead == NULL)
@@ -312,20 +441,12 @@ void MessageStorage::freeMessageEntry(MessageEntry * entry)
 	// first free the filename / memory buffers for the entry
 	if(entry->memPtr != NULL)
 	{
-		delete [] entry->memPtr;
+		free(entry->memPtr);
 		entry->memPtr = NULL;
-	} 
-	else if(entry->fileName != NULL)
-	{
-		// delete the file
-		deleteFile(entry->fileName);
-		// free the filename buffer
-		delete [] entry->fileName;
-		entry->fileName = NULL;
 	}
 	
 	// finally, deallocate the MessageEntry space itself
-	delete entry;
+	free(entry);
 }
 
 unsigned int MessageStorage::getStorageQueueCount()
@@ -455,6 +576,9 @@ unsigned int MessageStorage::getDirFileCount(char *path)
 	DIR         dir;
 	int         i;
 	char        *fn;
+	
+	// TODO copy files into queue as we iterate
+	// TODO update latest sequence number
 
 	m_fr = f_opendir(&dir, path);
 	
@@ -481,6 +605,7 @@ unsigned int MessageStorage::getDirFileCount(char *path)
 				module_debug_strg("%s/%s", path, fn);
 			else
 				module_debug_strg("%s", fn);
+			f_unlink(fn);	// TODO remove this after we stabilize!
 			count++;
 		  }
 		}
@@ -510,6 +635,11 @@ void MessageStorage::unmountStorage()
 {
 	FATFS_deinitializeFilesystem();
 	m_storageOK = false;
+}
+
+unsigned int MessageStorage::getTimestamp()
+{
+	return AlarmManager::getInstance()->getUnixTime();
 }
 #endif
 // end of internal filesystem access layer functions ------------------------

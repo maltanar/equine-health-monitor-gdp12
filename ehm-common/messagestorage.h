@@ -10,6 +10,7 @@
 #define EHM_MONITORING_DEVICE
 #include "fatfs.h"
 #include "ff.h"
+#include "alarmmanager.h"
 #else
 // TODO insert BS-specific includes here
 #endif
@@ -24,8 +25,10 @@ class MessageStorage  {
 	
 	void initialize(char * storageRoot);
 	void addToStorageQueue(MessagePacket * in_msg, unsigned short size);
-	void getFromStorageQueue(MessagePacket * out_msg);
+	MessagePacket * getFromStorageQueue();
+	char * getFromStorageQueueRaw(unsigned short * size);
 	unsigned int getStorageQueueCount();
+	void flushAllToDisk();
 	
 	// RTC storage functions
 	unsigned int readRTCStorage();
@@ -46,20 +49,23 @@ private:
   bool m_fileOpen;
   bool m_storageOK;
   
-  typedef struct MessageEntry {
+  typedef PACKEDSTRUCT MessageEntry {
 	  void * memPtr;	// NULL if entry has already been saved to disk
-	  char * fileName; 	// NULL if entry is yet in memory
+	  unsigned int fileName; 	// 0 if entry is yet in memory
 	  unsigned short size;	// size of message data, either on disk or in mem
 	  MessageEntry * nextEntry;	// linked list structure, NULL if last member
   } MessageEntry;
   
   MessageEntry * m_queueHead, * m_queueTail;
   unsigned int m_queueCount;
+  unsigned int m_queueCountMem;
+  unsigned int m_nextMessageSeqNumber;
   
   // internal queue management functions
-  void enqueue(void * memPtr, char * fileName, unsigned short size);
+  void enqueue(void * memPtr, unsigned int fileName, unsigned short size);
   MessageEntry * dequeue();
   void freeMessageEntry(MessageEntry * entry);
+  void flushEntryToDisk(MessageEntry * entry);
   
   
   // internal filesystem access layer
@@ -69,6 +75,7 @@ private:
   void deleteFile(const char * fileName);
   void writeToFile(char * buffer, unsigned int count);
   void readFromFile(char * buffer, unsigned int count);
+  unsigned int getTimestamp();
   unsigned int getDirFileCount(char *dirName);
   bool mountStorage();
   void unmountStorage();
