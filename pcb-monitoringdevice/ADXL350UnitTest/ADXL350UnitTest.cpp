@@ -37,7 +37,11 @@ int main(void)
       EMU_EnterEM2(true);
       
       printf("sample and read for Accelerometer sensor \n");
+	  accl_Sensor->setSleepState(false);
+	  RTC_Trigger(10, NULL);
+      EMU_EnterEM2(true);
       accl_Sensor->sampleSensorData();
+	  accl_Sensor->setSleepState(true);
       
       acclSampleCount++;
       if(acclSampleCount == ACCL_MAX_SAMPLES)
