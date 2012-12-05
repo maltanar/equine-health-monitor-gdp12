@@ -13,10 +13,25 @@
 #define UINT32_MAX	0xffffffff
 #include "diskio.h"
 #include "microsd.h"
+#include "alarmmanager.h"
 
 volatile DSTATUS Stat = STA_NOINIT;	/* Disk status */
-volatile UINT Timer1;		        /* 1000Hz decrement timer */
 UINT CardType;
+bool diskAlarmTimeout;
+
+
+void diskAlarmHandler(AlarmID id)
+{
+	diskAlarmTimeout = true;
+}
+
+void setDiskAlarm(uint8_t timeout)
+{
+	diskAlarmTimeout = false;
+	AlarmManager::getInstance()->createAlarm(timeout, true, &diskAlarmHandler);
+	AlarmManager::getInstance()->resume();
+}
+								 
 
 /*--------------------------------------------------------------------------
 
@@ -44,12 +59,12 @@ DSTATUS disk_initialize (
 
 	ty = 0;
 	if (send_cmd(CMD0, 0) == 1) {			/* Enter Idle state */
-		Timer1 = 1000;						/* Initialization timeout of 1000 msec */
+		setDiskAlarm(1);
 		if (send_cmd(CMD8, 0x1AA) == 1) {	/* SDv2? */
 			for (n = 0; n < 4; n++) ocr[n] = xfer_spi(0xff);/* Get trailing return value of R7 resp */
 			if (ocr[2] == 0x01 && ocr[3] == 0xAA) {				/* The card can work at vdd range of 2.7-3.6V */
-				while (Timer1 && send_cmd(ACMD41, 0x40000000));	/* Wait for leaving idle state (ACMD41 with HCS bit) */
-				if (Timer1 && send_cmd(CMD58, 0) == 0) {			/* Check CCS bit in the OCR */
+				while (!diskAlarmTimeout && send_cmd(ACMD41, 0x40000000));	/* Wait for leaving idle state (ACMD41 with HCS bit) */
+				if (!diskAlarmTimeout && send_cmd(CMD58, 0) == 0) {			/* Check CCS bit in the OCR */
 					for (n = 0; n < 4; n++) ocr[n] = xfer_spi(0xff);
 					ty = (ocr[0] & 0x40) ? CT_SD2|CT_BLOCK : CT_SD2;	/* SDv2 */
 				}
@@ -60,8 +75,8 @@ DSTATUS disk_initialize (
 			} else {
 				ty = CT_MMC; cmd = CMD1;	/* MMCv3 */
 			}
-			while (Timer1 && send_cmd(cmd, 0));		/* Wait for leaving idle state */
-			if (!Timer1 || send_cmd(CMD16, 512) != 0)	/* Set read/write block length to 512 */
+			while (!diskAlarmTimeout && send_cmd(cmd, 0));		/* Wait for leaving idle state */
+			if (diskAlarmTimeout || send_cmd(CMD16, 512) != 0)	/* Set read/write block length to 512 */
 				ty = 0;
 		}
 	}

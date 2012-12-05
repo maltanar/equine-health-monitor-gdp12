@@ -50,7 +50,7 @@
 #define CS_HIGH()  GPIO_PinOutSet(MICROSD_USARTCFG.csPort, MICROSD_USARTCFG.csPin)
 
 extern DSTATUS Stat;    /**< Disk status */
-extern UINT    Timer1;  /**< 1000Hz decrement timer */
+
 
 /* Local prototypes. */
 static BYTE wait_ready(void);
@@ -145,10 +145,10 @@ static BYTE wait_ready(void)
 {
   BYTE res;
   /* Wait for ready in timeout of 500ms */
-  Timer1 = 500;
+  setDiskAlarm(1);
   do
     res = xfer_spi(0xff);
-  while ((res != 0xFF) && Timer1);
+  while ((res != 0xFF) && !diskAlarmTimeout);
   return res;
 }
 
@@ -218,10 +218,10 @@ int rcvr_datablock(BYTE *buff, UINT btr)
   uint32_t ctrl;
 
   /* Wait for data packet in timeout of 100ms */
-  Timer1 = 100;
+  setDiskAlarm(1);
   do
     token = xfer_spi(0xff);
-  while ((token == 0xFF) && (Timer1 > 0));
+  while ((token == 0xFF) && (!diskAlarmTimeout));
 
   if (token != 0xFE)
     /* Invalid data token */

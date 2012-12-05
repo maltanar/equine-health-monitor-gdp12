@@ -11,6 +11,7 @@ extern "C"{
 #define _READONLY	0	/* 1: Remove write functions */
 #define _USE_IOCTL	1	/* 1: Use disk_ioctl fucntion */
 
+#include <stdbool.h>
 #include "integer.h"
 
 
@@ -26,10 +27,12 @@ typedef enum {
 	RES_PARERR		/* 4: Invalid Parameter */
 } DRESULT;
 
+extern bool diskAlarmTimeout;
 
 /*---------------------------------------*/
 /* Prototypes for disk control functions */
 
+void setDiskAlarm(uint8_t timeout);
 int assign_drives (int, int);
 DSTATUS disk_initialize (BYTE);
 DSTATUS disk_status (BYTE);
