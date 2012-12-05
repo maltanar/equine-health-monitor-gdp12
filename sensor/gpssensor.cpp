@@ -32,14 +32,20 @@ void gpsSignalFrameHandler(uint8_t *buf)
 
 void GPSSensor::configurePower()
 {
+#ifdef GPIO_GPS_VCC
+#ifdef GPIO_GPS_VBAT
 	// configure both power control GPIOs as push-pull outputs
 	GPIO_PinModeSet(GPIO_GPS_VCC, gpioModePushPull, 0);
 	GPIO_PinModeSet(GPIO_GPS_VBAT, gpioModePushPull, 0);
+#endif
+#endif
 }
 
 void GPSSensor::setPower(bool vccOn, bool vbatOn)
 {
 	module_debug_gps("vcc %d vbat %d", vccOn, vbatOn);
+#ifdef GPIO_GPS_VCC
+#ifdef GPIO_GPS_VBAT
 	if(!vccOn)
 		GPIO_PinOutSet(GPIO_GPS_VCC);
 	else
@@ -49,6 +55,8 @@ void GPSSensor::setPower(bool vccOn, bool vbatOn)
 		GPIO_PinOutSet(GPIO_GPS_VBAT);
 	else
 		GPIO_PinOutClear(GPIO_GPS_VBAT);
+#endif
+#endif
 }
 
 GPSSensor::GPSSensor() :
