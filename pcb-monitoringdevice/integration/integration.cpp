@@ -31,7 +31,8 @@
 
 #define	SENSOR_TEMP_READ_PERIOD	2
 #define	SENSOR_ACCL_READ_PERIOD	1
-#define	SENSOR_GPS_READ_PERIOD	5
+#define	SENSOR_GPS_READ_PERIOD	10
+#define DATA_SEND_PERIOD		30
 
 extern "C"
 {
@@ -43,9 +44,11 @@ extern void __iar_dlmalloc_stats();
 Sensor * sensors[SENSOR_COUNT];
 AlarmManager * alarmManager;
 MessageStorage *msgStore;
+XBee *xbee;
 bool acquireNewData[SENSOR_COUNT], wakeup[SENSOR_COUNT];
 AlarmID sensorAlarmId[SENSOR_COUNT], wakeupAlarmId[SENSOR_COUNT];
 bool dataSaveFlag;
+bool zigbeeOK;
 
 // Alarm handler function
 void dataReadHandler(AlarmID id)
@@ -72,7 +75,7 @@ void deviceWakeupHandler(AlarmID id)
 		}
 }
 
-void dataSave(AlarmID id)
+void dataSaveHandler(AlarmID id)
 {
 	dataSaveFlag = true;
 }
@@ -87,44 +90,10 @@ void saveRTC()
 	msgStore->writeRTCStorage(alarmManager->getUnixTime());
 }
 
-/**************************************************************************//**
- * @brief  Main function
- *****************************************************************************/
-int main(void)
+
+
+void configureTempSensor()
 {
-	CHIP_Init();
-	TRACE_SWOSetup();
-	
-	// TODO clock setting - move to own function
-	/* Use 32MHZ HFXO as core clock frequency */
-  	CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
-	
-	// configure GPS power pins and enable both Vcc and Vbat
-	GPSSensor::configurePower();
-	GPSSensor::setPower(true, true);
-	
-	dataSaveFlag = false;
-	
-	// store the alarm manager instance
-	alarmManager = AlarmManager::getInstance();
-	
-	
-	msgStore = MessageStorage::getInstance();
-	msgStore->initialize("");
-	
-	// recover the RTC from storage, if possible
-	recoverRTC();
-	
-	for(int i = 0; i < SENSOR_COUNT; i++)
-	{
-		acquireNewData[i] = false;
-		wakeup[i] = false;
-		wakeupAlarmId[i] = ALARM_INVALID_ID;
-		sensorAlarmId[i] = ALARM_INVALID_ID;
-	}
-	
-	alarmManager->pause();
-	// create the sensor objects and alarms
 	TemperatureSensor * tmp = TemperatureSensor::getInstance();
 	printf("TS device id %x manid %x \n", tmp->getDeviceID(), tmp->getManufacturerID());
 	tmp->setSleepState(true);
@@ -135,31 +104,49 @@ int main(void)
 	// TODO add support for fixed offsets in alarm creation
 	alarmManager->setAlarmTimeout(sensorAlarmId[SENSOR_TEMP_INDEX], SENSOR_TEMP_READ_PERIOD + 1);
 	*/
-	
+}
+
+void configureAccelerometer()
+{
 	AccelerationSensor * acc = AccelerationSensor::getInstance();
 	acc->setSleepState(true);
 	sensors[SENSOR_ACCL_INDEX] = acc;
-	wakeupAlarmId[SENSOR_ACCL_INDEX] = alarmManager->createAlarm(SENSOR_ACCL_READ_PERIOD, false, &deviceWakeupHandler);
+	/*wakeupAlarmId[SENSOR_ACCL_INDEX] = alarmManager->createAlarm(SENSOR_ACCL_READ_PERIOD, false, &deviceWakeupHandler);
 	sensorAlarmId[SENSOR_ACCL_INDEX] = alarmManager->createAlarm(SENSOR_ACCL_READ_PERIOD, false, &dataReadHandler);
 	// offset the data acquire alarm by 1
 	// TODO add support for fixed offsets in alarm creation
-	alarmManager->setAlarmTimeout(sensorAlarmId[SENSOR_ACCL_INDEX], SENSOR_ACCL_READ_PERIOD + 3);
-	
+	alarmManager->setAlarmTimeout(sensorAlarmId[SENSOR_ACCL_INDEX], SENSOR_ACCL_READ_PERIOD + 3);*/
+}
+
+void configureGPS()
+{
 	GPSSensor * gps = GPSSensor::getInstance();
 	sensors[SENSOR_GPS_INDEX]  = gps;
+	// enabling parseOnReceive results in string parsing inside GPS ISR
+	// may decrease data loss but introduce instability due to long ISR
+	//gps->setParseOnReceive(true);
 	gps->setSleepState(true);
 	wakeupAlarmId[SENSOR_GPS_INDEX] = alarmManager->createAlarm(SENSOR_GPS_READ_PERIOD, false, &deviceWakeupHandler);
 	sensorAlarmId[SENSOR_GPS_INDEX] = alarmManager->createAlarm(SENSOR_GPS_READ_PERIOD, false, &dataReadHandler);
 	// offset the data acquire alarm by 2
 	// TODO add support for fixed offsets in alarm creation
 	alarmManager->setAlarmTimeout(sensorAlarmId[SENSOR_GPS_INDEX], SENSOR_GPS_READ_PERIOD + 2);
+}
+
+void configureDataCollection()
+{
+	dataSaveFlag = false;
+	alarmManager->createAlarm(DATA_SEND_PERIOD, false, &dataSaveHandler);
+}
+
+bool configureZigBee()
+{
+	zigbeeOK = false;
 	
-	// save or send data every 10 seconds
-	alarmManager->createAlarm(10, false, &dataSave);
+	GPIO_PinModeSet(GPIO_XBEE_VCC, gpioModePushPull, 0);	// XBee power on
+	GPIO_PinModeSet(GPIO_XBEE_DTR, gpioModePushPull, 0);	// XBee sleep off
 	
-	GPIO_PinModeSet(GPIO_XBEE_VCC, gpioModePushPull, 0);	// XBee power
-	GPIO_PinModeSet(GPIO_XBEE_DTR, gpioModePushPull, 0);	// XBee sleep
-	
+	// Xbee hard reset - turn power off for 150 ms
 	GPIO_PinOutSet(GPIO_XBEE_VCC);
 	alarmManager->lowPowerDelay(150);
 	GPIO_PinOutClear(GPIO_XBEE_VCC);
@@ -170,19 +157,92 @@ int main(void)
 	XBee_Config config("", "denver", false, pan_id, 0, B9600, 1);
 
     // initialize XBee device
-    XBee interface(config);
+    xbee = new XBee(config);
 
-    uint8_t error_code = interface.xbee_init();
+    uint8_t error_code = xbee->xbee_init();
+	zigbeeOK = (error_code == GBEE_NO_ERROR);
 	
     if (error_code != GBEE_NO_ERROR) {
          printf("Error: unable to configure device, code: %02x\n", error_code);
-		 return 0;
     }
 	
-	printf("Starting period sample and send... \n");
+	return zigbeeOK;
+}
+
+void sendOrSaveData()
+{
+	uint16_t size;
+	dataSaveFlag = false;
+	saveRTC();
 	
-	//GPIO_PinOutSet(GPIO_XBEE_DTR);
+	if(!zigbeeOK)
+	{
+		msgStore->flushAllToDisk();
+	}
 	
+	printf("Xbee status: %d \n", xbee->xbee_status());
+	if(xbee->xbee_status() == 0x00)
+	{
+		char * buf = NULL;
+		while(buf = msgStore->getFromStorageQueueRaw(&size))
+		{
+			printf("sending msg, size %d \n", size);
+			uint8_t ret = xbee->xbee_send_data("coordinator", (const uint8_t *) buf, size);
+			printf("return value %d \n", ret);
+			free(buf);
+		}
+	}
+	else
+		msgStore->flushAllToDisk();
+}
+
+/**************************************************************************//**
+ * @brief  Main function
+ *****************************************************************************/
+int main(void)
+{
+	CHIP_Init();
+	TRACE_SWOSetup();
+	// enable trace during deep sleep as well
+	// consumes additional power but worth it for debugging
+	EMU->CTRL |= EMU_CTRL_EMVREG_FULL;
+	
+	// TODO clock setting - move to own function
+	/* Use 32MHZ HFXO as core clock frequency */
+  	CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
+	
+	// configure GPS power pins and enable both Vcc and Vbat
+	GPSSensor::configurePower();
+	GPSSensor::setPower(true, true);
+	
+	// store the alarm manager instance
+	alarmManager = AlarmManager::getInstance();
+	
+	// store the message storage instance
+	msgStore = MessageStorage::getInstance();
+	msgStore->initialize("");
+	
+	// recover the RTC from storage, if possible
+	recoverRTC();
+	
+	// initialize sensor structures
+	for(int i = 0; i < SENSOR_COUNT; i++)
+	{
+		acquireNewData[i] = false;
+		wakeup[i] = false;
+		wakeupAlarmId[i] = ALARM_INVALID_ID;
+		sensorAlarmId[i] = ALARM_INVALID_ID;
+	}
+	
+	alarmManager->pause();
+	// create the sensor objects and alarms
+	configureTempSensor();
+	configureAccelerometer();
+	configureGPS();
+	configureDataCollection();
+	configureZigBee();
+	
+	printf("Starting periodic sample and send... \n");
 	
 	// start counting!
 	alarmManager->resume();
@@ -202,32 +262,12 @@ int main(void)
 	{
 		EMU_EnterEM2(true);
 		
+		// uncomment to view heap status
 		//__iar_dlmalloc_stats();
 		
 		if(dataSaveFlag)
 		{
-			dataSaveFlag = false;
-			saveRTC();
-			
-			//GPIO_PinOutClear(GPIO_XBEE_DTR);
-			printf("Xbee status: %d \n", interface.xbee_status());
-			if(interface.xbee_status() == 0x00)
-			{
-				char * buf = NULL;
-				while(buf = msgStore->getFromStorageQueueRaw(&size))
-				{
-					printf("sending msg, size %d \n", size);
-					uint8_t ret = interface.xbee_send_data("coordinator", (const uint8_t *) buf, size);
-					printf("return value %d \n", ret);
-					free(buf);
-				}
-			}
-			else
-				msgStore->flushAllToDisk();
-			
-			//GPIO_PinOutSet(GPIO_XBEE_DTR);
-			
-			//FATFS_speedTest(1);
+			sendOrSaveData();
 		}
 		
 		
