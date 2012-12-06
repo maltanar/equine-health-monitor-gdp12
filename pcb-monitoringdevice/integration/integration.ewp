@@ -2120,6 +2120,9 @@
       <name>$PROJ_DIR$\debug_output_control.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\debug_output_impl.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\dlmalloc.c</name>
     </file>
     <file>

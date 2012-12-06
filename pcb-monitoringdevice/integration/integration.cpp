@@ -33,14 +33,16 @@
 
 #define	SENSOR_TEMP_READ_PERIOD	7
 #define	SENSOR_ACCL_READ_PERIOD	3
-#define	SENSOR_GPS_READ_PERIOD	10
+#define	SENSOR_GPS_READ_PERIOD	5
 #define SENSOR_HRM_READ_PERIOD	5
-#define DATA_SEND_PERIOD		30
+#define DATA_SEND_PERIOD		10
 
 extern "C"
 {
 extern void __iar_dlmalloc_stats();
 }
+
+#define MAX_DEBUG_MSG	255
 
 
 // local variables for the module
@@ -52,6 +54,30 @@ bool acquireNewData[SENSOR_COUNT], wakeup[SENSOR_COUNT];
 AlarmID sensorAlarmId[SENSOR_COUNT], wakeupAlarmId[SENSOR_COUNT];
 bool dataSaveFlag;
 bool zigbeeOK;
+
+
+char mdMessageBuffer[255];
+
+void md_printf(int len)
+{	
+	if(!alarmManager || !msgStore)
+		return;
+	
+	if(len >= 255)
+	{
+		printf("debug msg too big! \n");
+		return;
+	}
+	
+	MessagePacket msg_pkt;
+	msg_pkt.mainType = msgDebug;
+  	msg_pkt.relTimestampS = alarmManager->getUnixTime();
+	DebugMessage dbg_msg;
+	dbg_msg.timestampS = alarmManager->getUnixTime();
+  	dbg_msg.debugData = (uint8_t *) mdMessageBuffer;
+	msg_pkt.payload = (uint8_t *) &dbg_msg;
+	msgStore->addToStorageQueue(&msg_pkt, len);
+}
 
 // Alarm handler function
 void dataReadHandler(AlarmID id)
@@ -240,6 +266,13 @@ int main(void)
 	// store the message storage instance
 	msgStore = MessageStorage::getInstance();
 	msgStore->initialize("");
+	
+	//ptest("hello world %d!", 23624);
+	
+
+	md_printf(sprintf(mdMessageBuffer, "TEST: %x \n", 0xdeadbeef));
+	md_printf(sprintf(mdMessageBuffer, "TEST: %x \n", 0xdeadbeef));
+	md_printf(sprintf(mdMessageBuffer, "TEST: %x \n", 0xdeadbeef));
 	
 	// recover the RTC from storage, if possible
 	recoverRTC();
