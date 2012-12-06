@@ -87,22 +87,31 @@ void ANTHRMSensor::hardReset()
 	//   use the power pin instead
 #ifndef GPIO_ANT_VCC
 	GPIO_PinOutClear(ANT_RESET);
-	AlarmManager::getInstance()->lowPowerDelay(10, sleepModeEM1);
+	AlarmManager::getInstance()->lowPowerDelay(50, sleepModeEM1);
 	GPIO_PinOutSet(ANT_RESET);
 #else
 	GPIO_PinOutSet(ANT_RESET);
-	AlarmManager::getInstance()->lowPowerDelay(999, sleepModeEM1);
-	AlarmManager::getInstance()->lowPowerDelay(999, sleepModeEM1);
-	AlarmManager::getInstance()->lowPowerDelay(999, sleepModeEM1);
-	AlarmManager::getInstance()->lowPowerDelay(999, sleepModeEM1);
-	AlarmManager::getInstance()->lowPowerDelay(999, sleepModeEM1);
+	AlarmManager::getInstance()->lowPowerDelay(50, sleepModeEM1);
 	GPIO_PinOutClear(ANT_RESET);
 #endif
+	AlarmManager::getInstance()->lowPowerDelay(500, sleepModeEM1);
 }
 
 char ANTHRMSensor::setSleepState(bool sleepState)
 {
+	module_debug_ant("sleep %d", sleepState);
     // TODO implement
+	/*if(sleepState)
+	{
+		//ANT_CloseChannel(m_ucAntChannel);
+		GPIO_PinOutSet(GPIO_ANT_SLEEP);
+	}
+	else
+	{
+		GPIO_PinOutClear(GPIO_ANT_SLEEP);
+		//AlarmManager::getInstance()->lowPowerDelay(5, sleepModeEM1);
+		//ANT_OpenChannel(m_ucAntChannel);
+	}*/
     return 0;
 }
 
@@ -119,7 +128,7 @@ void ANTHRMSensor::sampleSensorData()
 	uint8_t *pucRxBuffer = readRxBuffer();        // Check if any data has been recieved from serial
     ANTPLUS_EVENT_RETURN stEventStruct;
     
-    if(pucRxBuffer)
+    while(pucRxBuffer)
     {
        /*if(HRMRX_ChannelEvent(pucRxBuffer, &stEventStruct))
           usLowPowerMode = 0;*/
@@ -127,6 +136,8 @@ void ANTHRMSensor::sampleSensorData()
        //processANTHRMRXEvents(&stEventStruct);
 
        releaseRxBuffer();
+	   
+	   pucRxBuffer = readRxBuffer();
     } 
 }
 
