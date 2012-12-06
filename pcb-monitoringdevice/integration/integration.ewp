@@ -2056,6 +2056,33 @@
   </group>
   <group>
     <name>sensor</name>
+    <group>
+      <name>ANT</name>
+      <file>
+        <name>$PROJ_DIR$\..\..\sensor\ANT\antdefines.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\sensor\ANT\antmessage.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\sensor\ANT\antplus.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\sensor\ANT\common_pages.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\sensor\ANT\hrm_rx.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\sensor\ANT\serial.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\sensor\ANT\types.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\sensor\ANT\version.h</name>
+      </file>
+    </group>
     <file>
       <name>$PROJ_DIR$\..\..\sensor\accelerationsensor.cpp</name>
     </file>

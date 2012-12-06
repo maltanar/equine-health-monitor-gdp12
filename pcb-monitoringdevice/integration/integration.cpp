@@ -15,6 +15,7 @@
 #include "usartmanager.h"
 #include "alarmmanager.h"
 #include "messagestorage.h"
+#include "anthrmsensor.h"
 
 // include files for sensors
 #include "gpssensor.h"
@@ -23,15 +24,17 @@
 
 #include <math.h>
 
-#define SENSOR_COUNT		3
+#define SENSOR_COUNT		4
 
 #define	SENSOR_TEMP_INDEX	0
 #define	SENSOR_ACCL_INDEX	1
 #define	SENSOR_GPS_INDEX	2
+#define	SENSOR_HRM_INDEX	3
 
-#define	SENSOR_TEMP_READ_PERIOD	2
-#define	SENSOR_ACCL_READ_PERIOD	1
+#define	SENSOR_TEMP_READ_PERIOD	7
+#define	SENSOR_ACCL_READ_PERIOD	3
 #define	SENSOR_GPS_READ_PERIOD	10
+#define SENSOR_HRM_READ_PERIOD	5
 #define DATA_SEND_PERIOD		30
 
 extern "C"
@@ -90,20 +93,18 @@ void saveRTC()
 	msgStore->writeRTCStorage(alarmManager->getUnixTime());
 }
 
-
-
 void configureTempSensor()
 {
 	TemperatureSensor * tmp = TemperatureSensor::getInstance();
 	printf("TS device id %x manid %x \n", tmp->getDeviceID(), tmp->getManufacturerID());
 	tmp->setSleepState(true);
 	sensors[SENSOR_TEMP_INDEX] = tmp;
-	/*wakeupAlarmId[SENSOR_TEMP_INDEX] = alarmManager->createAlarm(SENSOR_TEMP_READ_PERIOD, false, &deviceWakeupHandler);
+	wakeupAlarmId[SENSOR_TEMP_INDEX] = alarmManager->createAlarm(SENSOR_TEMP_READ_PERIOD, false, &deviceWakeupHandler);
 	sensorAlarmId[SENSOR_TEMP_INDEX] = alarmManager->createAlarm(SENSOR_TEMP_READ_PERIOD, false, &dataReadHandler);
 	// offset the data acquire alarm by 1
 	// TODO add support for fixed offsets in alarm creation
 	alarmManager->setAlarmTimeout(sensorAlarmId[SENSOR_TEMP_INDEX], SENSOR_TEMP_READ_PERIOD + 1);
-	*/
+	
 }
 
 void configureAccelerometer()
@@ -111,11 +112,11 @@ void configureAccelerometer()
 	AccelerationSensor * acc = AccelerationSensor::getInstance();
 	acc->setSleepState(true);
 	sensors[SENSOR_ACCL_INDEX] = acc;
-	/*wakeupAlarmId[SENSOR_ACCL_INDEX] = alarmManager->createAlarm(SENSOR_ACCL_READ_PERIOD, false, &deviceWakeupHandler);
+	wakeupAlarmId[SENSOR_ACCL_INDEX] = alarmManager->createAlarm(SENSOR_ACCL_READ_PERIOD, false, &deviceWakeupHandler);
 	sensorAlarmId[SENSOR_ACCL_INDEX] = alarmManager->createAlarm(SENSOR_ACCL_READ_PERIOD, false, &dataReadHandler);
 	// offset the data acquire alarm by 1
 	// TODO add support for fixed offsets in alarm creation
-	alarmManager->setAlarmTimeout(sensorAlarmId[SENSOR_ACCL_INDEX], SENSOR_ACCL_READ_PERIOD + 3);*/
+	alarmManager->setAlarmTimeout(sensorAlarmId[SENSOR_ACCL_INDEX], SENSOR_ACCL_READ_PERIOD + 3);
 }
 
 void configureGPS()
@@ -123,8 +124,8 @@ void configureGPS()
 	GPSSensor * gps = GPSSensor::getInstance();
 	sensors[SENSOR_GPS_INDEX]  = gps;
 	// enabling parseOnReceive results in string parsing inside GPS ISR
-	// may decrease data loss but introduce instability due to long ISR
-	//gps->setParseOnReceive(true);
+	// may decrease data loss but may introduce instability due to long ISR
+	gps->setParseOnReceive(true);
 	gps->setSleepState(true);
 	wakeupAlarmId[SENSOR_GPS_INDEX] = alarmManager->createAlarm(SENSOR_GPS_READ_PERIOD, false, &deviceWakeupHandler);
 	sensorAlarmId[SENSOR_GPS_INDEX] = alarmManager->createAlarm(SENSOR_GPS_READ_PERIOD, false, &dataReadHandler);
@@ -132,6 +133,21 @@ void configureGPS()
 	// TODO add support for fixed offsets in alarm creation
 	alarmManager->setAlarmTimeout(sensorAlarmId[SENSOR_GPS_INDEX], SENSOR_GPS_READ_PERIOD + 2);
 }
+
+void configureHRM()
+{
+	ANTHRMSensor * hrm = ANTHRMSensor::getInstance();
+	sensors[SENSOR_HRM_INDEX] = hrm;
+	if(!hrm->initializeNetwork(true))
+		printf("ANT initialization failed! \n");
+	hrm->setSleepState(true);	// TODO implement ANT sleep state
+	wakeupAlarmId[SENSOR_HRM_INDEX] = alarmManager->createAlarm(SENSOR_HRM_READ_PERIOD, false, &deviceWakeupHandler);
+	sensorAlarmId[SENSOR_HRM_INDEX] = alarmManager->createAlarm(SENSOR_HRM_READ_PERIOD, false, &dataReadHandler);
+	// offset the data acquire alarm by 2
+	// TODO add support for fixed offsets in alarm creation
+	alarmManager->setAlarmTimeout(sensorAlarmId[SENSOR_HRM_INDEX], SENSOR_HRM_READ_PERIOD + 2);
+}
+
 
 void configureDataCollection()
 {
@@ -164,13 +180,15 @@ bool configureZigBee()
 	
     if (error_code != GBEE_NO_ERROR) {
          printf("Error: unable to configure device, code: %02x\n", error_code);
-    }
+    } else
+		printf("ZigBee OK!");
 	
 	return zigbeeOK;
 }
 
 void sendOrSaveData()
 {
+	printf("***** send or save data *****\n");
 	uint16_t size;
 	dataSaveFlag = false;
 	saveRTC();
@@ -194,6 +212,7 @@ void sendOrSaveData()
 	}
 	else
 		msgStore->flushAllToDisk();
+	printf("***** send or save data done *****\n");
 }
 
 /**************************************************************************//**
@@ -236,10 +255,17 @@ int main(void)
 	
 	alarmManager->pause();
 	// create the sensor objects and alarms
+	printf("Configuring TMP006...\n");
 	configureTempSensor();
+	printf("Configuring ADXL350...\n");
 	configureAccelerometer();
+	printf("Configuring GPS...\n");
 	configureGPS();
+	printf("Configuring ANT HRM...\n");
+	configureHRM();
+	printf("Configuring data collection...\n");
 	configureDataCollection();
+	printf("Configuring ZigBee...\n");
 	configureZigBee();
 	
 	printf("Starting periodic sample and send... \n");
@@ -251,6 +277,7 @@ int main(void)
 	SensorMessage *msg;
 	GPSMessage *gpsMsg;
 	MessagePacket pkt;
+	HeartRateMessage * hrmMsg;
 	
 	pkt.mainType = msgSensorData;
 	
@@ -287,7 +314,6 @@ int main(void)
 				pkt.relTimestampS = alarmManager->getUnixTime();
 				printf("sample and read for sensor %d time %u \n", i, pkt.relTimestampS);
 				
-				
 				if(i != SENSOR_ACCL_INDEX)
 				{
 					sensors[i]->sampleSensorData();
@@ -305,8 +331,11 @@ int main(void)
 				sensors[i]->setSleepState(true);
 				switch(i)
 				{
+				  case SENSOR_HRM_INDEX:
+					hrmMsg = (HeartRateMessage *) msg->sensorMsgArray;
+					printf("HRM: %d beats/min \n", hrmMsg->bpm);
+					break;
 				  case SENSOR_GPS_INDEX:
-					// if parseOnReceive is set, no need to sample ourselves?
 					gpsMsg = (GPSMessage *) msg->sensorMsgArray;
 					printf("GPS: %d %d %d, %d %d %d \n", gpsMsg->latitude.degree,
 						   gpsMsg->latitude.minute, gpsMsg->latitude.second, 
