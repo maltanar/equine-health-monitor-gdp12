@@ -43,7 +43,7 @@ void DMAManager::configureChannel(uint8_t ch, bool highPrio, uint32_t source)
   DMA_CfgChannel(ch, &channelConfig);
 }
 
-void DMAManager::configureDescriptor(uint8_t ch, DMA_DataInc_TypeDef dstIncMode,
+DMA_DESCRIPTOR_TypeDef * DMAManager::configureDescriptor(uint8_t ch, DMA_DataInc_TypeDef dstIncMode,
                            DMA_DataInc_TypeDef srcIncMode, 
                            DMA_DataSize_TypeDef unitSize,
                            DMA_ArbiterConfig_TypeDef rate)
@@ -58,6 +58,8 @@ void DMAManager::configureDescriptor(uint8_t ch, DMA_DataInc_TypeDef dstIncMode,
     .hprot   = 0
   };
   DMA_CfgDescr(ch, true, &descriptorConfig);
+  
+  return ((DMA_DESCRIPTOR_TypeDef *)(DMA->CTRLBASE)) + ch;
 }
 
 void DMAManager::activateBasic(uint8_t ch, void * sourceBuf, void * destBuf, 

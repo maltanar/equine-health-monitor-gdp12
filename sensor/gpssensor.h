@@ -63,9 +63,11 @@ private:
   void operator=(GPSSensor const&);        // do not implement
   // ------ end of singleton pattern specific section --------
   
-  uint8_t m_msgBuffer[GPS_MSGBUFFER_SIZE];      // message buffer into which we receive raw NMEA strings
+  uint8_t m_msgBuffer[GPS_MSGBUFFER_SIZE];      // message buffer 1 - data copied here after signal char
+  uint8_t m_dmaBuffer[GPS_MSGBUFFER_SIZE];      // message buffer - DMA works here
   LEUARTPort * m_port;                            // the UART IF for the GPS
   GPSMessage m_gpsMessage;
+  bool m_parseOnReceive;	// will the messages be parsed upon reception in ISR?
   
   // process a buffer as an NMEA message
   void processNMEAMessage(uint8_t * buffer);

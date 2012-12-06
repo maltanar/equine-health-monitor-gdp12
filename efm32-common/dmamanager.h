@@ -17,7 +17,7 @@ public:
   }
   
   void configureChannel(uint8_t ch, bool highPrio, uint32_t src);
-  void configureDescriptor(uint8_t ch, DMA_DataInc_TypeDef dstIncMode,
+  DMA_DESCRIPTOR_TypeDef * configureDescriptor(uint8_t ch, DMA_DataInc_TypeDef dstIncMode,
                            DMA_DataInc_TypeDef srcIncMode, 
                            DMA_DataSize_TypeDef unitSize,
                            DMA_ArbiterConfig_TypeDef rate);

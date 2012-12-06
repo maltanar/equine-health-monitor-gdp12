@@ -17,7 +17,8 @@
 // message received will be automatically parsed into internal structures
 void gpsSignalFrameHandler(uint8_t *buf)
 {
-	GPSSensor::getInstance()->sampleSensorData();
+	module_debug_gps("signal frame!");
+	GPSSensor::getInstance()->processNMEAMessage(buf);
 }
 
 // PE8 controls the transistor that turns on/off the GPS Vcc
@@ -62,6 +63,7 @@ GPSSensor::GPSSensor() :
   Sensor(typeGPS, sizeof(GPSMessage), 1000)
 {
 	m_sensorMessage.sensorMsgArray = (uint8_t *) &m_gpsMessage;
+	m_parseOnReceive = false;
 	
 	// initialize the GPS message to all 0xFF's
 	m_gpsMessage.latitude.degree = 0xFF;
@@ -84,8 +86,10 @@ GPSSensor::GPSSensor() :
   // TODO should we perform a sanity check on the GPS module here?
   
 #ifdef USE_GPS_DMA
+  // generate interrupt when newline is received at the very end of the frame
+  ((LEUARTPort *)m_port)->setupSignalFrame('\n');
   // configure DMA 
-  ((LEUARTPort *)m_port)->setupSignalFrameDMA(DMA_CHANNEL_GPS, '\n');
+  ((LEUARTPort *)m_port)->setupDMA(m_dmaBuffer, GPS_MSGBUFFER_SIZE, DMA_CHANNEL_GPS);
 #endif
   
   // TODO GPS is responding weirdly to these control msgs, but why?
@@ -99,8 +103,12 @@ GPSSensor::GPSSensor() :
   module_debug_gps("initialized with period %d", 1000);
 }
 
+// if enabled, data received via DMA is parsed as soon as one complete
+// message is received (inside the signal frame ISR)
 void GPSSensor::setParseOnReceive(bool enable)
 {
+	m_parseOnReceive = enable;
+	
 	if(enable)
 		((LEUARTPort *)m_port)->setSignalFrameHook(&gpsSignalFrameHandler);
 	else
@@ -111,6 +119,12 @@ char GPSSensor::setSleepState(bool sleepState)
 {
 	// note: GPS sleep function only possible when power pins are controllable
 	setPower(!sleepState, true);
+	
+	if(!sleepState)
+	{
+		// send configure message upon wakeup
+		configureWantedNMEASentences();
+	}
 	return 1;
 }
 
@@ -125,9 +139,11 @@ void GPSSensor::setPeriod(SensorPeriod ms)
   
 void GPSSensor::sampleSensorData()
 {
-  // GPS sends data to us at a fixed rate, so there is no real way of "sampling"
-  // instead, parse the stored string data
-  processNMEAMessage(m_msgBuffer);
+	// GPS sends data to us at a fixed rate, so there is no real way of "sampling"
+	// instead, parse the stored string data brought by DMA
+	// no point in parsing again if parse on receive was set
+	if(!m_parseOnReceive)
+		processNMEAMessage(m_msgBuffer);
 }
 
 void GPSSensor::queryFirmwareVersion()
@@ -208,21 +224,36 @@ void GPSSensor::processNMEAMessage(uint8_t * buffer)
   int i = 0, c = 0;
   uint8_t fieldPos[20];
   
-  // find the start sequence
-  while(buffer[i] != '$')
-    i++;
-  fieldPos[c++] = i + 1;
-  
-  while(buffer[i] != '*')
-  {
-    // convert commas to zero delimiter & add field
-    if(buffer[i] == ',')
-    {
-      buffer[i] = 0;
-      fieldPos[c++] = i + 1;
-    }
-    i++;
-  }
+	// find the start sequence
+	while(buffer[i] != '$')
+	{
+		i++;
+		if(i == GPS_MSGBUFFER_SIZE)
+		{
+		  // reached end of buffer without finding start char
+		  module_debug_gps("corrupt NMEA message - no start sequence");
+		  return;
+		}
+	}
+	fieldPos[c++] = i + 1;
+
+	while(buffer[i] != '*')
+	{
+		// convert commas to zero delimiter & add field
+		if(buffer[i] == ',')
+		{
+			buffer[i] = 0;
+			fieldPos[c++] = i + 1;
+		}
+		i++;
+		
+		// reached end of buffer without finding terminator
+		if(i == GPS_MSGBUFFER_SIZE)
+		{
+			module_debug_gps("corrupt NMEA message - no terminator");
+			return;
+		}
+	}
   
   buffer[i] = 0;
   
@@ -262,7 +293,39 @@ void GPSSensor::processNMEAMessage(uint8_t * buffer)
 					m_gpsMessage.longitude.minute,
 					m_gpsMessage.longitude.second,
 					m_gpsMessage.longitudeWest);
-  }
+  } 
+	else if(strcmp((char const *) &buffer[fieldPos[0]], "GPGGA") == 0)
+  	{
+		// copy information from the parsed fields into GPSMessage structure
+		// position fix is invalid if V
+		m_gpsMessage.validPosFix = (buffer[fieldPos[6]] == '0' ? false : true);
+		// latitude format is DDMM.SSxx
+		m_gpsMessage.latitude.degree = ASCIITONUM(buffer[fieldPos[2] + 0]) * 10 + ASCIITONUM(buffer[fieldPos[2] + 1]);
+		m_gpsMessage.latitude.minute = ASCIITONUM(buffer[fieldPos[2] + 2]) * 10 + ASCIITONUM(buffer[fieldPos[2] + 3]);
+		m_gpsMessage.latitude.second = ASCIITONUM(buffer[fieldPos[2] + 5]) * 10 + ASCIITONUM(buffer[fieldPos[2] + 6]);
+		// latitude hemisphere is N for north and S for south
+		m_gpsMessage.latitudeNorth = (buffer[fieldPos[3]] == 'N' ? true : false);
+		// longitude format is DDDMM.SSxx
+		m_gpsMessage.longitude.degree = ASCIITONUM(buffer[fieldPos[4] + 0]) * 100 
+								+ ASCIITONUM(buffer[fieldPos[4] + 1]) * 10
+								+ ASCIITONUM(buffer[fieldPos[4] + 2]) * 1;
+		m_gpsMessage.longitude.minute = ASCIITONUM(buffer[fieldPos[4] + 3]) * 10 + ASCIITONUM(buffer[fieldPos[5] + 4]);
+		m_gpsMessage.longitude.second = ASCIITONUM(buffer[fieldPos[4] + 6]) * 10 + ASCIITONUM(buffer[fieldPos[5] + 7]);
+		// longitude hemisphere is E for east and W for west
+		m_gpsMessage.longitudeWest = (buffer[fieldPos[5]] == 'W' ? true : false);
+		// TODO num of satellites in view:
+		//m_gpsMessage.numSatellitesInView = ASCIITONUM(buffer[fieldPos[7]]);
+
+		module_debug_gps("validPosFix: %d", m_gpsMessage.validPosFix);
+		module_debug_gps("lat %d %d %d %d", m_gpsMessage.latitude.degree,
+				m_gpsMessage.latitude.minute,
+				m_gpsMessage.latitude.second,
+				m_gpsMessage.latitudeNorth);
+		module_debug_gps("long %d %d %d %d", m_gpsMessage.longitude.degree,
+				m_gpsMessage.longitude.minute,
+				m_gpsMessage.longitude.second,
+				m_gpsMessage.longitudeWest);
+	}
   // TODO decide on action when we get a non-GPRMC message
   // "keep old position data" assumed for now
   // ideally we should have a separate message handler that does this

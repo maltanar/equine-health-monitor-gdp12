@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <string.h>
 #include "efm32.h"
 #include "em_cmu.h"
 #include "em_gpio.h"
@@ -14,6 +15,9 @@ LEUARTPort::LEUARTPort(const USARTPortConfig *cfg) :
 	USARTPort(cfg)
 {
     // no additional initialization necessary for LEUART
+	m_dmaBuffer = NULL;
+	m_dmaBufferSize = 0;
+	m_sfHook = 0;
 }
 
 bool LEUARTPort::initialize(uint8_t *rxBuffer, uint8_t rxBufferSize, 
@@ -24,8 +28,8 @@ bool LEUARTPort::initialize(uint8_t *rxBuffer, uint8_t rxBufferSize,
 	m_rxWriteIndex = 0;
 	m_rxCount = 0;
 	m_rxBufferSize = rxBufferSize;
-	m_rxBuffer         = rxBuffer;
-	m_sfHook = 0;
+	m_rxBuffer = rxBuffer;
+	
 
 	// Configure GPIO pins 
 	CMU_ClockEnable(cmuClock_GPIO, true);
@@ -123,61 +127,82 @@ void LEUARTPort::handleInterrupt()
 	if (uartif & LEUART_IF_SIGF)
 	{
 		module_debug_leuart("signal frame!");
-
+		// nothing to do without DMA buffer
+		if(!m_dmaBuffer)
+			return;
+		
+		// copy data to rx buffer from DMA buffer
+		// TODO maybe used rxWriteIndex and do wraparound
+		uint32_t len = m_dmaBufferSize - 1 - ((m_dmaDescriptor->CTRL >> 4) & 0x3FF);
+		module_debug_leuart("len = %d %x %x", len, m_rxBuffer, m_dmaBuffer);
+		
+		DMAManager::getInstance()->activateBasic(m_dmaChannel, NULL, NULL, 
+											 m_dmaBufferSize - 1);
+		
+		memcpy(m_rxBuffer, m_dmaBuffer, len);
+		
 		// call the signal frame hook if set
 		if(m_sfHook)
-		m_sfHook(m_rxBuffer);
-
-		// reactivate DMA
-		DMAManager::getInstance()->activateBasic(m_dmaChannel, NULL, NULL, 
-												 m_rxBufferSize - 1);
+			m_sfHook(m_rxBuffer);
 	}
 }
 
-void LEUARTPort::setupSignalFrameDMA(uint8_t dmaChannel, uint8_t signalFrameChar)
+void LEUARTPort::setupSignalFrame(uint8_t signalFrameChar)
 {
-    if(!m_rxBuffer || m_rxBufferSize == 0)
-    {
-		module_debug_leuart("cannot enable DMA without RX buffer");
-		return;
-    }
+	// TODO is there anything we cannot accept as the signal frame char?
+    m_signalFrameChar = signalFrameChar;
+	
+	// configure signal frame - interrupt to be generated upon encountering
+    // this character
+    ((LEUART_TypeDef *) m_portConfig->usartBase)->SIGFRAME = m_signalFrameChar;
     
+    // enable LEUART signal frame interrupt
+    LEUART_IntEnable(LEUART0, LEUART_IEN_SIGF);
+}
+
+void LEUARTPort::setupDMA(uint8_t *dmaBuffer, uint8_t dmaBufferSize, uint8_t dmaChannel)
+{
     // require normal initialization first
     if(!m_initialized)
         return;
+	
+	if(!dmaBuffer || dmaBufferSize == 0)
+    {
+		module_debug_leuart("cannot enable DMA without buffer");
+		return;
+    }
     
-    module_debug_leuart("Configuring sigframe DMA on channel %d and sigframe 0x%x", dmaChannel,
-					signalFrameChar);
+    module_debug_leuart("Configuring DMA on channel %d ", dmaChannel);
     
     // TODO this is hardcoded for LEUART0, modify this to support others
     
+	m_dmaBufferSize = dmaBufferSize; 
+	m_dmaBuffer = dmaBuffer;
     m_dmaChannel = dmaChannel;
-    // TODO is there anything we cannot accept as the signal frame char?
-    m_signalFrameChar = signalFrameChar;
+    
     
     // config LEUART DMA, interrupts and DMAManager
     DMAManager * dmaMgr = DMAManager::getInstance();
     
     // configure the DMA channel and descriptor for LEUART0
-    // TODO make this customizable - not only for LEUART0!!
+    // TODO make this customizable - not only for LEUART0!! need dma no in config
     dmaMgr->configureChannel(m_dmaChannel, false, DMAREQ_LEUART0_RXDATAV);
-    dmaMgr->configureDescriptor(m_dmaChannel, dmaDataInc1, dmaDataIncNone, 
-                                                            dmaDataSize1, dmaArbitrate1);
+    m_dmaDescriptor = dmaMgr->configureDescriptor(m_dmaChannel, dmaDataInc1, dmaDataIncNone, 
+                                dmaDataSize1, dmaArbitrate1);
     // activate DMA transfer
-    dmaMgr->activateBasic(m_dmaChannel, (void *) &LEUART0->RXDATA,
-                                                (void *) m_rxBuffer, m_rxBufferSize - 1);
+    dmaMgr->activateBasic(m_dmaChannel, (void *) &((LEUART_TypeDef *) m_portConfig->usartBase)->RXDATA,
+                                                (void *) m_dmaBuffer, m_dmaBufferSize - 1);
     
-    // configure signal frame - interrupt to be generated upon encountering
-    // this character
-    LEUART0->SIGFRAME = m_signalFrameChar;
-    
-    // enable LEUART signal frame interrupt
-    LEUART_IntEnable(LEUART0, LEUART_IEN_SIGF);
     // disable LEUART receive interrupt
     LEUART_IntDisable((LEUART_TypeDef *) m_portConfig->usartBase, LEUART_IF_RXDATAV);
+	
+	// TODO enable DMA interrupt and reroute to here!
+	// this should be done similar to what USARTManager does for the ports
+	// for LEUART it is fine to not have ,t as we can live with signal frame 
+	// interrupts instead
     
     // Make sure the LEUART wakes up the DMA on RX data
-    LEUART0->CTRL = LEUART_CTRL_RXDMAWU;
+    ((LEUART_TypeDef *) m_portConfig->usartBase)->CTRL = LEUART_CTRL_RXDMAWU;
 }
 
 int LEUARTPort::readChar(void)
