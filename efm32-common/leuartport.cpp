@@ -174,8 +174,6 @@ void LEUARTPort::setupDMA(uint8_t *dmaBuffer, uint8_t dmaBufferSize, uint8_t dma
     
     module_debug_leuart("Configuring DMA on channel %d ", dmaChannel);
     
-    // TODO this is hardcoded for LEUART0, modify this to support others
-    
 	m_dmaBufferSize = dmaBufferSize; 
 	m_dmaBuffer = dmaBuffer;
     m_dmaChannel = dmaChannel;

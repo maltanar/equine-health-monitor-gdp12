@@ -1904,6 +1904,12 @@
       <name>$PROJ_DIR$\..\..\efm32-common\leuartport.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\spiport.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\spiport.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\efm32-common\uartport.cpp</name>
     </file>
     <file>
@@ -1958,6 +1964,9 @@
       <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_i2c.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_int.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_leuart.c</name>
     </file>
     <file>
@@ -1965,6 +1974,9 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_system.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_timer.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_usart.c</name>
@@ -2083,6 +2095,24 @@
         <name>$PROJ_DIR$\..\..\sensor\ANT\version.h</name>
       </file>
     </group>
+    <group>
+      <name>audio</name>
+      <file>
+        <name>$PROJ_DIR$\..\..\sensor\audio\audio_config.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\sensor\audio\audio_dma.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\sensor\audio\audio_dma.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\sensor\audio\audio_timer.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\sensor\audio\audio_timer.h</name>
+      </file>
+    </group>
     <file>
       <name>$PROJ_DIR$\..\..\sensor\accelerationsensor.cpp</name>
     </file>
@@ -2094,6 +2124,12 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\sensor\anthrmsensor.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\sensor\audio.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\sensor\audio.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\sensor\gpssensor.cpp</name>

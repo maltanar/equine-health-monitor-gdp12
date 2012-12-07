@@ -17,6 +17,8 @@
 #include "messagestorage.h"
 #include "anthrmsensor.h"
 
+#include "audio.h"
+
 // include files for sensors
 #include "gpssensor.h"
 #include "accelerationsensor.h"
@@ -50,6 +52,8 @@ Sensor * sensors[SENSOR_COUNT];
 AlarmManager * alarmManager;
 MessageStorage *msgStore;
 XBee *xbee;
+Audio * mic;
+
 bool acquireNewData[SENSOR_COUNT], wakeup[SENSOR_COUNT];
 AlarmID sensorAlarmId[SENSOR_COUNT], wakeupAlarmId[SENSOR_COUNT];
 bool dataSaveFlag;
@@ -125,11 +129,11 @@ void configureTempSensor()
 	printf("TS device id %x manid %x \n", tmp->getDeviceID(), tmp->getManufacturerID());
 	tmp->setSleepState(true);
 	sensors[SENSOR_TEMP_INDEX] = tmp;
-	wakeupAlarmId[SENSOR_TEMP_INDEX] = alarmManager->createAlarm(SENSOR_TEMP_READ_PERIOD, false, &deviceWakeupHandler);
+	/*wakeupAlarmId[SENSOR_TEMP_INDEX] = alarmManager->createAlarm(SENSOR_TEMP_READ_PERIOD, false, &deviceWakeupHandler);
 	sensorAlarmId[SENSOR_TEMP_INDEX] = alarmManager->createAlarm(SENSOR_TEMP_READ_PERIOD, false, &dataReadHandler);
 	// offset the data acquire alarm by 1
 	// TODO add support for fixed offsets in alarm creation
-	alarmManager->setAlarmTimeout(sensorAlarmId[SENSOR_TEMP_INDEX], SENSOR_TEMP_READ_PERIOD + 1);
+	alarmManager->setAlarmTimeout(sensorAlarmId[SENSOR_TEMP_INDEX], SENSOR_TEMP_READ_PERIOD + 1);*/
 	
 }
 
@@ -138,11 +142,11 @@ void configureAccelerometer()
 	AccelerationSensor * acc = AccelerationSensor::getInstance();
 	acc->setSleepState(true);
 	sensors[SENSOR_ACCL_INDEX] = acc;
-	wakeupAlarmId[SENSOR_ACCL_INDEX] = alarmManager->createAlarm(SENSOR_ACCL_READ_PERIOD, false, &deviceWakeupHandler);
+	/*wakeupAlarmId[SENSOR_ACCL_INDEX] = alarmManager->createAlarm(SENSOR_ACCL_READ_PERIOD, false, &deviceWakeupHandler);
 	sensorAlarmId[SENSOR_ACCL_INDEX] = alarmManager->createAlarm(SENSOR_ACCL_READ_PERIOD, false, &dataReadHandler);
 	// offset the data acquire alarm by 1
 	// TODO add support for fixed offsets in alarm creation
-	alarmManager->setAlarmTimeout(sensorAlarmId[SENSOR_ACCL_INDEX], SENSOR_ACCL_READ_PERIOD + 3);
+	alarmManager->setAlarmTimeout(sensorAlarmId[SENSOR_ACCL_INDEX], SENSOR_ACCL_READ_PERIOD + 3);*/
 }
 
 void configureGPS()
@@ -153,25 +157,25 @@ void configureGPS()
 	// may decrease data loss but may introduce instability due to long ISR
 	gps->setParseOnReceive(true);
 	gps->setSleepState(true);
-	wakeupAlarmId[SENSOR_GPS_INDEX] = alarmManager->createAlarm(SENSOR_GPS_READ_PERIOD, false, &deviceWakeupHandler);
+	/*wakeupAlarmId[SENSOR_GPS_INDEX] = alarmManager->createAlarm(SENSOR_GPS_READ_PERIOD, false, &deviceWakeupHandler);
 	sensorAlarmId[SENSOR_GPS_INDEX] = alarmManager->createAlarm(SENSOR_GPS_READ_PERIOD, false, &dataReadHandler);
 	// offset the data acquire alarm by 2
 	// TODO add support for fixed offsets in alarm creation
-	alarmManager->setAlarmTimeout(sensorAlarmId[SENSOR_GPS_INDEX], SENSOR_GPS_READ_PERIOD + 2);
+	alarmManager->setAlarmTimeout(sensorAlarmId[SENSOR_GPS_INDEX], SENSOR_GPS_READ_PERIOD + 2);*/
 }
 
 void configureHRM()
 {
 	ANTHRMSensor * hrm = ANTHRMSensor::getInstance();
 	sensors[SENSOR_HRM_INDEX] = hrm;
-	if(!hrm->initializeNetwork(true))
-		printf("ANT initialization failed! \n");
+	//if(!hrm->initializeNetwork(true))
+	//	printf("ANT initialization failed! \n");
 	hrm->setSleepState(true);	// TODO implement ANT sleep state
-	wakeupAlarmId[SENSOR_HRM_INDEX] = alarmManager->createAlarm(SENSOR_HRM_READ_PERIOD, false, &deviceWakeupHandler);
+	/*wakeupAlarmId[SENSOR_HRM_INDEX] = alarmManager->createAlarm(SENSOR_HRM_READ_PERIOD, false, &deviceWakeupHandler);
 	sensorAlarmId[SENSOR_HRM_INDEX] = alarmManager->createAlarm(SENSOR_HRM_READ_PERIOD, false, &dataReadHandler);
 	// offset the data acquire alarm by 2
 	// TODO add support for fixed offsets in alarm creation
-	alarmManager->setAlarmTimeout(sensorAlarmId[SENSOR_HRM_INDEX], SENSOR_HRM_READ_PERIOD + 2);
+	alarmManager->setAlarmTimeout(sensorAlarmId[SENSOR_HRM_INDEX], SENSOR_HRM_READ_PERIOD + 2);*/
 }
 
 
@@ -241,6 +245,61 @@ void sendOrSaveData()
 	printf("***** send or save data done *****\n");
 }
 
+void saveAudioSample(uint8_t audioLenS)
+{
+	printf("start acquiring audio sample, duration %d seconds \n", audioLenS);
+	const uint16_t bufferSize = 1000;
+	mic = new Audio(Fs_8khz, bufferSize);
+	mic->init();
+
+	msgStore->startAudioSample();	
+	mic->startRecording(audioLenS);
+	
+	int buffer_count =0;
+
+	audioStatus_typedef micStatus;
+	micStatus = mic->getStatus();
+
+	uint16_t *new_buffer;
+	
+	//uint32_t *bfs = (uint32_t *)malloc(4 * (audioLenS*8000)/bufferSize);
+
+	while (micStatus == recording) 
+	{
+		new_buffer = (uint16_t *)mic->getBuffer();
+
+		if (new_buffer != NULL)
+		{
+			//bfs[buffer_count] = (uint32_t) new_buffer;
+			buffer_count++;
+			
+			msgStore->flushAudioSample((char *) new_buffer, bufferSize * sizeof(uint16_t));
+			
+		}
+		EMU_EnterEM1();
+		micStatus = mic->getStatus();
+	}
+	
+	/*for(int i= 0; i < buffer_count; i++)
+		printf("%d: 0x%x \n", i, bfs[i]);
+	
+	free(bfs);*/
+	
+	new_buffer = (uint16_t *)mic->getBuffer();
+	
+	if(new_buffer)
+	{
+		printf("got last buffer! \n");
+		msgStore->flushAudioSample((char *) new_buffer, bufferSize * sizeof(uint16_t));
+	}
+	else
+		printf("no last buffer! \n");
+	
+	msgStore->endAudioSample();
+	
+	printf("end acquiring audio sample \n");
+}
+
 /**************************************************************************//**
  * @brief  Main function
  *****************************************************************************/
@@ -252,9 +311,15 @@ int main(void)
 	// consumes additional power but worth it for debugging
 	EMU->CTRL |= EMU_CTRL_EMVREG_FULL;
 	
-	// TODO clock setting - move to own function
-	/* Use 32MHZ HFXO as core clock frequency */
+	// TODO remove line below if rest of frequencies in system screws up
+	//SystemHFXOClockSet(48000000);   
   	CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
+	CMU_OscillatorEnable(cmuOsc_HFRCO, false, false);
+	// store the message storage instance
+	msgStore = MessageStorage::getInstance();
+	msgStore->initialize("");
+	
+	saveAudioSample(10);
 	
 	// configure GPS power pins and enable both Vcc and Vbat
 	GPSSensor::configurePower();
@@ -263,16 +328,14 @@ int main(void)
 	// store the alarm manager instance
 	alarmManager = AlarmManager::getInstance();
 	
-	// store the message storage instance
-	msgStore = MessageStorage::getInstance();
-	msgStore->initialize("");
+	
 	
 	//ptest("hello world %d!", 23624);
 	
 
-	md_printf(sprintf(mdMessageBuffer, "TEST: %x \n", 0xdeadbeef));
-	md_printf(sprintf(mdMessageBuffer, "TEST: %x \n", 0xdeadbeef));
-	md_printf(sprintf(mdMessageBuffer, "TEST: %x \n", 0xdeadbeef));
+	//md_printf(sprintf(mdMessageBuffer, "TEST: %x \n", 0xdeadbeef));
+	//md_printf(sprintf(mdMessageBuffer, "TEST: %x \n", 0xdeadbeef));
+	//md_printf(sprintf(mdMessageBuffer, "TEST: %x \n", 0xdeadbeef));
 	
 	// recover the RTC from storage, if possible
 	recoverRTC();
@@ -305,6 +368,9 @@ int main(void)
 	
 	// start counting!
 	alarmManager->resume();
+	
+	
+	
 	
 	uint16_t size;
 	SensorMessage *msg;

@@ -95,3 +95,20 @@ void md_printf(int len);
 #else
 	#define module_debug_strg(fmt, ...)   
 #endif
+
+
+#ifdef ENABLE_DEBUG_OUTPUT_SPI
+	#define module_debug_spi(fmt, ...)   printf("SPI: "fmt"\n", ##__VA_ARGS__)
+#elif defined(ZB_ENABLE_DEBUG_OUTPUT_STRG)
+	#define module_debug_spi(fmt, ...)   md_printf(sprintf(mdMessageBuffer, "SPI: "fmt"\n", ##__VA_ARGS__))
+#else
+	#define module_debug_spi(fmt, ...)   
+#endif
+
+#ifdef ENABLE_DEBUG_OUTPUT_AUDIO
+	#define module_debug_audio(fmt, ...)   printf("AUD: "fmt"\n", ##__VA_ARGS__)
+#elif defined(ZB_ENABLE_DEBUG_OUTPUT_AUDIO)
+	#define module_debug_audio(fmt, ...)   md_printf(sprintf(mdMessageBuffer, "AUD: "fmt"\n", ##__VA_ARGS__))
+#else
+	#define module_debug_audio(fmt, ...)   
+#endif
