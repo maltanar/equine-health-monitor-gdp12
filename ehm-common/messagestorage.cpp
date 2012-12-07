@@ -1,9 +1,11 @@
 #include "messagestorage.h"
 #include <string.h>
 #include <stdlib.h>
-#include "alarmmanager.h"
 
 #ifdef EHM_MONITORING_DEVICE
+#include "alarmmanager.h"
+#include "debug_output_control.h"
+#elseif EHM_BASE_STATION
 #include "debug_output_control.h"
 #else
 #define module_debug_strg(fmt, ...)
@@ -641,5 +643,21 @@ unsigned int MessageStorage::getTimestamp()
 {
 	return AlarmManager::getInstance()->getUnixTime();
 }
+#endif
+// end of internal filesystem access layer functions ------------------------
+
+// start of empty implementations for the internal filesystem functions, to be able
+// to use the static functins of the class in other projects
+#ifdef EHM_BASE_STATION
+void MessageStorage::openFile(const char * fileName, bool writeAccess, bool readAccess){}
+void MessageStorage::seekToPos(unsigned int pos){}
+void MessageStorage::closeFile(){}
+void MessageStorage::deleteFile(const char * fileName){}
+void MessageStorage::writeToFile(char * buffer, unsigned int count){}
+void MessageStorage::readFromFile(char * buffer, unsigned int count){}
+unsigned int MessageStorage::getDirFileCount(char *dirName){ return -1; }
+bool MessageStorage::mountStorage(){ return false; }
+void MessageStorage::unmountStorage(){}
+unsigned int MessageStorage::getTimestamp(){ return -1; }
 #endif
 // end of internal filesystem access layer functions ------------------------
