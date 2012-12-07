@@ -5,7 +5,7 @@
 #ifdef EHM_MONITORING_DEVICE
 #include "alarmmanager.h"
 #include "debug_output_control.h"
-#elseif EHM_BASE_STATION
+#elif EHM_BASE_STATION
 #include "debug_output_control.h"
 #else
 #define module_debug_strg(fmt, ...)
@@ -480,6 +480,22 @@ void MessageStorage::writeRTCStorage(unsigned int rtcValue)
 	writeToFile((char *) &rtcValue, sizeof(unsigned int));
 	closeFile();
 }
+
+void MessageStorage::startAudioSample()
+{
+	deleteFile("audio");
+	openFile("audio", true, false);
+}
+
+void MessageStorage::flushAudioSample(char * buf, uint16_t size)
+{
+	writeToFile(buf, size);
+}
+
+void MessageStorage::endAudioSample()
+{
+	closeFile();
+}				   
 
 	
 // internal filesystem access layer functions --------------------------------

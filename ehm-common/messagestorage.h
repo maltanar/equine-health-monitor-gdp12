@@ -30,6 +30,11 @@ class MessageStorage  {
 	unsigned int getStorageQueueCount();
 	void flushAllToDisk();
 	
+	void startAudioSample();
+	void flushAudioSample(char * buf, uint16_t size);
+	void endAudioSample();
+
+	
 	// RTC storage functions
 	unsigned int readRTCStorage();
 	void writeRTCStorage(unsigned int rtcValue);
