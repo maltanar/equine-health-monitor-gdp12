@@ -3,6 +3,10 @@
 // No need to make changes here, modify statements in debug_output_control
 // ************************************************************************
 
+extern "C" {
+void __iar_dlmalloc_stats();
+}
+
 extern char mdMessageBuffer[255];
 
 void md_printf(int len);
@@ -112,3 +116,5 @@ void md_printf(int len);
 #else
 	#define module_debug_audio(fmt, ...)   
 #endif
+
+#define module_debug_error(fmt, ...)   printf("!!ERR!!: "fmt"\n", ##__VA_ARGS__)
