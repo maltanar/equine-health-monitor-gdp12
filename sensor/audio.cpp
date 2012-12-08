@@ -131,58 +131,44 @@ void Audio::updateBuffStatus(void){
 
   m_dmaStatus = getDmaStatus();
   m_dmaRxCount = getDmaRxCount();
+  
+  //module_debug_audio("updateBuffStatus before: dmaStatus %d rxc %d bufferStatus %d", m_dmaStatus, m_dmaRxCount, m_bufferStatus);
+  
+  if((m_dmaRxCount - m_userFetchCount) > 1)
+	  module_debug_audio("overflow!");
+  else if (m_userFetchCount > m_dmaRxCount)
+	  module_debug_audio("underflow");
+	  
     
   switch(m_bufferStatus) {
     
     case wait_BuffA:
-      if (m_dmaRxCount == m_userFetchCount)
-        m_bufferStatus = wait_BuffA;
-      else if (m_dmaRxCount == m_userFetchCount+1) {
+      if (m_dmaStatus == bufferA_full || m_dmaStatus == transfer_done)
         m_bufferStatus = BufferA_new;
-        user_read = false;
-      }
-      else {
-        printf("Error: buffer overflow/underflow");
-      }
+	  else if(m_dmaStatus == dma_ready)
+		  module_debug_audio("waiting for data...");
+      else
+		  module_debug_audio("handle me, cwba nbaf");
       break;
 
     case BufferA_new:
-      if (m_dmaRxCount == m_userFetchCount+1)
-        m_bufferStatus = BufferA_new;
-      else if (m_dmaRxCount == m_userFetchCount) {
-        m_bufferStatus = wait_BuffB;
-        user_read = false;
-      }
-      else {
-        printf("Error: buffer overflow/underflow");
-      }
+      module_debug_audio("do I need handling? ban");
       break;
-
+	  
     case wait_BuffB:
-      if (m_dmaRxCount == m_userFetchCount)
-        m_bufferStatus = wait_BuffB;
-      else if (m_dmaRxCount == m_userFetchCount+1) {
+      if (m_dmaStatus == bufferB_full || m_dmaStatus == transfer_done)
         m_bufferStatus = BufferB_new;
-        user_read = false;
-      }
-      else {
-        printf("Error: buffer overflow/underflow");
-      }
+      else
+		  module_debug_audio("handle me, cwbb nbbf");
       break;
 
     case BufferB_new:
-      if (m_dmaRxCount == m_userFetchCount+1)
-        m_bufferStatus = BufferB_new;
-      else if (m_dmaRxCount == m_userFetchCount) {
-        m_bufferStatus = wait_BuffA;
-        user_read = false;
-      }
-      else {
-        printf("Error: buffer overflow/underflow");
-      }
+      module_debug_audio("do I need handling? bbn");
       break;
     
   }
+  
+  //module_debug_audio("updateBuffStatus after: dmaStatus %d rxc %d bufferStatus %d", m_dmaStatus, m_dmaRxCount, m_bufferStatus);
       
 }
 
@@ -198,7 +184,9 @@ void Audio::gotoSleep(void){
 
 void* Audio::getBuffer(void) {
 
-  
+	void * ret = NULL;
+	
+	//module_debug_audio("getBuff before:  bufferStatus %d userread %d fetchcount %d", m_bufferStatus, user_read, m_userFetchCount);
   if(m_audioStatus == recording || m_audioStatus == transferdone)
   {
 
@@ -210,27 +198,24 @@ void* Audio::getBuffer(void) {
 
     if (m_bufferStatus == BufferA_new)
     {
-      user_read = true;
+      m_bufferStatus = wait_BuffB;
       m_userFetchCount++;
-      return (void *)m_BufferA;
+      ret = (void *)m_BufferA;
     } 
     else if (m_bufferStatus == BufferB_new)
     {
-      user_read = true;
+      m_bufferStatus = wait_BuffA;
       m_userFetchCount++;
-      return (void *)m_BufferB;
+      ret = (void *)m_BufferB;
     } 
-    else 
-    {
-      return NULL;
-    }
-	
-	
   }
   else
   {
     printf("ERROR: recording not activated!");
-    return NULL;
   }
+  
+  //module_debug_audio("getBuff before:  bufferStatus %d userread %d fetchcount %d", m_bufferStatus, user_read, m_userFetchCount);
+  
+  return ret;
 }
 

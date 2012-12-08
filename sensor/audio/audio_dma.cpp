@@ -18,6 +18,8 @@ AUDIO_DMA_PINGPONG
 #include "audio/audio_dma.h"
 #include "audio/audio_config.h"
 
+#include "debug_output_control.h"
+
 /* DMA Callback structure */
 DMA_CB_TypeDef cb_tx;
 DMA_CB_TypeDef cb_rx;
@@ -41,18 +43,9 @@ volatile uint16_t spiBufferSize;
 
 DMAManager * dma_mgr; 
 
-/**************************************************************************//**
- * @brief  Call-back called when one RX block is received
- * TX doesnt trigger the interrupt
- *****************************************************************************/
-
 void spiBlockCompleted(unsigned int channel, bool primary, void *user)
 {
   (void) user;
- 
-// debug, TODO clean out
-
-//  printf("channel: %d  primary %d \n", channel, primary);
   
   if (channel == DMA_CHANNEL_TX)
   {
@@ -72,6 +65,7 @@ void spiBlockCompleted(unsigned int channel, bool primary, void *user)
   }
   else if (channel == DMA_CHANNEL_RX)
   {
+	  module_debug_audio("!rx! primary %d \n", primary);
     if (rx_count < (spiTotalTransfers - 2))
     {
       DMA_RefreshPingPong(channel,
@@ -211,10 +205,6 @@ void spiDmaTransfer_pp(void *rxBufferPri,  void *rxBufferAlt, int bufferSize, in
                        spiBufferSize - 1);
 
   PingPongStatus = dma_ready;
-  volatile int bufA_count;
-  volatile int bufB_count;
-  volatile int tx_count;
-  volatile int rx_count;
 
 }
 
@@ -225,12 +215,12 @@ void spiDmaTransfer_pp(void *rxBufferPri,  void *rxBufferAlt, int bufferSize, in
  *****************************************************************************/
 bool spiDmaIsActive(void)
 {
-//  bool temp;
-//  INT_Disable();
-//  temp = spiTransferActive;
-//  INT_Enable();
-//  return temp;
-  return spiTransferActive;
+  bool temp;
+  INT_Disable();
+  temp = spiTransferActive;
+  INT_Enable();
+  return temp;
+  //return spiTransferActive;
 }
 
 
@@ -242,14 +232,14 @@ PingPongStatus_TypeDef getDmaStatus(void)
 {
   PingPongStatus_TypeDef temp;
   
-  INT_Disable();
+  /*INT_Disable();
   temp = PingPongStatus;
 
   if(rx_count == spiTotalTransfers)
     temp = transfer_done;
   INT_Enable();
-  return temp;
-//  return PingPongStatus;
+  return temp;*/
+  return PingPongStatus;
 
 }
 
