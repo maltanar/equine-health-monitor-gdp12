@@ -6,7 +6,7 @@
 #include "em_chip.h"
 #include "em_cmu.h"
 #include "em_emu.h"
-//#include "em_gpio.h"
+#include <stdlib.h>
 #include "em_timer.h"
 #include "em_dma.h"
 
@@ -28,12 +28,8 @@ Audio::Audio(samplingFreq_typedef samplingFreq, unsigned int bufferSize)
   m_bufferSize = bufferSize;
 
   m_audioStatus = deinit;
-
-  m_BufferA = new uint16_t[m_bufferSize];
-  m_BufferB = new uint16_t[m_bufferSize];
   
-//  init();  //TODO, remove hardcoding!
-  
+  m_BufferA = m_BufferB = NULL;
 }
 
 
@@ -77,13 +73,20 @@ void Audio::setBufferSize(unsigned int BufferSize){
   m_bufferSize = BufferSize;
 }
   
-void Audio::init(void){
-
-//check clock frequency?
-
-  //setup spi, USART1 as Master
-  //SPI_setup(USART1_NUM, GPIO_POS1, true);
+void Audio::init(void)
+{
+	m_BufferA = (uint16_t *) malloc(sizeof(uint16_t) * m_bufferSize);
+	m_BufferB = (uint16_t *) malloc(sizeof(uint16_t) * m_bufferSize);
+  
+  if(!m_BufferA || !m_BufferB)
+  {
+	  module_debug_error("could not allocate audio DMA buffers!");
+	  __iar_dlmalloc_stats();
+	  return;
+  }
+  
   m_port = (SPIPort *) USARTManager::getInstance()->getPort(MIC_USART_PORT);
+
   m_port->initialize();
 
   //setup timer
