@@ -312,7 +312,7 @@ int main(void)
 	EMU->CTRL |= EMU_CTRL_EMVREG_FULL;
 	
 	// TODO remove line below if rest of frequencies in system screws up
-	//SystemHFXOClockSet(48000000);   
+	SystemHFXOClockSet(48000000);   
   	CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
 	CMU_OscillatorEnable(cmuOsc_HFRCO, false, false);
 	// store the message storage instance

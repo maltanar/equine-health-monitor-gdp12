@@ -304,6 +304,7 @@
           <state>$PROJ_DIR$\..\..\ehm-common\</state>
           <state>$PROJ_DIR$\..\..\efm32-common\</state>
           <state>$PROJ_DIR$\..\..\sensor</state>
+          <state>$PROJ_DIR$\..\..\fatfs</state>
           <state>$PROJ_DIR$</state>
         </option>
         <option>
@@ -697,11 +698,11 @@
         </option>
         <option>
           <name>IlinkIcfOverride</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$TOOLKIT_DIR$\config\linker\EnergyMicro\EFM32GG332F1024.icf</state>
+          <state>$PROJ_DIR$\MicUnitTest.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -953,6 +954,9 @@
       <name>$PROJ_DIR$\..\..\efm32-common\alarmmanager.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\debug_output_impl.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\efm32-common\dmamanager.cpp</name>
     </file>
     <file>
@@ -968,10 +972,40 @@
       <name>$PROJ_DIR$\..\..\efm32-common\i2cmanager.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\efm32-common\rtc.c</name>
+      <name>$PROJ_DIR$\..\..\efm32-common\leuartport.cpp</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\efm32-common\rtc.h</name>
+      <name>$PROJ_DIR$\..\..\efm32-common\leuartport.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\ehm-common\messagestorage.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\ehm-common\messagestorage.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\spiport.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\spiport.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\uartport.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\uartport.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\usartmanager.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\usartmanager.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\usartport.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\usartport.h</name>
     </file>
   </group>
   <group>
@@ -998,6 +1032,9 @@
       <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_i2c.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_int.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_leuart.c</name>
     </file>
     <file>
@@ -1007,11 +1044,71 @@
       <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_system.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_timer.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\efm32-common\emlib\src\em_usart.c</name>
     </file>
   </group>
   <group>
+    <name>fatfs</name>
+    <file>
+      <name>$PROJ_DIR$\..\..\fatfs\diskio.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\fatfs\diskio.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\fatfs\fatfs.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\fatfs\fatfs.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\fatfs\ff.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\fatfs\ff.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\fatfs\ffconf.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\fatfs\integer.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\fatfs\microsd.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\fatfs\microsd.h</name>
+    </file>
+  </group>
+  <group>
     <name>sensor</name>
+    <group>
+      <name>audio</name>
+      <file>
+        <name>$PROJ_DIR$\..\..\sensor\audio\audio_config.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\sensor\audio\audio_dma.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\sensor\audio\audio_dma.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\sensor\audio\audio_timer.cpp</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\sensor\audio\audio_timer.h</name>
+      </file>
+    </group>
+    <file>
+      <name>$PROJ_DIR$\..\..\sensor\audio.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\sensor\audio.h</name>
+    </file>
     <file>
       <name>$PROJ_DIR$\..\..\sensor\sensor.cpp</name>
     </file>
@@ -1023,6 +1120,9 @@
     <name>Source</name>
     <file>
       <name>$PROJ_DIR$\debug_output_control.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\dlmalloc.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\MicUnitTest.cpp</name>
