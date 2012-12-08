@@ -33,8 +33,6 @@ void saveAudioSample(uint8_t audioLenS)
 	micStatus = mic->getStatus();
 
 	uint16_t *new_buffer;
-	
-	uint32_t *bfs = (uint32_t *)malloc(4 * (audioLenS*8000)/bufferSize);
 
 	while (micStatus == recording) 
 	{
@@ -42,21 +40,14 @@ void saveAudioSample(uint8_t audioLenS)
 
 		if (new_buffer != NULL)
 		{
-			bfs[buffer_count] = (uint32_t) new_buffer;
 			buffer_count++;
 			
 			msgStore->flushAudioSample((char *) new_buffer, bufferSize * sizeof(uint16_t));
-			
 		}
 		EMU_EnterEM1();
 		micStatus = mic->getStatus();
 	}
-	
-	for(int i= 0; i < buffer_count; i++)
-		printf("%d: 0x%x \n", i, bfs[i]);
-	
-	free(bfs);
-	
+
 	new_buffer = (uint16_t *)mic->getBuffer();
 	
 	if(new_buffer)
@@ -88,9 +79,9 @@ int main(void)
 	msgStore = MessageStorage::getInstance();
 	msgStore->initialize("");
 	
-	FATFS_speedTest(128);
+	FATFS_speedTest(2);
 	
-	saveAudioSample(10);
+	saveAudioSample(180);
 	
 	msgStore->deinitialize();
 	
