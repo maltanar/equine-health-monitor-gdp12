@@ -1104,6 +1104,12 @@
       </file>
     </group>
     <file>
+      <name>$PROJ_DIR$\..\..\sensor\accelerationsensor.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\sensor\accelerationsensor.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\sensor\audio.cpp</name>
     </file>
     <file>
@@ -1114,6 +1120,12 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\sensor\sensor.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\sensor\temperaturesensor.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\sensor\temperaturesensor.h</name>
     </file>
   </group>
   <group>

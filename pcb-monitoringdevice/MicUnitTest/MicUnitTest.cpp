@@ -10,10 +10,13 @@
 #include "em_emu.h"
 #include "em_chip.h"
 #include "em_gpio.h"
+#include "em_timer.h"
 #include "trace.h"
 #include "fatfs.h"
 #include "messagestorage.h"
 #include "audio.h"
+#include "accelerationsensor.h"
+#include "temperaturesensor.h"
 
 MessageStorage * msgStore;
 
@@ -76,20 +79,33 @@ int main(void)
   	CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
 	CMU_OscillatorEnable(cmuOsc_HFRCO, false, false);
 	
+	
+	
 	msgStore = MessageStorage::getInstance();
 	msgStore->initialize("");
 	
 	FATFS_speedTest(2);
 	
-	saveAudioSample(180);
+	// turn off power to everything else
+	// only needed for the PCB where we cannot cut the power to these sensors:
+	AccelerationSensor::getInstance()->setSleepState(true);
+	TemperatureSensor::getInstance()->setSleepState(true);
+	
+	saveAudioSample(15);
 	
 	msgStore->deinitialize();
 	
 	printf("SD card now safe to remove! \n");
 	
+	// deinitialize used clocks, TODO this should be done in their respective classes
+	TIMER_Enable(TIMER0, false);
+	CMU_ClockEnable(cmuClock_TIMER0, false);
+	CMU_ClockEnable(cmuClock_USART1, false);
+	
 	while (1)
 	{
-          EMU_EnterEM2(true);		
+          EMU_EnterEM2(true);
+		  printf("Woke up! \n");
 	}
 
 }
