@@ -24,6 +24,7 @@ class MessageStorage  {
 	}
 	
 	void initialize(char * storageRoot);
+	void deinitialize();
 	void addToStorageQueue(MessagePacket * in_msg, unsigned short size);
 	MessagePacket * getFromStorageQueue();
 	char * getFromStorageQueueRaw(unsigned short * size);
@@ -50,7 +51,7 @@ private:
   void operator=(MessageStorage const&);        // do not implement
   // ------ end of singleton pattern specific section --------
   
-  char * m_storageRoot;
+  char m_storageRoot[13];
   bool m_fileOpen;
   bool m_storageOK;
   

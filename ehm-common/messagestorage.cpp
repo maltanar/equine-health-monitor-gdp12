@@ -13,7 +13,6 @@
 
 MessageStorage::MessageStorage()
 {
-	m_storageRoot = NULL;
 	m_storageOK = m_fileOpen = false;
 	m_nextMessageSeqNumber = 1;
 	m_queueCount = 0;
@@ -42,6 +41,14 @@ void MessageStorage::initialize(char * storageRoot)
 	
 	// TODO reenable file counting
 	/*m_queueCount = */getDirFileCount("");
+}
+
+void MessageStorage::deinitialize()
+{
+	m_storageRoot[0] = 0;
+	
+	flushAllToDisk();
+	unmountStorage();
 }
 
 
