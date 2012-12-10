@@ -11,6 +11,11 @@
 #define module_debug_strg(fmt, ...)
 #endif
 
+
+#define		SUBDIR_QUEUE	"/queue"
+#define		SUBDIR_AUDIO	"/audio"
+#define		SUBDIR_LOG		"/log"
+
 MessageStorage::MessageStorage()
 {
 	m_storageOK = m_fileOpen = false;
@@ -32,23 +37,33 @@ void MessageStorage::initialize(char * storageRoot)
 	// mount the actual storage device we use for storing data
 	module_debug_strg("mounting storage...");
 	if(mountStorage())
-		module_debug_strg("storage now available!");
+		module_debug_strg("storage available!");
 	else
 		module_debug_strg("storage not available!");
+	
+	module_debug_strg("changing to storage root: %s", m_storageRoot);
+	// change to storage root
+	changeDirectory(m_storageRoot);
+	
+	// create subdirectories
+	createDirectory(SUBDIR_QUEUE);
+	createDirectory(SUBDIR_AUDIO);
+	createDirectory(SUBDIR_LOG);
+	
 	
 	// count list of existing files in storage root,
 	module_debug_strg("counting files...");
 	
-	// TODO reenable file counting
-	/*m_queueCount = */getDirFileCount("");
+	// count disk files on queue
+	m_queueCount = getDirFileCount(SUBDIR_QUEUE);
 }
 
 void MessageStorage::deinitialize()
 {
-	m_storageRoot[0] = 0;
-	
 	flushAllToDisk();
 	unmountStorage();
+	
+	m_storageRoot[0] = 0;
 }
 
 
@@ -383,9 +398,11 @@ void MessageStorage::flushEntryToDisk(MessageEntry * entry)
 	module_debug_strg("flush to disk: %s", fnBuffer);
 	
 	// create new file and write data
+	changeDirectory(SUBDIR_QUEUE);
 	openFile(fnBuffer, true, false);
 	writeToFile((char*) entry->memPtr, entry->size);
 	closeFile();
+	changeDirectory("..");
 	
 	// free occupied entry memory and set memPtr to NULL
 	free(entry->memPtr);
@@ -447,11 +464,21 @@ void MessageStorage::freeMessageEntry(MessageEntry * entry)
 		return;
 	}
 	
-	// first free the filename / memory buffers for the entry
+	// first free the memory buffers for the entry
 	if(entry->memPtr != NULL)
 	{
 		free(entry->memPtr);
 		entry->memPtr = NULL;
+	}
+	
+	// delete stored file if exists
+	if(entry->fileName != 0)
+	{
+		char fnBuffer[13];
+		changeDirectory(SUBDIR_QUEUE);
+		sprintf(fnBuffer, "%d", entry->fileName);
+		deleteFile(fnBuffer);
+		changeDirectory("..");
 	}
 	
 	// finally, deallocate the MessageEntry space itself
@@ -601,7 +628,7 @@ unsigned int MessageStorage::getDirFileCount(char *path)
 	DIR         dir;
 	int         i;
 	char        *fn;
-	
+	uint32_t	fileSeq = 0;
 	// TODO copy files into queue as we iterate
 	// TODO update latest sequence number
 
@@ -630,7 +657,11 @@ unsigned int MessageStorage::getDirFileCount(char *path)
 				module_debug_strg("%s/%s", path, fn);
 			else
 				module_debug_strg("%s", fn);
-			f_unlink(fn);	// TODO remove this after we stabilize!
+			
+			if(sscanf(fn, "%d", &fileSeq))
+				if(fileSeq >= m_nextMessageSeqNumber)
+					m_nextMessageSeqNumber = fileSeq+1;
+
 			count++;
 		  }
 		}
@@ -640,7 +671,8 @@ unsigned int MessageStorage::getDirFileCount(char *path)
 		module_debug_strg("f_opendir failure %d", m_fr);
 	}
 	
-	module_debug_strg("found %d files", count);
+	module_debug_strg("found %d files, new seqnr is %d", count, 
+					  m_nextMessageSeqNumber);
 	
 	return count;
 }
@@ -666,6 +698,22 @@ unsigned int MessageStorage::getTimestamp()
 {
 	return AlarmManager::getInstance()->getUnixTime();
 }
+
+void MessageStorage::changeDirectory(char * dir)
+{
+	m_fr = f_chdir(dir);
+	
+	if(m_fr != FR_OK)
+		module_debug_strg("chdir failed! %d", m_fr);
+}
+
+void MessageStorage::createDirectory(char * dir)
+{
+	m_fr = f_mkdir(dir);
+	
+	if(m_fr != FR_OK)
+		module_debug_strg("mkdir failed! %s : %d", dir, m_fr);
+}
 #endif
 // end of internal filesystem access layer functions ------------------------
 
@@ -682,5 +730,7 @@ unsigned int MessageStorage::getDirFileCount(char *dirName){ return -1; }
 bool MessageStorage::mountStorage(){ return false; }
 void MessageStorage::unmountStorage(){}
 unsigned int MessageStorage::getTimestamp(){ return -1; }
+void MessageStorage::changeDirectory(char * dir) {};
+void MessageStorage::createDirectory(char * dir) {};
 #endif
 // end of internal filesystem access layer functions ------------------------

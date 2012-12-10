@@ -81,6 +81,8 @@ private:
   void deleteFile(const char * fileName);
   void writeToFile(char * buffer, unsigned int count);
   void readFromFile(char * buffer, unsigned int count);
+  void changeDirectory(char * dir);
+  void createDirectory(char * dir);
   unsigned int getTimestamp();
   unsigned int getDirFileCount(char *dirName);
   bool mountStorage();
