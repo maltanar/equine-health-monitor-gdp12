@@ -84,6 +84,10 @@ PingPongStatus_TypeDef getDmaStatus(void);
 uint16_t getDmaRxCount(void);
 
 
+//I2S
+void setupDmaI2s(void);
+void i2sDmaTransfer(void *rxBufferPri,  void *rxBufferAlt, int bufferSize, int cycles);
+
 
 #endif
 

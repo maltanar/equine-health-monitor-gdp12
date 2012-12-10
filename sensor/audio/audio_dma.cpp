@@ -1,5 +1,5 @@
 /*****************************************************************************
-AUDIO_DMA_PINGPONG
+ AUDIO_DMA_PINGPONG
  *****************************************************************************/
 #define UINT32_MAX	0xFFFFFFFF
 #include <stdbool.h>
@@ -65,7 +65,7 @@ void spiBlockCompleted(unsigned int channel, bool primary, void *user)
   }
   else if (channel == DMA_CHANNEL_RX)
   {
-	  module_debug_audio("!rx! primary %d \n", primary);
+//	  module_debug_audio("!rx! primary %d \n", primary);
     if (rx_count < (spiTotalTransfers - 2))
     {
       DMA_RefreshPingPong(channel,
@@ -268,5 +268,70 @@ void sleepUntilDmaDone(void)
    INT_Disable();
   }
   INT_Enable();
+}
+
+////////////////////////////////////// I2S ///////////////////////////////////
+
+
+/**************************************************************************//**
+ * @brief Configure DMA in basic mode for both TX and RX to/from USART
+ *****************************************************************************/
+void setupDmaI2s(void)
+{
+  /* Initialization structs */
+  DMA_CfgChannel_TypeDef  rxChnlCfg;
+  DMA_CfgDescr_TypeDef    rxDescrCfg;
+
+  dma_mgr = DMAManager::getInstance();
+
+  /* Setup call-back function */  
+  cb_rx.cbFunc  = spiBlockCompleted;
+  cb_rx.userPtr = NULL;
+  
+ 
+  /*** Setting up RX DMA ***/
+  /* Setting up channel */
+  rxChnlCfg.highPri   = true;
+  rxChnlCfg.enableInt = true;
+  rxChnlCfg.select    = DMAREQ_USART1_RXDATAV;
+//  rxChnlCfg.select    = DMAREQ_USART1_RXDATAVRIGHT;
+  rxChnlCfg.cb        = &cb_rx;
+  DMA_CfgChannel(DMA_CHANNEL_RX, &rxChnlCfg);
+
+  /* Setting up channel descriptor */
+  rxDescrCfg.dstInc  = dmaDataInc2;	// 2 bytes
+  rxDescrCfg.srcInc  = dmaDataIncNone;	// read src does not change
+  rxDescrCfg.size    = dmaDataSize2;	// 16 bits
+  rxDescrCfg.arbRate = dmaArbitrate1;
+  rxDescrCfg.hprot   = 0;
+  /* Ping-pong mode. primary and alternate channel descriptors have the same configuration */
+  DMA_CfgDescr(DMA_CHANNEL_RX, true, &rxDescrCfg);
+  DMA_CfgDescr(DMA_CHANNEL_RX, false, &rxDescrCfg);
+
+  PingPongStatus = transfer_done;
+}
+
+void i2sDmaTransfer(void *rxBufferPri,  void *rxBufferAlt, int bufferSize, int cycles)
+{ 
+  
+  spiTotalTransfers = cycles;
+  spiBufferSize = bufferSize;
+  
+  spiTransferActive = true;
+  
+  /* Clear RX regsiters */
+  USART1->CMD = USART_CMD_CLEARRX;
+  
+  /* Activate RX channel */
+  DMA_ActivatePingPong(DMA_CHANNEL_RX,
+                       false,
+                       rxBufferPri,
+                       (void *)&(USART1->RXDOUBLE),
+                       spiBufferSize - 1,
+                       rxBufferAlt,
+                       (void *)&(USART1->RXDOUBLE),
+                       spiBufferSize - 1);
+
+  PingPongStatus = dma_ready;
 }
 

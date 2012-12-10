@@ -114,6 +114,7 @@ static const USARTPortConfig USARTManagerPortConfigs[USART_MANAGER_PORT_COUNT] =
     .rxPort = gpioPortE,
     .rxPin = 15,
 	.async = true,
+	.i2s = false,
     .lowEnergy = true,
 	.rxDMASource = DMAREQ_LEUART0_RXDATAV
   },
@@ -129,6 +130,7 @@ static const USARTPortConfig USARTManagerPortConfigs[USART_MANAGER_PORT_COUNT] =
     .rxPort = gpioPortC,
     .rxPin = 7,
 	.async = true,
+	.i2s = false,
     .lowEnergy = true,
 	.rxDMASource = DMAREQ_LEUART1_RXDATAV
   },
@@ -144,6 +146,7 @@ static const USARTPortConfig USARTManagerPortConfigs[USART_MANAGER_PORT_COUNT] =
     .rxPort = gpioPortC,
     .rxPin = 10,
 	.async = true,
+	.i2s = false,
     .lowEnergy = false,
 	.rxDMASource = DMAREQ_USART0_RXDATAV
   },
@@ -163,6 +166,7 @@ static const USARTPortConfig USARTManagerPortConfigs[USART_MANAGER_PORT_COUNT] =
 	.csPort = gpioPortD,
 	.csPin = 3,
 	.async = false,
+	.i2s = true,
     .lowEnergy = false,
 	.rxDMASource = DMAREQ_USART1_RXDATAV
   },
@@ -182,6 +186,7 @@ static const USARTPortConfig USARTManagerPortConfigs[USART_MANAGER_PORT_COUNT] =
 	.csPort = gpioPortC,
 	.csPin = 5,
 	.async = false,
+	.i2s = false,
     .lowEnergy = false,
 	.rxDMASource = DMAREQ_USART2_RXDATAV
   }

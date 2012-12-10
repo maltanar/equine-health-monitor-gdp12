@@ -7,7 +7,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "audio/audio_dma.h"
-#include "spiport.h"
+//#include "spiport.h"
+#include "i2sport.h"
 
 // Audio class
 typedef enum {
@@ -23,7 +24,6 @@ typedef enum {
     transferdone,
     sleeping
 } audioStatus_typedef;
-
 
 
 typedef enum {
@@ -54,7 +54,7 @@ public:
 protected:
   samplingFreq_typedef m_samplingFreq;
   unsigned int m_bufferSize;
-  SPIPort * m_port;
+  I2SPort * m_port;
   
   audioStatus_typedef    m_audioStatus;
   PingPongStatus_TypeDef m_dmaStatus;  //TODO: is it necessary a separate status var?

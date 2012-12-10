@@ -972,6 +972,12 @@
       <name>$PROJ_DIR$\..\..\efm32-common\i2cmanager.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\i2sport.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\i2sport.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\efm32-common\leuartport.cpp</name>
     </file>
     <file>

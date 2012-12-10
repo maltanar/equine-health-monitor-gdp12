@@ -42,7 +42,6 @@ unsigned int Audio::getbufferSize(){
 }
 
 audioStatus_typedef Audio::getStatus(void){
-//    updateStatus();
   
     updateBuffStatus();
     
@@ -56,9 +55,6 @@ audioStatus_typedef Audio::getStatus(void){
 		
 		if(m_dmaRxCount == m_totalDmaCycles)
         m_audioStatus = transferdone;
-		
-		
-      
     }
   
     return m_audioStatus;
@@ -85,15 +81,18 @@ void Audio::init(void)
 	  return;
   }
   
-  m_port = (SPIPort *) USARTManager::getInstance()->getPort(MIC_USART_PORT);
+//  m_port = (SPIPort *) USARTManager::getInstance()->getPort(MIC_USART_PORT);
+    m_port = (I2SPort *) USARTManager::getInstance()->getPort(MIC_USART_PORT);
 
   m_port->initialize();
 
   //setup timer
-  initTimer();
+//  initTimer();
+//timer ot needed for I2S
 
   //setup dma
-  setupDmaSpi();
+//  setupDmaSpi();
+  setupDmaI2s();
 
   m_audioStatus = ready;
 }
@@ -101,7 +100,7 @@ void Audio::init(void)
 void Audio::startRecording(unsigned short secs){
 
   if (m_samplingFreq == Fs_8khz) {
-    m_totalDmaCycles = (secs*8000)/m_bufferSize;
+    m_totalDmaCycles = 2*(secs*8000)/(m_bufferSize);
   }
   else
   {
@@ -110,11 +109,16 @@ void Audio::startRecording(unsigned short secs){
   }
   
   // trigger spi DMA transfer
-  spiDmaTransfer_pp((void*) m_BufferA, (void*) m_BufferB, m_bufferSize, m_totalDmaCycles);
+//  spiDmaTransfer_pp((void*) m_BufferA, (void*) m_BufferB, m_bufferSize, m_totalDmaCycles);
+  i2sDmaTransfer((void*) m_BufferA, (void*) m_BufferB, m_bufferSize, m_totalDmaCycles);
 
   //start TIMER0!
-  startTimer();
+//  startTimer();
+//timer ot needed for I2S
 
+  // enable AUTO_TX instead
+  m_port->enable(true);
+  
   user_read = false;
   m_audioStatus = recording;
   m_bufferStatus = wait_BuffA;
@@ -176,8 +180,9 @@ void Audio::updateBuffStatus(void){
 
 void Audio::gotoSleep(void){
 
-  stopTimer();
+//  stopTimer();
 
+  m_port->enable(false);
 
   return;
 }

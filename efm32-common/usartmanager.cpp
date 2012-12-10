@@ -4,6 +4,7 @@
 #include "leuartport.h"
 #include "uartport.h"
 #include "spiport.h"
+#include "i2sport.h"
 
 #ifdef ROUTE_ISR_LEUART0
 void LEUART0_IRQHandler()
@@ -60,7 +61,12 @@ USARTPort * USARTManager::getPort(USARTManagerPort port)
 		if(m_configs[port].async)
 			m_ports[port] = new UARTPort(&m_configs[port]);
 		else
-			m_ports[port] = new SPIPort(&m_configs[port]);
+                {
+                        if (m_configs[port].i2s == true)
+                            m_ports[port] = new I2SPort(&m_configs[port]);
+                        else
+                            m_ports[port] = new SPIPort(&m_configs[port]);
+                }
 	}
   }
   
