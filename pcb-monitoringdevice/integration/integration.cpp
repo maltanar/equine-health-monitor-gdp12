@@ -153,15 +153,16 @@ void configureGPS()
 {
 	GPSSensor * gps = GPSSensor::getInstance();
 	sensors[SENSOR_GPS_INDEX]  = gps;
+	gps->initialize();
 	// enabling parseOnReceive results in string parsing inside GPS ISR
 	// may decrease data loss but may introduce instability due to long ISR
 	gps->setParseOnReceive(true);
 	gps->setSleepState(true);
-	/*wakeupAlarmId[SENSOR_GPS_INDEX] = alarmManager->createAlarm(SENSOR_GPS_READ_PERIOD, false, &deviceWakeupHandler);
+	wakeupAlarmId[SENSOR_GPS_INDEX] = alarmManager->createAlarm(SENSOR_GPS_READ_PERIOD, false, &deviceWakeupHandler);
 	sensorAlarmId[SENSOR_GPS_INDEX] = alarmManager->createAlarm(SENSOR_GPS_READ_PERIOD, false, &dataReadHandler);
 	// offset the data acquire alarm by 2
 	// TODO add support for fixed offsets in alarm creation
-	alarmManager->setAlarmTimeout(sensorAlarmId[SENSOR_GPS_INDEX], SENSOR_GPS_READ_PERIOD + 2);*/
+	alarmManager->setAlarmTimeout(sensorAlarmId[SENSOR_GPS_INDEX], SENSOR_GPS_READ_PERIOD + 2);
 }
 
 void configureHRM()
@@ -189,13 +190,12 @@ bool configureZigBee()
 {
 	zigbeeOK = false;
 	
-	GPIO_PinModeSet(GPIO_XBEE_VCC, gpioModePushPull, 0);	// XBee power on
-	GPIO_PinModeSet(GPIO_XBEE_DTR, gpioModePushPull, 0);	// XBee sleep off
+	XBEE_GPIO_CONFIG();
 	
 	// Xbee hard reset - turn power off for 150 ms
-	GPIO_PinOutSet(GPIO_XBEE_VCC);
+	XBEE_POWER(false);
 	alarmManager->lowPowerDelay(150);
-	GPIO_PinOutClear(GPIO_XBEE_VCC);
+	XBEE_POWER(true);
 	
 	// set configuration options for XBee device
     uint8_t pan_id[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0xAB, 0xBC, 0xCD};
@@ -317,9 +317,9 @@ int main(void)
 	CMU_OscillatorEnable(cmuOsc_HFRCO, false, false);
 	// store the message storage instance
 	msgStore = MessageStorage::getInstance();
-	msgStore->initialize("");
+	msgStore->initialize("/");
 	
-	saveAudioSample(10);
+	//saveAudioSample(10);
 	
 	// configure GPS power pins and enable both Vcc and Vbat
 	GPSSensor::configurePower();
@@ -361,8 +361,8 @@ int main(void)
 	configureHRM();
 	printf("Configuring data collection...\n");
 	configureDataCollection();
-	printf("Configuring ZigBee...\n");
-	configureZigBee();
+	//printf("Configuring ZigBee...\n");
+	//configureZigBee();
 	
 	printf("Starting periodic sample and send... \n");
 	
