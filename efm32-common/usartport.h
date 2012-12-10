@@ -25,6 +25,7 @@ typedef struct {
   GPIO_Port_TypeDef csPort;
   uint8_t csPin;
   bool async;
+  bool i2s;
   bool lowEnergy;
 } USARTPortConfig;
 

@@ -17,12 +17,14 @@
 #include "audio.h"
 #include "accelerationsensor.h"
 #include "temperaturesensor.h"
+#include "port_config.h"
+
 
 MessageStorage * msgStore;
 
-void saveAudioSample(uint8_t audioLenS)
+void saveAudioSample(uint16_t audioLenS)
 {
-	printf("start acquiring audio sample, duration %d seconds \n", audioLenS);
+//	printf("start acquiring audio sample, duration %d seconds \n", audioLenS);
 	const uint16_t bufferSize = 1000;
 	Audio * mic = new Audio(Fs_8khz, bufferSize);
 	mic->init();
@@ -58,12 +60,12 @@ void saveAudioSample(uint8_t audioLenS)
 		printf("got last buffer! \n");
 		msgStore->flushAudioSample((char *) new_buffer, bufferSize * sizeof(uint16_t));
 	}
-	else
-		printf("no last buffer! \n");
+//	else
+//		printf("no last buffer! \n");
 	
 	msgStore->endAudioSample();
 	
-	printf("end acquiring audio sample \n");
+//	printf("end acquiring audio sample \n");
 }
 
 
@@ -78,34 +80,33 @@ int main(void)
 	SystemHFXOClockSet(48000000);   
   	CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
 	CMU_OscillatorEnable(cmuOsc_HFRCO, false, false);
-	
-	
-	
-	msgStore = MessageStorage::getInstance();
-	msgStore->initialize("");
-	
-	FATFS_speedTest(2);
+	CMU_ClockEnable(cmuClock_USART1, false);
 	
 	// turn off power to everything else
 	// only needed for the PCB where we cannot cut the power to these sensors:
+	GPIO_PinModeSet(GPIO_ANT_VCC, gpioModePushPull, 1);
 	AccelerationSensor::getInstance()->setSleepState(true);
 	TemperatureSensor::getInstance()->setSleepState(true);
 	
-	saveAudioSample(15);
+
+	msgStore = MessageStorage::getInstance();
+	msgStore->initialize("");
+	
+//	FATFS_speedTest(2);
+	
+	saveAudioSample(2);
 	
 	msgStore->deinitialize();
-	
 	printf("SD card now safe to remove! \n");
-	
+
 	// deinitialize used clocks, TODO this should be done in their respective classes
 	TIMER_Enable(TIMER0, false);
 	CMU_ClockEnable(cmuClock_TIMER0, false);
-	CMU_ClockEnable(cmuClock_USART1, false);
 	
 	while (1)
 	{
-          EMU_EnterEM2(true);
-		  printf("Woke up! \n");
+         EMU_EnterEM2(true);
+//		  printf("Woke up! \n");
 	}
 
 }
