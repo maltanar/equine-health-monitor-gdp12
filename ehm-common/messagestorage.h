@@ -23,7 +23,7 @@ class MessageStorage  {
 		return &instance;
 	}
 	
-	void initialize(char * storageRoot);
+	void initialize(char * storageRoot, bool removeOldQueue = false);
 	void deinitialize();
 	void addToStorageQueue(MessagePacket * in_msg, unsigned short size);
 	MessagePacket * getFromStorageQueue();
@@ -84,7 +84,7 @@ private:
   void changeDirectory(char * dir);
   void createDirectory(char * dir);
   unsigned int getTimestamp();
-  unsigned int getDirFileCount(char *dirName);
+  unsigned int traverseDirectory(char *dirName, bool deleteFiles = false);
   bool mountStorage();
   void unmountStorage();
   

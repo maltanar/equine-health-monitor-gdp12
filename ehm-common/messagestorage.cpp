@@ -24,7 +24,7 @@ MessageStorage::MessageStorage()
 	m_queueCountMem = 0;
 }
 
-void MessageStorage::initialize(char * storageRoot)
+void MessageStorage::initialize(char * storageRoot, bool deleteOldQueue)
 {
 	if(storageRoot == NULL)
 	{
@@ -55,7 +55,7 @@ void MessageStorage::initialize(char * storageRoot)
 	module_debug_strg("counting files...");
 	
 	// count disk files on queue
-	m_queueCount = getDirFileCount(SUBDIR_QUEUE);
+	m_queueCount = traverseDirectory(SUBDIR_QUEUE, deleteOldQueue);
 }
 
 void MessageStorage::deinitialize()
@@ -274,9 +274,11 @@ char * MessageStorage::getFromStorageQueueRaw(unsigned short * size)
 		char fnBuffer[13];
 		entryContent = (char *) malloc(headEntry->size);
 		sprintf(fnBuffer, "%d", headEntry->fileName);
+		changeDirectory(SUBDIR_QUEUE);
 		openFile(fnBuffer, false, true);
 		readFromFile(entryContent, headEntry->size);
 		closeFile();
+		changeDirectory("..");
 	}
 	
 	// make room for the deserialized data
@@ -314,9 +316,11 @@ MessagePacket *  MessageStorage::getFromStorageQueue()
 		char fnBuffer[13];
 		entryContent = (char *) malloc(headEntry->size);
 		sprintf(fnBuffer, "%d", headEntry->fileName);
+		changeDirectory(SUBDIR_QUEUE);
 		openFile(fnBuffer, false, true);
 		readFromFile(entryContent, headEntry->size);
 		closeFile();
+		changeDirectory("..");
 	}
 	
 	// make room for the deserialized data
@@ -537,6 +541,7 @@ void MessageStorage::endAudioSample()
 void MessageStorage::openFile(const char * fileName, bool writeAccess, bool readAccess)
 {
 	BYTE access = 0;
+	module_debug_strg("openFile %s %d %d", fileName, writeAccess, readAccess);
 	
 	if(m_fileOpen)
 	{
@@ -567,6 +572,7 @@ void MessageStorage::openFile(const char * fileName, bool writeAccess, bool read
 
 void MessageStorage::seekToPos(unsigned int pos)
 {
+	module_debug_strg("seekToPos %d", pos);
 	if(!m_fileOpen)
 	{
 		module_debug_strg("file not open!");
@@ -578,6 +584,7 @@ void MessageStorage::seekToPos(unsigned int pos)
 
 void MessageStorage::closeFile()
 {
+	module_debug_strg("closeFile");
 	if(!m_fileOpen)
 	{
 		module_debug_strg("file not open!");
@@ -618,10 +625,11 @@ void MessageStorage::readFromFile(char * buffer,  unsigned int count)
 
 void MessageStorage::deleteFile(const char * fileName)
 {
+	module_debug_strg("deleteFile %s", fileName);
 	m_fr = f_unlink(fileName);
 }
 
-unsigned int MessageStorage::getDirFileCount(char *path)
+unsigned int MessageStorage::traverseDirectory(char *path, bool deleteFiles)
 {
 	unsigned int count = 0;
 	FILINFO     fno;
@@ -631,8 +639,11 @@ unsigned int MessageStorage::getDirFileCount(char *path)
 	uint32_t	fileSeq = 0;
 	// TODO copy files into queue as we iterate
 	// TODO update latest sequence number
+	
+	module_debug_strg("traversing %s, deleteFiles %d", path, deleteFiles);
 
 	m_fr = f_opendir(&dir, path);
+	changeDirectory(path);
 	
 	if (m_fr == FR_OK)
 	{
@@ -658,11 +669,14 @@ unsigned int MessageStorage::getDirFileCount(char *path)
 			else
 				module_debug_strg("%s", fn);
 			
-			if(sscanf(fn, "%d", &fileSeq))
+			if(deleteFiles)
+				deleteFile(fn);
+			else if(sscanf(fn, "%d", &fileSeq))
 				if(fileSeq >= m_nextMessageSeqNumber)
+				{
 					m_nextMessageSeqNumber = fileSeq+1;
-
-			count++;
+					count++;
+				}
 		  }
 		}
 	}
@@ -670,6 +684,8 @@ unsigned int MessageStorage::getDirFileCount(char *path)
 	{
 		module_debug_strg("f_opendir failure %d", m_fr);
 	}
+	
+	changeDirectory("..");
 	
 	module_debug_strg("found %d files, new seqnr is %d", count, 
 					  m_nextMessageSeqNumber);
@@ -679,6 +695,7 @@ unsigned int MessageStorage::getDirFileCount(char *path)
 
 bool MessageStorage::mountStorage()
 {
+	module_debug_strg("mounting...");
 	// only needed for the DVK
 	// Enable SPI access to MicroSD card
 #ifdef __DVK_H
@@ -690,6 +707,7 @@ bool MessageStorage::mountStorage()
 
 void MessageStorage::unmountStorage()
 {
+	module_debug_strg("unmounting...");
 	FATFS_deinitializeFilesystem();
 	m_storageOK = false;
 }
@@ -701,6 +719,7 @@ unsigned int MessageStorage::getTimestamp()
 
 void MessageStorage::changeDirectory(char * dir)
 {
+	module_debug_strg("chdir %s", dir);
 	m_fr = f_chdir(dir);
 	
 	if(m_fr != FR_OK)
@@ -709,6 +728,7 @@ void MessageStorage::changeDirectory(char * dir)
 
 void MessageStorage::createDirectory(char * dir)
 {
+	module_debug_strg("mkdir %s", dir);
 	m_fr = f_mkdir(dir);
 	
 	if(m_fr != FR_OK)
@@ -726,7 +746,7 @@ void MessageStorage::closeFile(){}
 void MessageStorage::deleteFile(const char * fileName){}
 void MessageStorage::writeToFile(char * buffer, unsigned int count){}
 void MessageStorage::readFromFile(char * buffer, unsigned int count){}
-unsigned int MessageStorage::getDirFileCount(char *dirName){ return -1; }
+unsigned int MessageStorage::traverseDirectory(char *dirName, bool deleteOld){ return -1; }
 bool MessageStorage::mountStorage(){ return false; }
 void MessageStorage::unmountStorage(){}
 unsigned int MessageStorage::getTimestamp(){ return -1; }
