@@ -66,6 +66,11 @@
 #define GPIO_XBEE_VCC_PORT 		gpioPortA 
 #define GPIO_XBEE_VCC_PIN 		9
 #define GPIO_XBEE_VCC			GPIO_XBEE_VCC_PORT, GPIO_XBEE_VCC_PIN
+
+#define XBEE_GPIO_CONFIG()		GPIO_PinModeSet(GPIO_XBEE_VCC, gpioModePushPull, 0); GPIO_PinModeSet(GPIO_XBEE_DTR, gpioModePushPull, 0);
+#define XBEE_POWER(x)			(x ? GPIO_PinOutClear(GPIO_XBEE_VCC) : GPIO_PinOutSet(GPIO_XBEE_VCC))
+#define XBEE_SLEEP(x)			(x ? GPIO_PinOutClear(GPIO_XBEE_DTR) : GPIO_PinOutSet(GPIO_XBEE_DTR))
+
 // -------------------------------------------------------------------------
 // End Section: Misc GPIO port config --------------------------------------
 // -------------------------------------------------------------------------
