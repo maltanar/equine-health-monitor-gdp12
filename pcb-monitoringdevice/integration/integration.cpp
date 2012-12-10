@@ -80,7 +80,8 @@ void md_printf(int len)
 	dbg_msg.timestampS = alarmManager->getUnixTime();
   	dbg_msg.debugData = (uint8_t *) mdMessageBuffer;
 	msg_pkt.payload = (uint8_t *) &dbg_msg;
-	msgStore->addToStorageQueue(&msg_pkt, len);
+	msgStore->addToStorageQueue(&msg_pkt, len + sizeof(DebugMessage) 
+								+ sizeof(MessagePacket));
 }
 
 // Alarm handler function
@@ -311,13 +312,12 @@ int main(void)
 	// consumes additional power but worth it for debugging
 	EMU->CTRL |= EMU_CTRL_EMVREG_FULL;
 	
-	// TODO remove line below if rest of frequencies in system screws up
 	SystemHFXOClockSet(48000000);   
   	CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
 	CMU_OscillatorEnable(cmuOsc_HFRCO, false, false);
 	// store the message storage instance
 	msgStore = MessageStorage::getInstance();
-	msgStore->initialize("/");
+	msgStore->initialize("/", true);	// TODO FINAL remove the true
 	
 	//saveAudioSample(10);
 	
@@ -327,15 +327,6 @@ int main(void)
 	
 	// store the alarm manager instance
 	alarmManager = AlarmManager::getInstance();
-	
-	
-	
-	//ptest("hello world %d!", 23624);
-	
-
-	//md_printf(sprintf(mdMessageBuffer, "TEST: %x \n", 0xdeadbeef));
-	//md_printf(sprintf(mdMessageBuffer, "TEST: %x \n", 0xdeadbeef));
-	//md_printf(sprintf(mdMessageBuffer, "TEST: %x \n", 0xdeadbeef));
 	
 	// recover the RTC from storage, if possible
 	recoverRTC();
@@ -361,13 +352,14 @@ int main(void)
 	configureHRM();
 	printf("Configuring data collection...\n");
 	configureDataCollection();
-	//printf("Configuring ZigBee...\n");
-	//configureZigBee();
+	printf("Configuring ZigBee...\n");
+	configureZigBee();
 	
 	printf("Starting periodic sample and send... \n");
 	
 	// start counting!
 	alarmManager->resume();
+	
 	
 	
 	
@@ -440,6 +432,8 @@ int main(void)
 						   gpsMsg->latitude.minute, gpsMsg->latitude.second, 
 						   gpsMsg->longitude.degree, gpsMsg->longitude.minute, 
 						   gpsMsg->longitude.second);
+					//printf("generating debug message: %d chars \n", msgLen);
+					md_printf(sprintf(mdMessageBuffer, "Hi! This is the monitoring device speaking"));
 					break;
 				  case SENSOR_TEMP_INDEX:
 					tempMsg = (RawTemperatureMessage *) msg->sensorMsgArray;
