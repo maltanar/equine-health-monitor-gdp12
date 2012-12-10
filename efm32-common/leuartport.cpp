@@ -174,8 +174,6 @@ void LEUARTPort::setupDMA(uint8_t *dmaBuffer, uint8_t dmaBufferSize, uint8_t dma
     
     module_debug_leuart("Configuring DMA on channel %d ", dmaChannel);
     
-    // TODO this is hardcoded for LEUART0, modify this to support others
-    
 	m_dmaBufferSize = dmaBufferSize; 
 	m_dmaBuffer = dmaBuffer;
     m_dmaChannel = dmaChannel;
@@ -185,8 +183,7 @@ void LEUARTPort::setupDMA(uint8_t *dmaBuffer, uint8_t dmaBufferSize, uint8_t dma
     DMAManager * dmaMgr = DMAManager::getInstance();
     
     // configure the DMA channel and descriptor for LEUART0
-    // TODO make this customizable - not only for LEUART0!! need dma no in config
-    dmaMgr->configureChannel(m_dmaChannel, false, DMAREQ_LEUART0_RXDATAV);
+    dmaMgr->configureChannel(m_dmaChannel, false, m_portConfig->rxDMASource);
     m_dmaDescriptor = dmaMgr->configureDescriptor(m_dmaChannel, dmaDataInc1, dmaDataIncNone, 
                                 dmaDataSize1, dmaArbitrate1);
     // activate DMA transfer

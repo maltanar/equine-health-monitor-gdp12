@@ -31,6 +31,13 @@ public:
   
   static void configurePower();
   static void setPower(bool vccOn, bool vbatOn);
+  
+  bool initialize();
+  void hardReset(uint16_t powerLowMs, uint16_t settleMs);
+  
+  // covenience status access functions
+  uint8_t getNumSatellitesInView() {return m_numSatellitesInView;}
+  bool isValidPosFix() {return m_gpsMessage.validPosFix;}
 	  
   
   // virtual functions which can be overridden if the sensor supports
@@ -65,9 +72,11 @@ private:
   
   uint8_t m_msgBuffer[GPS_MSGBUFFER_SIZE];      // message buffer 1 - data copied here after signal char
   uint8_t m_dmaBuffer[GPS_MSGBUFFER_SIZE];      // message buffer - DMA works here
+  uint8_t m_numSatellitesInView;				// number of satellites in view
   LEUARTPort * m_port;                            // the UART IF for the GPS
   GPSMessage m_gpsMessage;
   bool m_parseOnReceive;	// will the messages be parsed upon reception in ISR?
+  bool m_initialized;
   
   // process a buffer as an NMEA message
   void processNMEAMessage(uint8_t * buffer);

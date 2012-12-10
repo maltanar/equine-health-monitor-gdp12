@@ -112,7 +112,8 @@ static const USARTPortConfig USARTManagerPortConfigs[USART_MANAGER_PORT_COUNT] =
     .rxPort = gpioPortD,
     .rxPin = 5,
 	.async = true,
-    .lowEnergy = true
+    .lowEnergy = true,
+	.rxDMASource = DMAREQ_LEUART0_RXDATAV
   },
   // port configuration for LEUART1, location 1
   {
@@ -126,7 +127,8 @@ static const USARTPortConfig USARTManagerPortConfigs[USART_MANAGER_PORT_COUNT] =
     .rxPort = gpioPortA,
     .rxPin = 6,
 	.async = true,
-    .lowEnergy = true
+    .lowEnergy = true,
+	.rxDMASource = DMAREQ_LEUART1_RXDATAV
   },
   // port configuration for USART0, location 1
   {
@@ -144,7 +146,8 @@ static const USARTPortConfig USARTManagerPortConfigs[USART_MANAGER_PORT_COUNT] =
 	.sclkPort = gpioPortE,
 	.sclkPin = 5,
 	.async = false,
-    .lowEnergy = false
+    .lowEnergy = false,
+	.rxDMASource = DMAREQ_USART0_RXDATAV
   },
   // port configuration for USART1, location 1
   {
@@ -158,7 +161,8 @@ static const USARTPortConfig USARTManagerPortConfigs[USART_MANAGER_PORT_COUNT] =
     .rxPort = gpioPortD,
     .rxPin = 1,
 	.async = true,
-    .lowEnergy = false
+    .lowEnergy = false,
+	.rxDMASource = DMAREQ_USART1_RXDATAV
   }
 };
 

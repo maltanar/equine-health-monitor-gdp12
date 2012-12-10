@@ -13,6 +13,7 @@
 typedef struct {
   CMU_Clock_TypeDef clockPoint;
   IRQn irqNumber;
+  uint32_t rxDMASource;
   USART_TypeDef * usartBase;
   uint32_t routeLocation;
   GPIO_Port_TypeDef txPort;

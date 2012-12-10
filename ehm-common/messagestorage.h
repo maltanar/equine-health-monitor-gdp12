@@ -23,12 +23,18 @@ class MessageStorage  {
 		return &instance;
 	}
 	
-	void initialize(char * storageRoot);
+	void initialize(char * storageRoot, bool removeOldQueue = false);
+	void deinitialize();
 	void addToStorageQueue(MessagePacket * in_msg, unsigned short size);
 	MessagePacket * getFromStorageQueue();
 	char * getFromStorageQueueRaw(unsigned short * size);
 	unsigned int getStorageQueueCount();
 	void flushAllToDisk();
+	
+	void startAudioSample();
+	void flushAudioSample(char * buf, uint16_t size);
+	void endAudioSample();
+
 	
 	// RTC storage functions
 	unsigned int readRTCStorage();
@@ -45,7 +51,7 @@ private:
   void operator=(MessageStorage const&);        // do not implement
   // ------ end of singleton pattern specific section --------
   
-  char * m_storageRoot;
+  char m_storageRoot[13];
   bool m_fileOpen;
   bool m_storageOK;
   
@@ -75,8 +81,10 @@ private:
   void deleteFile(const char * fileName);
   void writeToFile(char * buffer, unsigned int count);
   void readFromFile(char * buffer, unsigned int count);
+  void changeDirectory(char * dir);
+  void createDirectory(char * dir);
   unsigned int getTimestamp();
-  unsigned int getDirFileCount(char *dirName);
+  unsigned int traverseDirectory(char *dirName, bool deleteFiles = false);
   bool mountStorage();
   void unmountStorage();
   

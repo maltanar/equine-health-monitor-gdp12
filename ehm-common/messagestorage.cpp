@@ -1,24 +1,30 @@
 #include "messagestorage.h"
 #include <string.h>
 #include <stdlib.h>
-#include "alarmmanager.h"
 
 #ifdef EHM_MONITORING_DEVICE
+#include "alarmmanager.h"
+#include "debug_output_control.h"
+#elif EHM_BASE_STATION
 #include "debug_output_control.h"
 #else
 #define module_debug_strg(fmt, ...)
 #endif
 
+
+#define		SUBDIR_QUEUE	"/queue"
+#define		SUBDIR_AUDIO	"/audio"
+#define		SUBDIR_LOG		"/log"
+
 MessageStorage::MessageStorage()
 {
-	m_storageRoot = NULL;
 	m_storageOK = m_fileOpen = false;
 	m_nextMessageSeqNumber = 1;
 	m_queueCount = 0;
 	m_queueCountMem = 0;
 }
 
-void MessageStorage::initialize(char * storageRoot)
+void MessageStorage::initialize(char * storageRoot, bool deleteOldQueue)
 {
 	if(storageRoot == NULL)
 	{
@@ -31,15 +37,33 @@ void MessageStorage::initialize(char * storageRoot)
 	// mount the actual storage device we use for storing data
 	module_debug_strg("mounting storage...");
 	if(mountStorage())
-		module_debug_strg("storage now available!");
+		module_debug_strg("storage available!");
 	else
 		module_debug_strg("storage not available!");
+	
+	module_debug_strg("changing to storage root: %s", m_storageRoot);
+	// change to storage root
+	changeDirectory(m_storageRoot);
+	
+	// create subdirectories
+	createDirectory(SUBDIR_QUEUE);
+	createDirectory(SUBDIR_AUDIO);
+	createDirectory(SUBDIR_LOG);
+	
 	
 	// count list of existing files in storage root,
 	module_debug_strg("counting files...");
 	
-	// TODO reenable file counting
-	/*m_queueCount = */getDirFileCount("");
+	// count disk files on queue
+	m_queueCount = traverseDirectory(SUBDIR_QUEUE, deleteOldQueue);
+}
+
+void MessageStorage::deinitialize()
+{
+	flushAllToDisk();
+	unmountStorage();
+	
+	m_storageRoot[0] = 0;
 }
 
 
@@ -250,9 +274,11 @@ char * MessageStorage::getFromStorageQueueRaw(unsigned short * size)
 		char fnBuffer[13];
 		entryContent = (char *) malloc(headEntry->size);
 		sprintf(fnBuffer, "%d", headEntry->fileName);
+		changeDirectory(SUBDIR_QUEUE);
 		openFile(fnBuffer, false, true);
 		readFromFile(entryContent, headEntry->size);
 		closeFile();
+		changeDirectory("..");
 	}
 	
 	// make room for the deserialized data
@@ -290,9 +316,11 @@ MessagePacket *  MessageStorage::getFromStorageQueue()
 		char fnBuffer[13];
 		entryContent = (char *) malloc(headEntry->size);
 		sprintf(fnBuffer, "%d", headEntry->fileName);
+		changeDirectory(SUBDIR_QUEUE);
 		openFile(fnBuffer, false, true);
 		readFromFile(entryContent, headEntry->size);
 		closeFile();
+		changeDirectory("..");
 	}
 	
 	// make room for the deserialized data
@@ -374,9 +402,11 @@ void MessageStorage::flushEntryToDisk(MessageEntry * entry)
 	module_debug_strg("flush to disk: %s", fnBuffer);
 	
 	// create new file and write data
+	changeDirectory(SUBDIR_QUEUE);
 	openFile(fnBuffer, true, false);
 	writeToFile((char*) entry->memPtr, entry->size);
 	closeFile();
+	changeDirectory("..");
 	
 	// free occupied entry memory and set memPtr to NULL
 	free(entry->memPtr);
@@ -438,11 +468,21 @@ void MessageStorage::freeMessageEntry(MessageEntry * entry)
 		return;
 	}
 	
-	// first free the filename / memory buffers for the entry
+	// first free the memory buffers for the entry
 	if(entry->memPtr != NULL)
 	{
 		free(entry->memPtr);
 		entry->memPtr = NULL;
+	}
+	
+	// delete stored file if exists
+	if(entry->fileName != 0)
+	{
+		char fnBuffer[13];
+		changeDirectory(SUBDIR_QUEUE);
+		sprintf(fnBuffer, "%d", entry->fileName);
+		deleteFile(fnBuffer);
+		changeDirectory("..");
 	}
 	
 	// finally, deallocate the MessageEntry space itself
@@ -479,12 +519,29 @@ void MessageStorage::writeRTCStorage(unsigned int rtcValue)
 	closeFile();
 }
 
+void MessageStorage::startAudioSample()
+{
+	deleteFile("audio");
+	openFile("audio", true, false);
+}
+
+void MessageStorage::flushAudioSample(char * buf, uint16_t size)
+{
+	writeToFile(buf, size);
+}
+
+void MessageStorage::endAudioSample()
+{
+	closeFile();
+}				   
+
 	
 // internal filesystem access layer functions --------------------------------
 #ifdef EHM_MONITORING_DEVICE
 void MessageStorage::openFile(const char * fileName, bool writeAccess, bool readAccess)
 {
 	BYTE access = 0;
+	module_debug_strg("openFile %s %d %d", fileName, writeAccess, readAccess);
 	
 	if(m_fileOpen)
 	{
@@ -515,6 +572,7 @@ void MessageStorage::openFile(const char * fileName, bool writeAccess, bool read
 
 void MessageStorage::seekToPos(unsigned int pos)
 {
+	module_debug_strg("seekToPos %d", pos);
 	if(!m_fileOpen)
 	{
 		module_debug_strg("file not open!");
@@ -526,6 +584,7 @@ void MessageStorage::seekToPos(unsigned int pos)
 
 void MessageStorage::closeFile()
 {
+	module_debug_strg("closeFile");
 	if(!m_fileOpen)
 	{
 		module_debug_strg("file not open!");
@@ -566,21 +625,25 @@ void MessageStorage::readFromFile(char * buffer,  unsigned int count)
 
 void MessageStorage::deleteFile(const char * fileName)
 {
+	module_debug_strg("deleteFile %s", fileName);
 	m_fr = f_unlink(fileName);
 }
 
-unsigned int MessageStorage::getDirFileCount(char *path)
+unsigned int MessageStorage::traverseDirectory(char *path, bool deleteFiles)
 {
 	unsigned int count = 0;
 	FILINFO     fno;
 	DIR         dir;
 	int         i;
 	char        *fn;
-	
+	uint32_t	fileSeq = 0;
 	// TODO copy files into queue as we iterate
 	// TODO update latest sequence number
+	
+	module_debug_strg("traversing %s, deleteFiles %d", path, deleteFiles);
 
 	m_fr = f_opendir(&dir, path);
+	changeDirectory(path);
 	
 	if (m_fr == FR_OK)
 	{
@@ -605,8 +668,15 @@ unsigned int MessageStorage::getDirFileCount(char *path)
 				module_debug_strg("%s/%s", path, fn);
 			else
 				module_debug_strg("%s", fn);
-			f_unlink(fn);	// TODO remove this after we stabilize!
-			count++;
+			
+			if(deleteFiles)
+				deleteFile(fn);
+			else if(sscanf(fn, "%d", &fileSeq))
+				if(fileSeq >= m_nextMessageSeqNumber)
+				{
+					m_nextMessageSeqNumber = fileSeq+1;
+					count++;
+				}
 		  }
 		}
 	}
@@ -615,13 +685,17 @@ unsigned int MessageStorage::getDirFileCount(char *path)
 		module_debug_strg("f_opendir failure %d", m_fr);
 	}
 	
-	module_debug_strg("found %d files", count);
+	changeDirectory("..");
+	
+	module_debug_strg("found %d files, new seqnr is %d", count, 
+					  m_nextMessageSeqNumber);
 	
 	return count;
 }
 
 bool MessageStorage::mountStorage()
 {
+	module_debug_strg("mounting...");
 	// only needed for the DVK
 	// Enable SPI access to MicroSD card
 #ifdef __DVK_H
@@ -633,6 +707,7 @@ bool MessageStorage::mountStorage()
 
 void MessageStorage::unmountStorage()
 {
+	module_debug_strg("unmounting...");
 	FATFS_deinitializeFilesystem();
 	m_storageOK = false;
 }
@@ -641,5 +716,41 @@ unsigned int MessageStorage::getTimestamp()
 {
 	return AlarmManager::getInstance()->getUnixTime();
 }
+
+void MessageStorage::changeDirectory(char * dir)
+{
+	module_debug_strg("chdir %s", dir);
+	m_fr = f_chdir(dir);
+	
+	if(m_fr != FR_OK)
+		module_debug_strg("chdir failed! %d", m_fr);
+}
+
+void MessageStorage::createDirectory(char * dir)
+{
+	module_debug_strg("mkdir %s", dir);
+	m_fr = f_mkdir(dir);
+	
+	if(m_fr != FR_OK)
+		module_debug_strg("mkdir failed! %s : %d", dir, m_fr);
+}
+#endif
+// end of internal filesystem access layer functions ------------------------
+
+// start of empty implementations for the internal filesystem functions, to be able
+// to use the static functins of the class in other projects
+#ifdef EHM_BASE_STATION
+void MessageStorage::openFile(const char * fileName, bool writeAccess, bool readAccess){}
+void MessageStorage::seekToPos(unsigned int pos){}
+void MessageStorage::closeFile(){}
+void MessageStorage::deleteFile(const char * fileName){}
+void MessageStorage::writeToFile(char * buffer, unsigned int count){}
+void MessageStorage::readFromFile(char * buffer, unsigned int count){}
+unsigned int MessageStorage::traverseDirectory(char *dirName, bool deleteOld){ return -1; }
+bool MessageStorage::mountStorage(){ return false; }
+void MessageStorage::unmountStorage(){}
+unsigned int MessageStorage::getTimestamp(){ return -1; }
+void MessageStorage::changeDirectory(char * dir) {};
+void MessageStorage::createDirectory(char * dir) {};
 #endif
 // end of internal filesystem access layer functions ------------------------

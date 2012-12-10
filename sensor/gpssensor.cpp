@@ -8,6 +8,7 @@
 #include "usartmanager.h"
 #include "leuartport.h"
 #include "gpssensor.h"
+#include "alarmmanager.h"
 #include "debug_output_control.h"
 
 #define ASCIITONUM(x)	(x - 0x30)
@@ -64,6 +65,9 @@ GPSSensor::GPSSensor() :
 {
 	m_sensorMessage.sensorMsgArray = (uint8_t *) &m_gpsMessage;
 	m_parseOnReceive = false;
+	m_port = NULL;
+	m_initialized = false;
+	m_numSatellitesInView = 0;
 	
 	// initialize the GPS message to all 0xFF's
 	m_gpsMessage.latitude.degree = 0xFF;
@@ -76,43 +80,81 @@ GPSSensor::GPSSensor() :
 	m_gpsMessage.longitudeWest = false;
 	m_gpsMessage.validPosFix = false;
 	
+	// configure GPS power pins
+	configurePower();
+}
+
+void GPSSensor::hardReset(uint16_t powerLowMs, uint16_t settleMs)
+{
+	// turn power off to both Vcc and Vbat
+	setPower(false, false);
+	// wait desired amount for reset to occur
+	AlarmManager::getInstance()->lowPowerDelay(powerLowMs, sleepModeEM2);
+	// turn power back on
+	setPower(true, true);
+	// wait desired amount for the device to settle down
+	AlarmManager::getInstance()->lowPowerDelay(settleMs, sleepModeEM2);
+}
+
+bool GPSSensor::initialize()
+{
 	
-  // initialize UART
-  m_port = (LEUARTPort *) USARTManager::getInstance()->getPort(GPS_USART_PORT);
-  
-  m_port->initialize(m_msgBuffer, GPS_MSGBUFFER_SIZE, 
-                     LEUARTPort::leuartPortBaudRate9600);
-  
-  // TODO should we perform a sanity check on the GPS module here?
-  
+	m_initialized = false;
+	// initialize UART
+	m_port = (LEUARTPort *) USARTManager::getInstance()->getPort(GPS_USART_PORT);
+
+	if(!m_port)
+	{
+		  module_debug_gps("could not attach to LEUART! %d", GPS_USART_PORT);
+		  return false;
+	}
+
+	m_port->initialize(m_msgBuffer, GPS_MSGBUFFER_SIZE, 
+					 LEUARTPort::leuartPortBaudRate9600);
+
+	// TODO should we perform a sanity check on the GPS module here?
+
 #ifdef USE_GPS_DMA
-  // generate interrupt when newline is received at the very end of the frame
-  ((LEUARTPort *)m_port)->setupSignalFrame('\n');
-  // configure DMA 
-  ((LEUARTPort *)m_port)->setupDMA(m_dmaBuffer, GPS_MSGBUFFER_SIZE, DMA_CHANNEL_GPS);
+	// generate interrupt when newline is received at the very end of the frame
+	m_port->setupSignalFrame('\n');
+	// configure DMA 
+	m_port->setupDMA(m_dmaBuffer, GPS_MSGBUFFER_SIZE, DMA_CHANNEL_GPS);
 #endif
-  
-  // TODO GPS is responding weirdly to these control msgs, but why?
-  // the setPeriod is causing a restart and not keeping the new period..
-  // unless sent in a loop
-  // send NMEA message to restrict rate and wanted message types, as we
-  // are not interested in satellites in view etc. notifications
-  //setPeriod(5000);
-  configureWantedNMEASentences();
-  
-  module_debug_gps("initialized with period %d", 1000);
+
+	// power cycle the GPS
+	hardReset(10, 150);
+	
+	m_initialized = true;
+
+	// TODO GPS is responding weirdly to these control msgs, but why?
+	// the setPeriod is causing a restart and not keeping the new period..
+	// unless sent in a loop
+	// send NMEA message to restrict rate and wanted message types, as we
+	// are not interested in satellites in view etc. notifications
+	//setPeriod(500);
+	configureWantedNMEASentences();
+
+	module_debug_gps("initialized");
+
+	return m_initialized;
 }
 
 // if enabled, data received via DMA is parsed as soon as one complete
 // message is received (inside the signal frame ISR)
 void GPSSensor::setParseOnReceive(bool enable)
 {
+	if(!m_initialized)
+	{
+		module_debug_gps("not initialized!");
+		return;
+	}
+	
 	m_parseOnReceive = enable;
 	
 	if(enable)
-		((LEUARTPort *)m_port)->setSignalFrameHook(&gpsSignalFrameHandler);
+		m_port->setSignalFrameHook(&gpsSignalFrameHandler);
 	else
-		((LEUARTPort *)m_port)->setSignalFrameHook(NULL);
+		m_port->setSignalFrameHook(NULL);
 }
 
 char GPSSensor::setSleepState(bool sleepState)
@@ -120,11 +162,11 @@ char GPSSensor::setSleepState(bool sleepState)
 	// note: GPS sleep function only possible when power pins are controllable
 	setPower(!sleepState, true);
 	
-	if(!sleepState)
+	/*if(!sleepState)
 	{
 		// send configure message upon wakeup
 		configureWantedNMEASentences();
-	}
+	}*/
 	return 1;
 }
 
@@ -139,6 +181,11 @@ void GPSSensor::setPeriod(SensorPeriod ms)
   
 void GPSSensor::sampleSensorData()
 {
+	if(!m_initialized)
+	{
+		module_debug_gps("sampleSensorData: not initialized!");
+		return;
+	}
 	// GPS sends data to us at a fixed rate, so there is no real way of "sampling"
 	// instead, parse the stored string data brought by DMA
 	// no point in parsing again if parse on receive was set
@@ -217,7 +264,7 @@ void GPSSensor::hotRestart()
 
 // process a buffer as an NMEA message
 void GPSSensor::processNMEAMessage(uint8_t * buffer)
-{
+{	
   // TODO implement detailed message parsing?
   // TODO maybe implement checksum control
   // TODO handle corrupt or incorrect messages, don't loop forever
@@ -313,9 +360,10 @@ void GPSSensor::processNMEAMessage(uint8_t * buffer)
 		m_gpsMessage.longitude.second = ASCIITONUM(buffer[fieldPos[4] + 6]) * 10 + ASCIITONUM(buffer[fieldPos[5] + 7]);
 		// longitude hemisphere is E for east and W for west
 		m_gpsMessage.longitudeWest = (buffer[fieldPos[5]] == 'W' ? true : false);
-		// TODO num of satellites in view:
-		//m_gpsMessage.numSatellitesInView = ASCIITONUM(buffer[fieldPos[7]]);
-
+		// number of satellites in view:
+		m_numSatellitesInView = ASCIITONUM(buffer[fieldPos[7]]);
+		
+		module_debug_gps("satellites in view: %d", m_numSatellitesInView);
 		module_debug_gps("validPosFix: %d", m_gpsMessage.validPosFix);
 		module_debug_gps("lat %d %d %d %d", m_gpsMessage.latitude.degree,
 				m_gpsMessage.latitude.minute,
@@ -334,31 +382,37 @@ void GPSSensor::processNMEAMessage(uint8_t * buffer)
 
 void GPSSensor::sendNMEAString(char *data)
 {
-  char checksum = 0, checksumString[2];
-  
-  // send the NMEA preamble, a dollar sign
-  m_port->writeChar('$');
-  
-  // send the data string while calculating the checksum
-  int i = 0;
-  while(data[i] != 0)
-  {
-    checksum = checksum ^ data[i];
-    m_port->writeChar(data[i]);
-    i++;
-  }
-  
-  sprintf(checksumString, "%02x", checksum);
-  
-  // send the end-of-data sign, an asterisk
-  m_port->writeChar('*');
-  // send the calculated checksum for the data
-  m_port->writeChar(checksumString[0]);
-  m_port->writeChar(checksumString[1]);
-  // send CRLF to mark end of message
-  m_port->writeChar('\r');
-  m_port->writeChar('\n');
-  
-  module_debug_gps("sendNMEAcommand $%s*%c%c\r\n",data,checksumString[0],
-                   checksumString[1]);
+	if(!m_initialized)
+	{
+		module_debug_gps("sendNMEAString: not initialized!");
+		return;
+	}
+	
+	char checksum = 0, checksumString[2];
+
+	// send the NMEA preamble, a dollar sign
+	m_port->writeChar('$');
+
+	// send the data string while calculating the checksum
+	int i = 0;
+	while(data[i] != 0)
+	{
+		checksum = checksum ^ data[i];
+		m_port->writeChar(data[i]);
+		i++;
+	}
+
+	sprintf(checksumString, "%02x", checksum);
+
+	// send the end-of-data sign, an asterisk
+	m_port->writeChar('*');
+	// send the calculated checksum for the data
+	m_port->writeChar(checksumString[0]);
+	m_port->writeChar(checksumString[1]);
+	// send CRLF to mark end of message
+	m_port->writeChar('\r');
+	m_port->writeChar('\n');
+
+	module_debug_gps("sendNMEAcommand $%s*%c%c\r\n",data,checksumString[0],
+			 		  checksumString[1]);
 }

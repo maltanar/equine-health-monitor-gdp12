@@ -34,7 +34,7 @@
 // this is set by the value of the ADR* pins
 // which are always 0 for the breakout board
 #define TMP006_I2C_ADDR     0x80
-#define TMP006_DEFAULT_PERIOD	1000
+#define TMP006_DEFAULT_PERIOD	500
 
 TemperatureSensor::TemperatureSensor()
  : Sensor(typeRawTemperature, sizeof(RawTemperatureMessage), TMP006_DEFAULT_PERIOD)

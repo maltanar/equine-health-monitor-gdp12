@@ -17,7 +17,7 @@ static const uint8_t aucNetworkKey[] = ANTPLUS_NETWORK_KEY;
 
 // stuff we borrow from the ANT HRM RX example -----------------------------
 #define ANT_SERIAL_QUEUE_BUFFER_LENGTH     ((uint8_t) 15)                                  // 15 assumes that an exteneded message is the longest that will be recieved.                                               
-#define ANT_SERIAL_QUEUE_RX_SIZE           ((uint8_t) 2)                                   // Same for TX and RX buffers
+#define ANT_SERIAL_QUEUE_RX_SIZE           ((uint8_t) 6)                                   // Same for TX and RX buffers
 #define ANT_TXBUFSIZE						15
 
 typedef struct
@@ -56,7 +56,8 @@ typedef enum
 #define HRMRX_DEVICE_TYPE             ((uint8_t) 0x78)	
 
 // Message Periods
-#define HRMRX_MSG_PERIOD              ((uint16_t) 32280)	// hex 0x1F86: decimal 8070 (4.06Hz) or 32280 for approx 1 Hz
+//#define HRMRX_MSG_PERIOD              ((uint16_t) 32280)	// hex 0x1F86: decimal 8070 (4.06Hz) or 32280 for approx 1 Hz
+#define HRMRX_MSG_PERIOD              ((uint16_t) 8070)	// hex 0x1F86: decimal 8070 (4.06Hz) or 32280 for approx 1 Hz
 
 // HRM Page Toggle Bit Mask
 #define TOGGLE_MASK                   ((uint8_t) 0x80)
@@ -71,6 +72,9 @@ typedef enum
 
 class ANTHRMSensor : public Sensor {
 public:
+	static void setPower(bool vccOn);
+	static void configurePower();
+	
 	// singleton instance accessor
 	static ANTHRMSensor* getInstance()
 	{

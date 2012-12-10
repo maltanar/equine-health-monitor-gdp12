@@ -3,8 +3,7 @@
 
 #include "leuartport.h"
 #include "uartport.h"
-// TODO remove comment below after completing SPIPort framework
-//#include "spiport.h"
+#include "spiport.h"
 
 #ifdef ROUTE_ISR_LEUART0
 void LEUART0_IRQHandler()
@@ -60,9 +59,8 @@ USARTPort * USARTManager::getPort(USARTManagerPort port)
 	{
 		if(m_configs[port].async)
 			m_ports[port] = new UARTPort(&m_configs[port]);
-			// TODO remove comment below after completing SPIPort framework
-		/*else
-			m_ports[port] = new SPIPort(&m_configs[port]);*/
+		else
+			m_ports[port] = new SPIPort(&m_configs[port]);
 	}
   }
   

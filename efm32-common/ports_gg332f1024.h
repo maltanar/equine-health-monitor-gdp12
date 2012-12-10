@@ -66,6 +66,11 @@
 #define GPIO_XBEE_VCC_PORT 		gpioPortA 
 #define GPIO_XBEE_VCC_PIN 		9
 #define GPIO_XBEE_VCC			GPIO_XBEE_VCC_PORT, GPIO_XBEE_VCC_PIN
+
+#define XBEE_GPIO_CONFIG()		GPIO_PinModeSet(GPIO_XBEE_VCC, gpioModePushPull, 0); GPIO_PinModeSet(GPIO_XBEE_DTR, gpioModePushPull, 0);
+#define XBEE_POWER(x)			(x ? GPIO_PinOutClear(GPIO_XBEE_VCC) : GPIO_PinOutSet(GPIO_XBEE_VCC))
+#define XBEE_SLEEP(x)			(x ? GPIO_PinOutClear(GPIO_XBEE_DTR) : GPIO_PinOutSet(GPIO_XBEE_DTR))
+
 // -------------------------------------------------------------------------
 // End Section: Misc GPIO port config --------------------------------------
 // -------------------------------------------------------------------------
@@ -109,7 +114,8 @@ static const USARTPortConfig USARTManagerPortConfigs[USART_MANAGER_PORT_COUNT] =
     .rxPort = gpioPortE,
     .rxPin = 15,
 	.async = true,
-    .lowEnergy = true
+    .lowEnergy = true,
+	.rxDMASource = DMAREQ_LEUART0_RXDATAV
   },
   // port configuration for LEUART1, location 0
   {
@@ -123,7 +129,8 @@ static const USARTPortConfig USARTManagerPortConfigs[USART_MANAGER_PORT_COUNT] =
     .rxPort = gpioPortC,
     .rxPin = 7,
 	.async = true,
-    .lowEnergy = true
+    .lowEnergy = true,
+	.rxDMASource = DMAREQ_LEUART1_RXDATAV
   },
   // port configuration for USART0, location 2
   {
@@ -137,7 +144,8 @@ static const USARTPortConfig USARTManagerPortConfigs[USART_MANAGER_PORT_COUNT] =
     .rxPort = gpioPortC,
     .rxPin = 10,
 	.async = true,
-    .lowEnergy = false
+    .lowEnergy = false,
+	.rxDMASource = DMAREQ_USART0_RXDATAV
   },
   // port configuration for USART1, location 1 / SPI or I2S mode
   {
@@ -155,7 +163,8 @@ static const USARTPortConfig USARTManagerPortConfigs[USART_MANAGER_PORT_COUNT] =
 	.csPort = gpioPortD,
 	.csPin = 3,
 	.async = false,
-    .lowEnergy = false
+    .lowEnergy = false,
+	.rxDMASource = DMAREQ_USART1_RXDATAV
   },
   // port configuration for USART2, location 0 / SPI mode
   {
@@ -173,7 +182,8 @@ static const USARTPortConfig USARTManagerPortConfigs[USART_MANAGER_PORT_COUNT] =
 	.csPort = gpioPortC,
 	.csPin = 5,
 	.async = false,
-    .lowEnergy = false
+    .lowEnergy = false,
+	.rxDMASource = DMAREQ_USART2_RXDATAV
   }
 };
 
@@ -196,7 +206,7 @@ typedef enum {
 #define	ROUTE_ISR_LEUART0
 #define	ROUTE_ISR_LEUART1
 #define ROUTE_ISR_USART0_RX
-#define ROUTE_ISR_USART1_RX
+#define nROUTE_ISR_USART1_RX
 #define nROUTE_ISR_USART2_RX
 
 // -------------------------------------------------------------------------
