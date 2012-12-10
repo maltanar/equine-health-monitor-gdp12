@@ -131,7 +131,9 @@ void TemperatureSensor::writeRegister(unsigned char reg, unsigned int val)
 bool TemperatureSensor::isMeasurementReady()
 {
   // Read DRDY status from Config register
-  if (TMP006_DRDY & readRegister(TMP006_P_WRITE_REG))
+  uint32_t res = TMP006_DRDY & readRegister(TMP006_P_WRITE_REG);
+  module_debug_temp("ready: %d", res);
+  if (res)
     return true;
   else
     return false;
