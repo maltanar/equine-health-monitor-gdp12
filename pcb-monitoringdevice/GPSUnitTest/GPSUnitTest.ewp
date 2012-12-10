@@ -959,16 +959,25 @@
       <name>$PROJ_DIR$\..\..\efm32-common\dmamanager.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\i2cbus.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\i2cbus.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\i2cmanager.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\efm32-common\leuartport.cpp</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\efm32-common\leuartport.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\efm32-common\rtc.c</name>
+      <name>$PROJ_DIR$\..\..\efm32-common\spiport.cpp</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\efm32-common\rtc.h</name>
+      <name>$PROJ_DIR$\..\..\efm32-common\spiport.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\efm32-common\uartport.cpp</name>
@@ -1028,6 +1037,18 @@
   <group>
     <name>sensor</name>
     <file>
+      <name>$PROJ_DIR$\..\..\sensor\accelerationsensor.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\sensor\accelerationsensor.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\sensor\anthrmsensor.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\sensor\anthrmsensor.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\sensor\gpssensor.cpp</name>
     </file>
     <file>
@@ -1038,6 +1059,12 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\sensor\sensor.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\sensor\temperaturesensor.cpp</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\sensor\temperaturesensor.h</name>
     </file>
   </group>
   <group>
