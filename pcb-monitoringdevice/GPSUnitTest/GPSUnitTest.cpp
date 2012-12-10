@@ -19,7 +19,9 @@
 #include "temperaturesensor.h"
 
 
-#define	SENSOR_GPS_READ_PERIOD	4
+#define	READ_PERIOD	10
+#define READ_OFFSET	2
+
 GPSSensor * gps;
 AlarmManager * alarmManager;
 
@@ -71,9 +73,9 @@ int main(void)
 	gps->setSleepState(true);
 		
 	mgr->pause();
-	mgr->createAlarm(5, false, &wakeupHandler);
-	AlarmID readID = mgr->createAlarm(5, false, &readHandler);
-	mgr->setAlarmTimeout(readID, 7);
+	mgr->createAlarm(READ_PERIOD, false, &wakeupHandler);
+	AlarmID readID = mgr->createAlarm(READ_PERIOD, false, &readHandler);
+	mgr->setAlarmTimeout(readID, READ_PERIOD+READ_OFFSET);
 	mgr->resume();
 	
 	uint16_t size;
