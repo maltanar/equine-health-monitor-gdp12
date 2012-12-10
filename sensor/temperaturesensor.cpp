@@ -157,7 +157,6 @@ void TemperatureSensor::sampleSensorData()
   // raw data mode selected, no further processing
   m_temperatureMessage.Tenv = tDie;
   m_temperatureMessage.Vobj = vObj;
-
 }
 
 double TemperatureSensor::getTemperatureReading()

@@ -26,12 +26,12 @@ typedef enum {
 } MessageType;
 
 typedef enum  {
-	typeGPS,
-	typeAccelerometer,
-	typeRawTemperature,
-	typeHeartRate,
-	typeZigBee,
-	typeMonitoringDevice
+	typeGPS				 = 0x00,
+	typeAccelerometer	 = 0x01,
+	typeRawTemperature	 = 0x02,
+	typeHeartRate		 = 0x03,
+	typeZigBee			 = 0x04,
+	typeMonitoringDevice = 0x05
 } DeviceType;
 
 // definition of the data structure at the highest abstraction level.
@@ -95,8 +95,8 @@ typedef PACKEDSTRUCT {
 } AccelerometerMessage;
 
 typedef PACKEDSTRUCT {
-	double Vobj;
-	double Tenv;
+	int Vobj;
+	int Tenv;
 } RawTemperatureMessage;
 
 typedef PACKEDSTRUCT {

@@ -34,22 +34,8 @@ extern void __iar_dlmalloc_stats();
 // Section: Local definitions and macros -------------------------------------
 
 #define SENSOR_COUNT				4
-
-#define	SENSOR_TEMP_INDEX			0
-#define	SENSOR_ACCL_INDEX			1
-#define	SENSOR_GPS_INDEX			2
-#define	SENSOR_HRM_INDEX			3
-
-#define	SENSOR_TEMP_READ_PERIOD		3
-#define	SENSOR_TEMP_READ_OFFSET		1
-#define	SENSOR_TEMP_SAMPLES			1
-
-#define	SENSOR_ACCL_READ_PERIOD	3
-#define	SENSOR_GPS_READ_PERIOD	5
-#define SENSOR_HRM_READ_PERIOD	5
-#define DATA_SEND_PERIOD		30
-
-#define MAX_DEBUG_MSG	255
+#define DATA_SEND_PERIOD			10
+#define MAX_DEBUG_MSG				255
 
 // End Section: Local definitions and macros ---------------------------------
 
@@ -76,7 +62,7 @@ typedef struct {
 
 // End Section: Local Type Definitions ----------------------------------------
 
-// Section: Local Function Declarations ---------------------------------------
+// Section: Local Helper Function Declarations --------------------------------
 
 void initializeMCU();						// initialize clocks, debug
 void initializeDevicePowerPins();			// config GPIOs used for pwr control
@@ -84,8 +70,10 @@ void saveAudioSample(uint16_t audioLenS);	// save audio sample of given length
 void md_printf(int len);					// print over ZigBee / DebugMsg
 void recoverRTC();							// read RTC from SD card
 void saveRTC();								// save RTC to SD card
-
-// End Section: Local Function Declarations -----------------------------------
+void sendOrSaveData();
+bool configureZigBee();
+void configureDataCollection();
+// Section: Local Helper Function Declarations --------------------------------
 
 
 // Section: Local Variables ---------------------------------------------------
@@ -100,10 +88,10 @@ Audio * mic;
 SensorControlBlock sensorControl[SENSOR_COUNT];
 SensorParameters sensorParam[SENSOR_COUNT] =
 {
-	// Temperature sensor configuration
+	// GPS configuration
 	{
-		.period = 5,
-		.readOffset = 1,
+		.period = 10,
+		.readOffset = 5,
 		.samples = 1,
 		.enabled = true,
 		.requestChange = true
@@ -116,10 +104,10 @@ SensorParameters sensorParam[SENSOR_COUNT] =
 		.enabled = true,
 		.requestChange = true
 	},
-	// GPS configuration
+	// Temperature sensor configuration
 	{
-		.period = 10,
-		.readOffset = 2,
+		.period = 5,
+		.readOffset = 1,
 		.samples = 1,
 		.enabled = true,
 		.requestChange = true
@@ -142,73 +130,10 @@ SensorParameters sensorParam[SENSOR_COUNT] =
 // executed on data save alarm - simply set save flag to true
 void dataSaveHandler(AlarmID id);
 void tempSensorHandler(AlarmID id);
-
+void acclSensorHandler(AlarmID id);
+void gpsSensorHandler(AlarmID id);
 // End Section: Callback functions --------------------------------------------
 
-
-void configureDataCollection()
-{
-	dataSaveFlag = false;
-	alarmManager->createAlarm(DATA_SEND_PERIOD, false, &dataSaveHandler);
-}
-
-bool configureZigBee()
-{
-	zigbeeOK = false;
-	
-	// Xbee hard reset - turn power off for 150 ms
-	XBEE_POWER(false);
-	alarmManager->lowPowerDelay(150);
-	XBEE_POWER(true);
-	
-	// set configuration options for XBee device
-    uint8_t pan_id[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0xAB, 0xBC, 0xCD};
-    
-	XBee_Config config("", "denver", false, pan_id, 0, B9600, 1);
-
-    // initialize XBee device
-    xbee = new XBee(config);
-
-    uint8_t error_code = xbee->xbee_init();
-	zigbeeOK = (error_code == GBEE_NO_ERROR);
-	
-    if (error_code != GBEE_NO_ERROR) {
-         printf("Error: unable to configure device, code: %02x\n", error_code);
-    } else
-		printf("ZigBee OK!");
-	
-	return zigbeeOK;
-}
-
-void sendOrSaveData()
-{
-	printf("***** send or save data *****\n");
-	uint16_t size;
-	dataSaveFlag = false;
-	saveRTC();
-	
-	if(!zigbeeOK)
-	{
-		msgStore->flushAllToDisk();
-	}
-	
-	printf("Xbee status: %d \n", xbee->xbee_status());
-	if(xbee->xbee_status() == 0x00)
-	{
-		char * buf = NULL;
-		while(buf = msgStore->getFromStorageQueueRaw(&size))
-		{
-			printf("sending msg, size %d \n", size);
-			uint8_t ret = xbee->xbee_send_data("coordinator", (const uint8_t *) buf, size);
-			printf("return value %d \n", ret);
-			free(buf);
-		}
-	}
-	else
-		msgStore->flushAllToDisk();
-	
-	printf("***** send or save data done *****\n");
-}
 
 /**************************************************************************//**
  * @brief  Main function
@@ -237,12 +162,9 @@ int main(void)
 	
 	// create the sensor objects and alarms
 	tempSensorHandler(NULL);
-	/*printf("Configuring ADXL350...\n");
-	configureAccelerometer();
-	printf("Configuring GPS...\n");
-	configureGPS();
-	printf("Configuring ANT HRM...\n");
-	configureHRM();*/
+	acclSensorHandler(NULL);
+	gpsSensorHandler(NULL);
+	
 	printf("Configuring data collection...\n");
 	configureDataCollection();
 	printf("Configuring ZigBee...\n");
@@ -326,6 +248,32 @@ int main(void)
 
 // Section: Local helper function implementations ----------------------------
 
+void initializeMCU()
+{
+	// handle chip errata
+	CHIP_Init();
+	
+	// enable SWO output for printf over SWO
+	TRACE_SWOSetup();
+	// enable trace during deep sleep as well
+	// consumes additional power but worth it for debugging
+	EMU->CTRL |= EMU_CTRL_EMVREG_FULL;
+	
+	// configure the system clocks
+	SystemHFXOClockSet(48000000); 
+	
+	// enable the external crystal oscillators
+	CMU_OscillatorEnable(cmuOsc_HFXO, true, true);
+	CMU_OscillatorEnable(cmuOsc_LFXO, true, true);
+	
+	// select the external crystal oscillators and deselect old ones
+	CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
+	CMU_OscillatorEnable(cmuOsc_HFRCO, false, false);
+	CMU_ClockSelectSet(cmuClock_LFA, cmuSelect_LFXO);
+	CMU_ClockSelectSet(cmuClock_LFB, cmuSelect_LFXO);
+}
+
+
 void saveAudioSample(uint16_t audioLenS)
 {
 	printf("start acquiring audio sample, duration %d seconds \n", audioLenS);
@@ -408,33 +356,6 @@ void saveRTC()
 	msgStore->writeRTCStorage(alarmManager->getUnixTime());
 }
 
-void initializeMCU()
-{
-	// handle chip errata
-	CHIP_Init();
-	
-	// enable SWO output for printf over SWO
-	TRACE_SWOSetup();
-	// enable trace during deep sleep as well
-	// consumes additional power but worth it for debugging
-	EMU->CTRL |= EMU_CTRL_EMVREG_FULL;
-	
-	// configure the system clocks
-	SystemHFXOClockSet(48000000); 
-	SystemLFXOClockSet(32768);
-	
-	// enable the external crystal oscillators
-	CMU_OscillatorEnable(cmuOsc_HFXO, true, true);
-	CMU_OscillatorEnable(cmuOsc_LFXO, true, true);
-	
-	// select the external crystal oscillators and deselect old ones
-	CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
-	CMU_OscillatorEnable(cmuOsc_HFRCO, false, false);
-	CMU_ClockSelectSet(cmuClock_LFA, cmuSelect_LFXO);
-	CMU_ClockSelectSet(cmuClock_LFB, cmuSelect_LFXO);
-	CMU_OscillatorEnable(cmuOsc_HFRCO, false, false);
-}
-
 void initializeDevicePowerPins()
 {
 	// configure the GPIO pins we use to control the power to the
@@ -442,6 +363,71 @@ void initializeDevicePowerPins()
 	XBEE_GPIO_CONFIG();
 	GPSSensor::configurePower();
 	ANTHRMSensor::configurePower();
+}
+
+
+void configureDataCollection()
+{
+	dataSaveFlag = false;
+	alarmManager->createAlarm(DATA_SEND_PERIOD, false, &dataSaveHandler);
+}
+
+bool configureZigBee()
+{
+	zigbeeOK = false;
+	
+	// Xbee hard reset - turn power off for 150 ms
+	XBEE_POWER(false);
+	alarmManager->lowPowerDelay(150);
+	XBEE_POWER(true);
+	
+	// set configuration options for XBee device
+    uint8_t pan_id[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0xAB, 0xBC, 0xCD};
+    
+	XBee_Config config("", "denver", false, pan_id, 0, B9600, 1);
+
+    // initialize XBee device
+    xbee = new XBee(config);
+
+    uint8_t error_code = xbee->xbee_init();
+	zigbeeOK = (error_code == GBEE_NO_ERROR);
+	
+    if (error_code != GBEE_NO_ERROR) {
+         printf("Error: unable to configure device, code: %02x\n", error_code);
+    } else
+		printf("ZigBee OK!");
+	
+	return zigbeeOK;
+}
+
+void sendOrSaveData()
+{
+	printf("***** send or save data *****\n");
+	uint16_t size;
+	dataSaveFlag = false;
+	saveRTC();
+	
+	if(!zigbeeOK)
+	{
+		msgStore->flushAllToDisk();
+	}
+	
+	printf("Xbee status: %d \n", xbee->xbee_status());
+	if(xbee->xbee_status() == 0x00)
+	{
+		char * buf = NULL;
+		while(buf = msgStore->getFromStorageQueueRaw(&size))
+		{
+			printf("sending msg, size %d \n", size);
+			uint8_t ret = xbee->xbee_send_data("coordinator", (const uint8_t *) buf, size);
+			printf("return value %d \n", ret);
+			free(buf);
+		}
+	}
+	else
+		msgStore->flushAllToDisk();
+	
+	printf("***** send or save data done *****\n");
 }
 
 // End Section: Local helper function implementations -------------------------
@@ -459,7 +445,8 @@ void dataSaveHandler(AlarmID id)
 // temperature sensor callback handler
 void tempSensorHandler(AlarmID id)
 {
-	const uint8_t i = SENSOR_TEMP_INDEX;
+	const uint8_t i = typeRawTemperature;
+	SensorParameters * params = &sensorParam[i];
 	SensorControlBlock * control = &sensorControl[i];	// for convenience
 	static TemperatureSensor * tmp = NULL;
 	static AlarmID wakeupAlarmID = ALARM_INVALID_ID;
@@ -474,15 +461,15 @@ void tempSensorHandler(AlarmID id)
 		// put device to sleep
 		tmp->setSleepState(true);
 		// create the wakeup alarm
-		wakeupAlarmID = alarmManager->createAlarm(SENSOR_TEMP_READ_PERIOD,
+		wakeupAlarmID = alarmManager->createAlarm(params->period,
 												  false, &tempSensorHandler);
 		// create the read alarm
-		readAlarmID = alarmManager->createAlarm(SENSOR_TEMP_READ_PERIOD,
+		readAlarmID = alarmManager->createAlarm(params->period,
 												  false, &tempSensorHandler);
 		
 		// offset the read alarm - it needs to be triggered after the wakeup
-		alarmManager->setAlarmTimeout(readAlarmID, SENSOR_TEMP_READ_PERIOD +
-									 SENSOR_TEMP_READ_OFFSET );
+		alarmManager->setAlarmTimeout(readAlarmID, params->period + 
+									  params->readOffset);
 		
 		// initialize the control block structure
 		control->requestWakeup = true;
@@ -497,12 +484,122 @@ void tempSensorHandler(AlarmID id)
 		if(id == wakeupAlarmID)
 		{
 			control->requestWakeup = true;
-		} 
+		}
 		else if(id == readAlarmID)
 		{
-			control->requestSamples = SENSOR_TEMP_SAMPLES;
+			control->requestSamples = params->samples;
 			control->requestSleep = true;
 		}
 	}
 }
+
+// accelerometer callback handler
+void acclSensorHandler(AlarmID id)
+{
+	const uint8_t i = typeAccelerometer;
+	SensorParameters * params = &sensorParam[i];
+	SensorControlBlock * control = &sensorControl[i];	// for convenience
+	static AlarmID wakeupAlarmID = ALARM_INVALID_ID;
+	static AlarmID readAlarmID = ALARM_INVALID_ID;
+	
+	static AccelerationSensor * acc = NULL;
+	
+	// detect first run - create and configure sensor
+	if(acc == NULL)
+	{
+		printf("Configuring ADXL350...\n");
+		// get the sensor instance
+		acc = AccelerationSensor::getInstance();
+		// put device to sleep
+		acc->setSleepState(true);
+		// create the wakeup alarm
+		wakeupAlarmID = alarmManager->createAlarm(params->period,
+												  false, &acclSensorHandler);
+		// create the read alarm
+		readAlarmID = alarmManager->createAlarm(params->period,
+												  false, &acclSensorHandler);
+		
+		// offset the read alarm - it needs to be triggered after the wakeup
+		alarmManager->setAlarmTimeout(readAlarmID, params->period + 
+									  params->readOffset);
+		
+		// initialize the control block structure
+		control->requestWakeup = true;
+		control->requestSleep = false;
+		control->requestSamples = 0;
+		control->sensor = acc;
+	} 
+	else
+	{
+		// sensor has already been created - take action depending on
+		// alarm identifier
+		if(id == wakeupAlarmID)
+		{
+			control->requestWakeup = true;
+		}
+		else if(id == readAlarmID)
+		{
+			control->requestSamples = params->samples;
+			control->requestSleep = true;
+		}
+	}
+}
+
+
+// GPS callback handler
+void gpsSensorHandler(AlarmID id)
+{
+	const uint8_t i = typeGPS;
+	SensorParameters * params = &sensorParam[i];
+	SensorControlBlock * control = &sensorControl[i];	// for convenience
+	static AlarmID wakeupAlarmID = ALARM_INVALID_ID;
+	static AlarmID readAlarmID = ALARM_INVALID_ID;
+	
+	static GPSSensor * gps = NULL;
+	
+	// detect first run - create and configure sensor
+	if(gps == NULL)
+	{
+		printf("Configuring GPS...\n");
+		// get the sensor instance
+		gps = GPSSensor::getInstance();
+		gps->initialize();
+		gps->setParseOnReceive(true);
+		// put device to sleep
+		gps->setSleepState(true);
+		
+		// create the wakeup alarm
+		wakeupAlarmID = alarmManager->createAlarm(params->period,
+												  false, &gpsSensorHandler);
+		// create the read alarm
+		readAlarmID = alarmManager->createAlarm(params->period,
+												  false, &gpsSensorHandler);
+		
+		// offset the read alarm - it needs to be triggered after the wakeup
+		alarmManager->setAlarmTimeout(readAlarmID, params->period + 
+									  params->readOffset);
+		
+		// initialize the control block structure
+		control->requestWakeup = true;
+		control->requestSleep = false;
+		control->requestSamples = 0;
+		control->sensor = gps;
+	} 
+	else
+	{
+		// sensor has already been created - take action depending on
+		// alarm identifier
+		if(id == wakeupAlarmID)
+		{
+			control->requestWakeup = true;
+		}
+		else if(id == readAlarmID)
+		{
+			control->requestSamples = params->samples;
+			control->requestSleep = true;
+		}
+	}
+}
+
+
 // End Section: Alarm callback handlers / task control ------------------------
