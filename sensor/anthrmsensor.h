@@ -72,6 +72,9 @@ typedef enum
 
 class ANTHRMSensor : public Sensor {
 public:
+	static void setPower(bool vccOn);
+	static void configurePower();
+	
 	// singleton instance accessor
 	static ANTHRMSensor* getInstance()
 	{

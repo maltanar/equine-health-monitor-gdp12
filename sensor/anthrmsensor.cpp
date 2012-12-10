@@ -20,6 +20,26 @@ bool ANTRxHook(uint8_t c)
 	return true; // tell the UART driver we already processed the data
 }
 
+// configure the GPIO pin that controls the ANT power
+void ANTHRMSensor::configurePower()
+{
+#ifdef GPIO_ANT_VCC
+	GPIO_PinModeSet(GPIO_ANT_VCC, gpioModePushPull, 0);
+#endif
+}
+
+// set ANT power on or off
+void ANTHRMSensor::setPower(bool vccOn)
+{
+	module_debug_ant("vcc %d ", vccOn);
+#ifdef GPIO_ANT_VCC
+	if(!vccOn)
+		GPIO_PinOutSet(GPIO_ANT_VCC);
+	else
+		GPIO_PinOutClear(GPIO_ANT_VCC);
+#endif
+}
+
 ANTHRMSensor::ANTHRMSensor() :
   Sensor(typeHeartRate, sizeof(HeartRateMessage), ANTHRM_DEFAULT_RATE)
 {
