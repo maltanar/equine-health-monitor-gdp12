@@ -36,9 +36,6 @@ void AlarmManager::rtcSetup(void)
   // Ensure LE modules are accessible
   CMU_ClockEnable(cmuClock_CORELE, true);
 
-  // Enable LFRCO as LFACLK in CMU (will also enable oscillator if not enabled)
-  CMU_ClockSelectSet(cmuClock_LFA, cmuSelect_LFRCO);
-
   // Enable clock to RTC module
   CMU_ClockEnable(cmuClock_RTC, true);
 
