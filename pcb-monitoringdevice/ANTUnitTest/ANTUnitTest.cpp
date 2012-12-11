@@ -81,6 +81,13 @@ int main()
 	SensorMessage * msg;
 	HeartRateMessage * hrm_msg;
 	uint16_t size;
+	
+	// probably best to test this using the ANT+ simulator which has a HRM
+	// simulator mode
+	// installer can be found under Dropbox/Application Notes/ANT
+	// attach AP2M module on top of USB stick from Nordic (both in the
+	// small white EM box) and plug it in, ANT+ simulator is straightforward
+	// to use
 		
 
 	while(1)
