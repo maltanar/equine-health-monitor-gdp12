@@ -7,13 +7,6 @@
 #include "ANT/antdefines.h"
 #include "debug_output_control.h"
 
-// either GPIO_ANT_RST or GPIO_ANT_VCC must be defined to reset the ANT
-#ifdef GPIO_ANT_RST
-#define ANT_RESET	GPIO_ANT_RST
-#else
-#define ANT_RESET	GPIO_ANT_VCC
-#endif
-
 bool ANTRxHook(uint8_t c)
 {
 	ANTHRMSensor::getInstance()->processUARTRxChar(c);
@@ -42,7 +35,9 @@ void ANTHRMSensor::setPower(bool vccOn)
 
 ANTHRMSensor::ANTHRMSensor() :
   Sensor(typeHeartRate, sizeof(HeartRateMessage), ANTHRM_DEFAULT_RATE)
-{
+{	
+	m_isInitialized = false;
+	
 	// initialize message structures
 	m_sensorMessage.arrayLength = 1;
 	m_sensorMessage.sampleIntervalMs = ANTHRM_DEFAULT_RATE;
@@ -88,11 +83,8 @@ ANTHRMSensor::ANTHRMSensor() :
 	
 	// initialize other GPIO pins used to control the ANT
 	GPIO_PinModeSet(GPIO_ANT_RTS, gpioModeInput, 0);
-	GPIO_PinModeSet(ANT_RESET, gpioModePushPull, 1);
 	GPIO_PinModeSet(GPIO_ANT_SLEEP, gpioModePushPull, 0);
 
-	
-	
 	// TODO configure sleep pin here
     
     setPeriod(ANTHRM_DEFAULT_RATE);
@@ -100,21 +92,16 @@ ANTHRMSensor::ANTHRMSensor() :
 
 void ANTHRMSensor::hardReset()
 {
-	module_debug_ant("hard reset!");
+	module_debug_ant("hard reset start");
 	// we implement hard reset for the ANT module in two ways:
 	// - if the GPIO RST pin is defined, pull that low for some time
 	// - if not (f.ex for the PCB all reset lines are connected together)
 	//   use the power pin instead
-#ifndef GPIO_ANT_VCC
-	GPIO_PinOutClear(ANT_RESET);
+	setPower(false);
 	AlarmManager::getInstance()->lowPowerDelay(50, sleepModeEM1);
-	GPIO_PinOutSet(ANT_RESET);
-#else
-	GPIO_PinOutSet(ANT_RESET);
-	AlarmManager::getInstance()->lowPowerDelay(50, sleepModeEM1);
-	GPIO_PinOutClear(ANT_RESET);
-#endif
+	setPower(true);
 	AlarmManager::getInstance()->lowPowerDelay(500, sleepModeEM1);
+	module_debug_ant("hard reset end");
 }
 
 char ANTHRMSensor::setSleepState(bool sleepState)
@@ -407,6 +394,8 @@ bool ANTHRMSensor::initializeNetwork(bool doHardReset)
 {
 	bool resetOK;
 	
+	m_isInitialized = false;
+	
 	if(!doHardReset)
 		resetOK = ANT_Reset();
 	else 
@@ -476,7 +465,15 @@ bool ANTHRMSensor::initializeNetwork(bool doHardReset)
 		module_debug_ant("initializeNetwork: OpenChannel OK!");
 	
 	module_debug_ant("initializeNetwork successful!");
-	return true;
+	
+	m_isInitialized = true;
+	
+	return m_isInitialized;
+}
+
+bool ANTHRMSensor::isInitialized()
+{
+	return m_isInitialized;
 }
 
 bool ANTHRMSensor::ANT_Reset()

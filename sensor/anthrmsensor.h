@@ -101,6 +101,7 @@ public:
 	bool initializeNetwork(bool hardReset = false);
 	void hardReset();
 	bool isConnected();
+	bool isInitialized();
 	uint16_t getPairedDeviceID();
 	void setPairedDeviceID(uint16_t id);
 	void closeChannel();
@@ -121,6 +122,7 @@ private:
 	LEUARTPort * m_port;                            // the UART IF for the ANT HRM
 	HeartRateMessage m_hrmMessage;
 	bool m_isConnected;
+	bool m_isInitialized;
 	
 	// rx-tx queues and buffers
 	ANTSerialBuffer m_stRxBuffer[ANT_SERIAL_QUEUE_RX_SIZE];
