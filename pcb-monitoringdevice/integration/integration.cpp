@@ -70,9 +70,11 @@ void saveAudioSample(uint16_t audioLenS);	// save audio sample of given length
 void md_printf(int len);					// print over ZigBee / DebugMsg
 void recoverRTC();							// read RTC from SD card
 void saveRTC();								// save RTC to SD card
-void sendOrSaveData();
 bool configureZigBee();
 void configureDataCollection();
+void sendOrSaveData();
+void receiveData();
+void handleConfigSensorMsg(ConfigSensor *msg);
 // Section: Local Helper Function Declarations --------------------------------
 
 
@@ -411,23 +413,85 @@ void sendOrSaveData()
 	{
 		msgStore->flushAllToDisk();
 	}
+	char * buf = NULL;
 	
 	printf("Xbee status: %d \n", xbee->xbee_status());
 	if(xbee->xbee_status() == 0x00)
 	{
-		char * buf = NULL;
 		while(buf = msgStore->getFromStorageQueueRaw(&size))
 		{
 			printf("sending msg, size %d \n", size);
-			uint8_t ret = xbee->xbee_send_data("coordinator", (const uint8_t *) buf, size);
+			uint8_t ret = xbee->xbee_send_data("coordinator", 
+											   (const uint8_t *) buf, size);
 			printf("return value %d \n", ret);
 			free(buf);
 		}
+		
+		// TODO uncomment if receiption causes errors
+		receiveData();
 	}
 	else
 		msgStore->flushAllToDisk();
 	
 	printf("***** send or save data done *****\n");
+}
+
+void receiveData()
+{
+	uint16_t size = 0;
+	uint8_t * buf = NULL;
+		
+	// see if the base station sent us anything
+	printf("Receiving XBee message.. \n");
+	XBee_Message *rcv = xbee->xbee_receive_message();
+	if(rcv)
+	{
+		size = 0;
+		buf = rcv->get_payload(&size);
+		if(size > 0)
+		{
+			printf("got message! \n");
+			MessagePacket * pkt = (MessagePacket *) malloc(size + 8);
+			MessageStorage::deserialize(buf, pkt);
+			if(pkt->mainType == msgSensorConfig)
+			{
+				ConfigMessage * cfg = (ConfigMessage *) pkt->payload;
+				ConfigSensor * cfgArray = (ConfigSensor *) cfg->configMsgArray;
+				
+				// traverse the received config messages and handle each
+				// with helper function
+				for(int i = 0; i < cfg->arrayLength; i++)
+					handleConfigSensorMsg(&cfgArray[i]);
+			}
+			else
+				printf("What to do with type %d? \n", pkt->mainType);
+				
+			// free the deserialization buffer
+			free(pkt);
+		}
+		// free the XBee_Message
+		delete rcv;
+	}
+	else
+		printf("no message! \n");
+}
+
+void handleConfigSensorMsg(ConfigSensor *msg)
+{
+	printf("sensor config: %d %d %d \n", msg->sensorType, 
+		   msg->enableSensor, msg->samplePeriodMs);
+	
+	if(msg->sensorType > SENSOR_COUNT)
+	{
+		printf("error, cfg for sensor %d undefined! \n", msg->sensorType);
+		return;
+	}
+	
+	// change sensorParam for the corresponding sensor
+	sensorParam[msg->sensorType].enabled = msg->enableSensor;
+	sensorParam[msg->sensorType].period = msg->samplePeriodMs;	// TODO one of these should be s
+	sensorParam[msg->sensorType].readOffset = msg->sampleIntervalMs;	// TODO one of these should be s
+	sensorParam[msg->sensorType].requestChange = true;
 }
 
 // End Section: Local helper function implementations -------------------------
@@ -477,6 +541,14 @@ void tempSensorHandler(AlarmID id)
 		control->requestSamples = 0;
 		control->sensor = tmp;
 	} 
+	
+	if(params->requestChange)
+	{
+		// want to change sensor parameters
+		params->requestChange = false;
+		printf("changing sensor parameters... \n");
+		// TODO implement the actual changes
+	}
 	else
 	{
 		// sensor has already been created - take action depending on
@@ -584,6 +656,60 @@ void gpsSensorHandler(AlarmID id)
 		control->requestSleep = false;
 		control->requestSamples = 0;
 		control->sensor = gps;
+	} 
+	else
+	{
+		// sensor has already been created - take action depending on
+		// alarm identifier
+		if(id == wakeupAlarmID)
+		{
+			control->requestWakeup = true;
+		}
+		else if(id == readAlarmID)
+		{
+			control->requestSamples = params->samples;
+			control->requestSleep = true;
+		}
+	}
+}
+
+// ANT callback handler
+void antSensorHandler(AlarmID id)
+{
+	const uint8_t i = typeHeartRate;
+	SensorParameters * params = &sensorParam[i];
+	SensorControlBlock * control = &sensorControl[i];	// for convenience
+	static AlarmID wakeupAlarmID = ALARM_INVALID_ID;
+	static AlarmID readAlarmID = ALARM_INVALID_ID;
+	
+	static ANTHRMSensor * ant = NULL;
+	
+	// detect first run - create and configure sensor
+	if(ant == NULL)
+	{
+		printf("Configuring ANT...\n");
+		// get the sensor instance
+		ant = ANTHRMSensor::getInstance();
+		ant->initializeNetwork();
+		// put device to sleep
+		ant->setSleepState(true);
+		
+		// create the wakeup alarm
+		wakeupAlarmID = alarmManager->createAlarm(params->period,
+												  false, &antSensorHandler);
+		// create the read alarm
+		readAlarmID = alarmManager->createAlarm(params->period,
+												  false, &antSensorHandler);
+		
+		// offset the read alarm - it needs to be triggered after the wakeup
+		alarmManager->setAlarmTimeout(readAlarmID, params->period + 
+									  params->readOffset);
+		
+		// initialize the control block structure
+		control->requestWakeup = true;
+		control->requestSleep = false;
+		control->requestSamples = 0;
+		control->sensor = ant;
 	} 
 	else
 	{
