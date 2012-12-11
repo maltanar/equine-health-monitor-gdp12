@@ -96,7 +96,7 @@ SensorParameters sensorParam[SENSOR_COUNT] =
 		.readOffset = 5,
 		.samples = 1,
 		.enabled = true,
-		.requestChange = true
+		.requestChange = false
 	},
 	// Accelerometer configuration
 	{
@@ -104,7 +104,7 @@ SensorParameters sensorParam[SENSOR_COUNT] =
 		.readOffset = 1,
 		.samples = 10,
 		.enabled = true,
-		.requestChange = true
+		.requestChange = false
 	},
 	// Temperature sensor configuration
 	{
@@ -112,15 +112,15 @@ SensorParameters sensorParam[SENSOR_COUNT] =
 		.readOffset = 1,
 		.samples = 1,
 		.enabled = true,
-		.requestChange = true
+		.requestChange = false
 	},
 	// Heart Rate Monitor configuration
 	{
 		.period = 5,
-		.readOffset = 1,
+		.readOffset = 2,
 		.samples = 1,
 		.enabled = true,
-		.requestChange = true
+		.requestChange = false
 	}
 };
 	
@@ -134,6 +134,7 @@ void dataSaveHandler(AlarmID id);
 void tempSensorHandler(AlarmID id);
 void acclSensorHandler(AlarmID id);
 void gpsSensorHandler(AlarmID id);
+void antSensorHandler(AlarmID id);
 // End Section: Callback functions --------------------------------------------
 
 
@@ -162,10 +163,11 @@ int main(void)
 	// this way we can start them all simultaneously
 	alarmManager->pause();
 	
-	// create the sensor objects and alarms
+	// create the sensor objects and alarms, call handlers with NULL
 	tempSensorHandler(NULL);
 	acclSensorHandler(NULL);
 	gpsSensorHandler(NULL);
+	antSensorHandler(NULL);
 	
 	printf("Configuring data collection...\n");
 	configureDataCollection();
