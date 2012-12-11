@@ -30,7 +30,8 @@ DMAManager::DMAManager()
 // TODO keep track of used DMA channels instead of asking the user, make
 //      management easier
 
-void DMAManager::configureChannel(uint8_t ch, bool highPrio, uint32_t source)
+void DMAManager::configureChannel(uint8_t ch, bool highPrio, uint32_t source,
+								  DMA_CB_TypeDef * cb)
 {
   // setup the data structure we use to initialize the DMA channel
   DMA_CfgChannel_TypeDef channelConfig =
@@ -38,7 +39,7 @@ void DMAManager::configureChannel(uint8_t ch, bool highPrio, uint32_t source)
     .highPri   = highPrio,
     .enableInt = false,
     .select    = source,
-    .cb        = NULL
+    .cb        = cb
   };
   DMA_CfgChannel(ch, &channelConfig);
 }

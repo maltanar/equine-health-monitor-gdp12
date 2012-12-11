@@ -183,7 +183,8 @@ void LEUARTPort::setupDMA(uint8_t *dmaBuffer, uint8_t dmaBufferSize, uint8_t dma
     DMAManager * dmaMgr = DMAManager::getInstance();
     
     // configure the DMA channel and descriptor for LEUART0
-    dmaMgr->configureChannel(m_dmaChannel, false, m_portConfig->rxDMASource);
+	// no callback defined as LEUART DMA is assumed to be used with sigframes
+    dmaMgr->configureChannel(m_dmaChannel, false, m_portConfig->rxDMASource, NULL);
     m_dmaDescriptor = dmaMgr->configureDescriptor(m_dmaChannel, dmaDataInc1, dmaDataIncNone, 
                                 dmaDataSize1, dmaArbitrate1);
     // activate DMA transfer
