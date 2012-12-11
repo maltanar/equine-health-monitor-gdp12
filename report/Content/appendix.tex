@@ -1,0 +1,32 @@
+\chapter{Appendix}
+\section{Part List}
+\label{sec:part_list}
+Please refer to table \ref{tab:part_list_1} and \ref{tab:part_list_2} for the part list. 
+
+\begin{sidewaystable}
+\scriptsize
+\begin{tabular}{|l|l|l|m{2.3cm}|l|l|l|}\hline%
+\bfseries Part & \bfseries Value & \bfseries Device & \bfseries Description & \bfseries Package & \bfseries Manufacturer & \bfseries Man. part nr. \\\hline
+\csvreader[head to column names,
+late after line=\\
+]{Data/partlist_part1.csv}{}%
+{\Part & \Value & \Device & \Description & \Package & \Manufacturer & \PartNr}%
+\hline
+\end{tabular}
+\caption{Part list part 1}
+\label{tab:part_list_1}
+\end{sidewaystable}
+
+\begin{sidewaystable}
+\scriptsize
+\begin{tabular}{|l|l|l|m{2.3cm}|l|l|l|}\hline%
+\bfseries Part & \bfseries Value & \bfseries Device & \bfseries Description & \bfseries Package & \bfseries Manufacturer & \bfseries Man. part nr. \\\hline
+\csvreader[head to column names,
+late after line=\\
+]{Data/partlist_part2.csv}{}%
+{\Part & \Value & \Device & \Description & \Package & \Manufacturer & \PartNr}%
+\hline
+\end{tabular}
+\caption{Part list part 2}
+\label{tab:part_list_2}
+\end{sidewaystable}

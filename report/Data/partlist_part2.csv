@@ -1,0 +1,39 @@
+Part   ,Value           ,Device             ,Description,Package             ,Manufacturer,PartNr
+Q1     ,FZT751          ,Transistor,"PNP, 60V 3A",SOT223              ,Zetex,SC10976
+Q2     ,IRLML6402       ,Transistor      ,"P-Channel HEXFET, 20V 2A",SOT23               ,IR,IRLML6402PBF 
+Q3     ,IRLML6402       ,Transistor,"P-Channel HEXFET, 20V 2A",SOT23               ,IR,IRLML6402PBF 
+Q4     ,IRLML6402       ,Transistor,"P-Channel HEXFET, 20V 2A",SOT23               ,IR,IRLML6402PBF 
+Q5     ,IRLML6402       ,Transistor,"P-Channel HEXFET, 20V 2A",SOT23   
+R1     ,200R            ,Resistor    ,0.25W 5\%,R1206               ,Panasonic,ERJ8GEYJ201V
+R2     ,0.2R           ,Resistor    ,0.5W 1\%,R1210               ,WELWYN ,LR1206-R20FI 
+R3     ,0.2R            ,Resistor    ,0.5W 1\%,R1210               ,WELWYN ,LR1206-R20FI 
+R4     ,22K             ,Resistor    ,0.25W 5\%,R1206               ,Multicomp ,CRCW120622K0FKEA
+R5     ,100K            ,Resistor    ,0.25W 5\%,R0805               ,Multicomp ,MCSR12X1003FTL
+R6     ,22K          ,Resistor    ,0.25W 5\%,R1206               ,Multicomp ,CRCW120622K0FKEA
+R7     ,1K              ,Resistor    ,0.25W 5\%,R1206               ,Multicomp ,MCMR12X102
+R8     ,1K              ,Resistor    ,0.25W 5\%,R1206               ,Multicomp ,MCMR12X102
+R9     ,47K             ,Resistor    ,0.25W 5\%,R1206               ,Multicomp ,MC 0.125W 1206 5\% 47K
+R10    ,1K              ,Resistor    ,0.25W 5\%,R1206               ,Multicomp ,MCMR12X102
+R11    ,1K              ,Resistor    ,0.25W 5\%,R1206               ,Multicomp ,MCMR12X102
+R12    ,1K              ,Resistor    ,0.25W 5\%,R1206               ,Multicomp ,MCMR12X102
+R13,22K,Resistor    ,0.25W 1\%,R1206               ,VISHAY DRALORIC ,CRCW120622K0FKEA
+R14,22K,Resistor    ,0.25W 1\%,R1206               ,VISHAY DRALORIC ,CRCW120622K0FKEA
+R15,22K,Resistor    ,0.25W 1\%,R1206               ,VISHAY DRALORIC ,CRCW120622K0FKEA
+R16,22K,Resistor    ,0.25W 1\%,R1206               ,VISHAY DRALORIC ,CRCW120622K0FKEA
+S1     ,,Push Button        ,,B3F-10XX            ,TE CONNECTIVITY,5-1437565-0
+SD1    ,,MicroSD Slot   ,,MSD CON,MOLEX,49225-0821
+SL1    ,,Header   ,3 way,03P                 ,AMP,
+SL2    ,                ,Jumper,2 pin,02P                 ,AMP,
+SL3    ,                ,Header   ,2 way,02P                 ,AMP,
+U1     ,ADP2291         ,Charger     ,Sgl Cell Batt. charger,MSOP8               ,Analog Devices,ADP2291ARMZ-R7
+U2     ,ADP1706         ,LDO Regulator  ,3.3V fixed,SOIC8 ,Analog Devices,ADP1708ARDZ-3.3-R7   
+U3     ,TMP006          ,Temperature Sensor    ,IR MEMS thermopile sensor,DSBGA8             ,Texas Instruments,TMP006AIYZFR 
+U4     ,UP501           ,GPS     ,GPS Receiver,GPS UP501           ,Fastrax,UP501
+U5     ,ADXL350         ,Accelerometer,3-axis - 13-bit - SPI I2C output,LGA CAV 16,Analog Devices,ADXL350BCEZ-RL7
+U6     ,ANT AP2         ,ANT transceiver            ,RF module,ANT            ,Dynastream Innovations,ANT AP2     
+USART1 ,                ,Header      ,6 way,06P                 ,AMP,
+VMCU   ,                ,Jumper           ,2 pin,02P                 ,AMP,
+XB1    ,XBEE            ,XBEE               ,RF module,XBEE                ,Digi International,XBEE2
+XT1,48MHz           ,Oscillator              ,Fundamental AT cut,6X3.5,Abracon,ABM7-48.000MHZ-D2Y-F-T
+XT2,32.768KHz       ,Oscillator              ,QMEMS,3.2X1.5,EPSON TOYOCOM,FC-13F 32.768KHZ 20PPM - 7PF
+MIC,PmodMIC,Microphone,Microphone w/ dig. if,6 way header,Digilent,PmodMIC

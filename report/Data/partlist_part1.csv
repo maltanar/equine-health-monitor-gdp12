@@ -1,0 +1,44 @@
+Part   ,Value           ,Device             ,Description,Package             ,Manufacturer,PartNr
+BAT    ,2200mAh 3.7V    ,Battery,Li-Ion - 2200mAh - 8.1Wh,18650,Cameron Sino,CS-PSU9600RC
+C1     ,0.68uf 25V  ,Capacitor,ECPU(A)- Plastic Film,C1206               ,Panasonic,ECPU1C684MA5
+C2     ,150uf 10V   ,Capacitor,OS-CON SVP,153CLV-1010         ,Sanyo,10SVP150M
+C3     ,10nf 50V           ,Capacitor,X7R MLCC,C1206               ,AVX,12065C103KAT2A
+C4     ,820uf 25V         ,Capacitor,Electrolytic,153CLV-1010         ,Panasonic,EEEFT1E821AP
+C5     ,150uf 10V           ,Capacitor,OS-CON SVP,153CLV-1010         ,Sanyo,10SVP150M
+C6     ,0.1uf 50V           ,Capacitor,X7R MLCC,C1206               ,Multicomp ,MCCA000478
+C7     ,0.1uf 50V           ,Capacitor,X7R MLCC,C1206               ,Multicomp ,MCCA000479
+C8     ,0.1uf 50V           ,Capacitor,X7R MLCC,C1206               ,Multicomp ,MCCA000480
+C9     ,0.1uf 50V           ,Capacitor,X7R MLCC,C1206               ,Multicomp ,MCCA000481
+C10    ,0.1uf 50V           ,Capacitor,X7R MLCC,C1206               ,Multicomp ,MCCA000482
+C11    ,0.1uf 50V           ,Capacitor,X7R MLCC,C1206               ,Multicomp ,MCCA000483
+C12    ,0.1uf 50V           ,Capacitor,X7R MLCC,C1206               ,Multicomp ,MCCA000484
+C13    ,0.68uf 25V       ,Capacitor,"ECPU(A), Plastic Film",C1206               ,Panasonic,ECPU1C684MA5
+C14    ,0.1uf 50V           ,Capacitor,X7R MLCC,C1206               ,Multicomp ,MCCA000484
+C15    ,0.68uf          ,Capacitor,"ECPU(A), Plastic Film",C1206               ,Panasonic,ECPU1C684MA5
+C16    ,0.68uf          ,Capacitor,"ECPU(A), Plastic Film",C1206               ,Panasonic,ECPU1C684MA6
+C17    ,18pf            ,Capacitor,NPO MLCC,C1206               ,Kemet,C1206C180J5GACTU
+C18    ,18pf            ,Capacitor,NPO MLCC,C1206               ,Kemet,C1206C180J5GACTU
+C19    ,7pf             ,Capacitor,NPO MLCC,C0805               ,Multicomp ,MCCA000315
+C20    ,7pf             ,Capacitor,NPO MLCC,C0805               ,Multicomp ,MCCA000315
+C21    ,0.1uf 50V           ,Capacitor,X7R MLCC,C1206               ,Multicomp ,MCCA000478
+C22    ,0.1uf 50V           ,Capacitor,X7R MLCC,C1206               ,Multicomp ,MCCA000478
+C23    ,22uf            ,Capacitor,OS-CON SVP,PANASONIC A         ,Sanyo,6SVP22M
+C24    ,0.1uf 50V           ,Capacitor,X7R MLCC,C1206               ,Multicomp ,MCCA000478
+C25    ,22uf            ,Capacitor,OS-CON SVP,PANASONIC A         ,Sanyo,6SVP22M
+C26    ,0.1uf 50V           ,Capacitor,X7R MLCC,C1206               ,Multicomp ,MCCA000478
+C27    ,0.68uf          ,Capacitor,"ECPU(A), Plastic Film",C1206               ,Panasonic,ECPU1C684MA5
+C28    ,22uf            ,Capacitor,OS-CON SVP,PANASONIC A         ,Sanyo,6SVP22M
+C29    ,0.1uf 50V           ,Capacitor,X7R ceramic ,C1206               ,Multicomp ,MCCA000478
+C30    ,22uf            ,Capacitor,OS-CON SVP,PANASONIC A         ,Sanyo,6SVP22M
+C31    ,0.1uf 50V           ,Capacitor,X7R MLCC,C1206               ,Multicomp ,MCCA000478
+C32    ,0.1uf 50V           ,Capacitor,X7R MLCC,C1206               ,Multicomp ,MCCA000478
+C33,22uf            ,Capacitor,OS-CON SVP,PANASONIC A         ,Sanyo,6SVP22M
+CON1   ,JLINK SWO       ,Connector    ,2X10 way,DIP20               ,AMP,1-1241050-0
+D1     ,MBRA340T3       ,MBRA340T3          ,Schottky Pwr Rect. 3A 40V,SMA                 ,ON Semicond.,MBRA340T3G
+J1     ,,Socket           ,DC Power Socket 2.1mm,DCJ0202             ,SwitchCraft,RAPC722
+LED1   , 3.2V 20mA,LED  ,True green 300mcd,CHIPLED 1206        ,Multicomp ,OVS-0804
+MCU,EFM32GG332F1024 ,MCU  ,Cortex M3 based MCU,TQFP64               ,Energy Micro,EFM32GG332F1024 
+NTC1   ,470K            ,Thermistor       ,0.25W 10\%,R0805               ,AVX,NB20Q00474KBA
+PD     ,-               ,Header,5 way,05P                 ,AMP,
+PF     ,-               ,Header,4 way,04P                 ,AMP,
+            ,IR,IRLML6402PBF
