@@ -1,0 +1,72 @@
+%% ----------------------------------------------------------------
+%% GDP.tex
+%% ---------------------------------------------------------------- 
+\documentclass[
+	english,
+	oneside
+	]{ecsgdp}         % Use the GDP Report Style
+\graphicspath{{Images/}}   % Location of your graphics files
+\usepackage{natbib}            % Use Natbib style for the refs.
+\hypersetup{colorlinks=true}   % Set to false for black/white printing
+\input{praemble_ecs}
+%% ----------------------------------------------------------------
+
+%--------------Preface-------------------------
+\begin{document}
+\frontmatter
+\title      {Equine Horse Monitor}
+\authors    {\texorpdfstring
+             {\href{mailto:jacc1g12@soton.ac.uk}{Jose Cubero,}}{Jose Cubero}
+            \texorpdfstring
+                         {\href{mailto:mo1g12@soton.ac.uk}{Merve Oksar,}}{Merve Oksar}
+             \texorpdfstring
+             {\href{mailto:kr2g12@soton.ac.uk}{Konke Radlow,}}{Konke Radlow}
+			 \texorpdfstring
+			 {\href{mailto:ms15g12@soton.ac.uk}{Michail Sidorov,}}{Michail Sidorov}
+			 \texorpdfstring
+			 {\href{mailto:yu1g12@soton.ac.uk}{Yaman Umuroglu}}{Yaman Umuroglu}
+            }
+\addresses  {\groupname\\\deptname\\\univname}
+\date       {\today}
+\subject    {A Group Design Project report submitted as part of the European Masters on Embedded Computing Systems (EMECS)}
+\keywords   {}
+\supervisor {Dr. Peter Reid Wilson}
+\examiner   {Iain McNelly}
+\degree     {Master of Engineering}
+
+% load Meta-Informations, that can be used throughout the document
+\input{dsl.tex}
+
+
+\maketitle
+\begin{abstract}
+\input{Content/abstract.tex}
+\end{abstract}
+\tableofcontents
+\listoffigures
+\listoftables
+\lstlistoflistings
+\listofsymbols{ll}{$w$ & The weight vector}
+\acknowledgements{Thanks to Energy Micro and Nordic Semiconductor for their generous support of our project.}
+\dedicatory{To \dots}
+
+%--------------Main Part------------------------
+\mainmatter
+\input{Content/introduction.tex}
+\input{Content/research.tex}
+\input{Content/system_design.tex}
+\input{Content/hardware_subsystems.tex}
+\input{Content/system_software.tex}
+\input{Content/pcb_design.tex}
+\input{Content/future_work.tex}
+\input{Content/project_management.tex}
+
+%-------------Appendix----------------------------
+\appendix
+
+%--------------Credits----------------------------
+\backmatter
+\bibliographystyle{ecs}
+\bibliography{ECS}
+\end{document}
+%% ----------------------------------------------------------------

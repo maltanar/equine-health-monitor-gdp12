@@ -1,0 +1,68 @@
+%--------------Central Dokument------------------------
+%----------------
+% Define Document specific settings
+%----------------
+\documentclass[	 english			% document language (passed to other packages)
+				,oneside			% center content (alt: twoside)
+				,paper=a4			
+				,fontsize=11pt
+				,abstract=true		% center headline of abstract section								
+				]{scrreprt}			% Document class: Koma Report
+\usepackage{scrhack}	%Fixes problems when using Koma in combination with Hyperref, Listing und Float
+
+% load your personal praemble
+\input{praemble}
+
+% define metadata for pdf document
+\hypersetup{						
+	pdftitle = "Equine Horse Monitor"
+	,pdfauthor ="J. Cubero - M. Oksar - K. Radlow 
+	- M. Sidorov - Y. Umuroglu" 
+	,pdfsubject = "GDP2012 Project Report"
+	%,pdfkeywords =
+	%,pdfproducer =
+	}
+	
+% load Meta-Informations, that can be used throughout the document
+\input{meta.tex}
+\input{dsl.tex}
+
+\begin{document}
+%--------------Preface-------------------------
+\pagenumbering{roman}
+\setcounter{page}{1}
+\include{Content/cover}	% include adds a vertical space
+\pagebreak
+\begin{abstract}
+\input{Content/abstract.tex}
+\end{abstract}
+\tableofcontents		% add table of contents
+\pagebreak	
+\listoffigures			% add table of figures
+\listoftables			% add table of tables
+\lstlistoflistings
+\cleardoublepage
+
+%--------------Main Part------------------------
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\input{Content/introduction.tex}
+\input{Content/research.tex}
+\input{Content/system_design.tex}
+\input{Content/hardware_subsystems.tex}
+\input{Content/system_software.tex}
+\input{Content/pcb_design.tex}
+\input{Content/future_work.tex}
+\input{Content/project_management.tex}
+
+%-------------Appendix----------------------------
+\pagebreak
+\appendix
+\input{Content/appendix.tex}
+
+
+%--------------Credits----------------------------
+%\chapter{Bibliography}
+%\bibliography{references}	% print the biblography
+
+\end{document}

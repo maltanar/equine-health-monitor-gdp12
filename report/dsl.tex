@@ -1,0 +1,25 @@
+% redefine the icon used within the itemize environment
+\renewcommand{\labelitemi}{$\diamond$}
+
+% a custom environment that can be used to add all kinds of content
+% in a centered minipage
+\newenvironment{minicenter}[1][0.9]
+{\begin{center}\begin{minipage}{#1\textwidth}}
+{\end{minipage}\end{center}}
+
+% define custom  environment for embedding LaTeX sourcecode
+\lstnewenvironment{lx}[1][numbers=none]
+{\hfill\lstset{style=myLaTeX,tabsize=2, #1}\minipage{0.9\textwidth}}
+{\endminipage\hfill\null}
+
+
+% command to print the text in bold and white  
+% used for row / column descriptors of tables
+\newcommand{\tbldescr}[1]{\textcolor{White}{\textbf{#1}}}
+
+% command to insert a TODO marker
+\newcommand{\TODO}[1]{\fcolorbox{Red}{Yellow}{
+\texttt{\large
+\textbf{\#TODO: #1}
+}}}
+

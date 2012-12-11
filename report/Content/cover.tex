@@ -1,0 +1,50 @@
+%--------------Custom Titlepage------------------------
+%----------------
+% This titlepage was adopted from http://en.wikibooks.org/wiki/LaTeX/Title_Creation
+%----------------
+
+\begin{titlepage}
+%\includegraphics[height=1.5cm]{Images/ntnu_logo.pdf}\\[1cm]   
+\begin{center}
+
+ 
+% Upper part of the page
+~\\[1.5cm]
+
+\textsc{\Large \type}\\[0.5cm]			% print the type of the docment
+
+% Set the title of the Document between two horizontal lines
+\hrule ~\\[0.2cm]
+{\huge \bfseries \mytitle}\\[0.4cm]		% print the title of the document
+\large \mysubtitle \\[0.5cm]			% print the subtitle
+\hrule ~\\[1.5cm]
+
+% Additional Information about the document
+\begin{minipage}{0.4\textwidth}
+	\begin{flushleft} \large
+		\emph{Author:}\\
+		\myauthor \linebreak
+		\myauthori \linebreak
+		\myauthorii \linebreak
+		\myauthoriii \linebreak
+		\myauthoriv
+	\end{flushleft}
+\end{minipage}
+\begin{minipage}{0.4\textwidth}
+	\begin{flushright} \large
+		\emph{Supervisors:} \\
+		\professor \linebreak
+		\professori \linebreak 
+		\linebreak
+		\linebreak
+		\linebreak
+	\end{flushright}
+\end{minipage}
+
+\vfill
+
+% Bottom of the page
+{\large \today}
+
+\end{center}
+\end{titlepage}
