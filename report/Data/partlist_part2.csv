@@ -36,4 +36,4 @@ VMCU   ,                ,Jumper           ,2 pin,02P                 ,AMP,
 XB1    ,XBEE            ,XBEE               ,RF module,XBEE                ,Digi International,XBEE2
 XT1,48MHz           ,Oscillator              ,Fundamental AT cut,6X3.5,Abracon,ABM7-48.000MHZ-D2Y-F-T
 XT2,32.768KHz       ,Oscillator              ,QMEMS,3.2X1.5,EPSON TOYOCOM,FC-13F 32.768KHZ 20PPM - 7PF
-MIC,PmodMIC,Microphone,Microphone w/ dig. if,6 way header,Digilent,PmodMIC
+MIC,PmodMIC,Microphone,Mic w/ dig. if,6 way header,Digilent,PmodMIC
