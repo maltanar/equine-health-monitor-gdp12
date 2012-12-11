@@ -32,7 +32,7 @@ class MessageStorage  {
 	void flushAllToDisk();
 	
 	void startAudioSample();
-	void flushAudioSample(char * buf, uint16_t size);
+	void flushAudioSample(char * buf, uint16_t size, bool removeRightChannel = false);
 	void endAudioSample();
 
 	
@@ -66,6 +66,7 @@ private:
   unsigned int m_queueCount;
   unsigned int m_queueCountMem;
   unsigned int m_nextMessageSeqNumber;
+  unsigned int m_nextAudioSeqNumber;
   
   // internal queue management functions
   void enqueue(void * memPtr, unsigned int fileName, unsigned short size);
@@ -80,11 +81,14 @@ private:
   void closeFile();
   void deleteFile(const char * fileName);
   void writeToFile(char * buffer, unsigned int count);
+  void writeToFileWithReadStep(char * buffer, unsigned int count, 
+											 int writeSize, int skipSize);
   void readFromFile(char * buffer, unsigned int count);
   void changeDirectory(char * dir);
   void createDirectory(char * dir);
   unsigned int getTimestamp();
-  unsigned int traverseDirectory(char *dirName, bool deleteFiles = false);
+  unsigned int traverseDirectory(char *dirName, unsigned int *seqNumberCounter, 
+								 bool deleteFiles = false);
   bool mountStorage();
   void unmountStorage();
   

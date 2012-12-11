@@ -20,6 +20,7 @@ MessageStorage::MessageStorage()
 {
 	m_storageOK = m_fileOpen = false;
 	m_nextMessageSeqNumber = 1;
+	m_nextAudioSeqNumber = 1;
 	m_queueCount = 0;
 	m_queueCountMem = 0;
 }
@@ -55,7 +56,11 @@ void MessageStorage::initialize(char * storageRoot, bool deleteOldQueue)
 	module_debug_strg("counting files...");
 	
 	// count disk files on queue
-	m_queueCount = traverseDirectory(SUBDIR_QUEUE, deleteOldQueue);
+	m_queueCount = traverseDirectory(SUBDIR_QUEUE, &m_nextMessageSeqNumber, deleteOldQueue);
+	
+	// traverse audio samples as well to find latest seq number there
+	// hardcoded to not remove old files, gut sound is a valuable commodity...
+	traverseDirectory(SUBDIR_AUDIO, &m_nextAudioSeqNumber, false);
 }
 
 void MessageStorage::deinitialize()
@@ -521,18 +526,28 @@ void MessageStorage::writeRTCStorage(unsigned int rtcValue)
 
 void MessageStorage::startAudioSample()
 {
-	deleteFile("audio");
-	openFile("audio", true, false);
+	char fnBuffer[13];
+	sprintf(fnBuffer, "%d", m_nextAudioSeqNumber);
+	
+	// create new file and write data
+	changeDirectory(SUBDIR_AUDIO);
+	openFile(fnBuffer, true, false);		
 }
 
-void MessageStorage::flushAudioSample(char * buf, uint16_t size)
+void MessageStorage::flushAudioSample(char * buf, uint16_t size, 
+									  bool removeRightChannel)
 {
-	writeToFile(buf, size);
+	if(!removeRightChannel)
+		writeToFile(buf, size);
+	else
+		// TODO audio sample size is hardcoded as uint16
+		writeToFileWithReadStep(buf, size, sizeof(uint16_t), sizeof(uint16_t));
 }
 
 void MessageStorage::endAudioSample()
 {
 	closeFile();
+	changeDirectory("..");
 }				   
 
 	
@@ -609,6 +624,32 @@ void MessageStorage::writeToFile(char * buffer, unsigned int count)
 		module_debug_strg("error while writing: %x wrote %d of %d", m_fr, bw, count);
 }
 
+void MessageStorage::writeToFileWithReadStep(char * buffer, unsigned int count, 
+											 int writeSize, int skipSize)
+{
+	if(!m_fileOpen)
+	{
+		module_debug_strg("file not open!");
+		return;
+	}
+	
+	UINT bw;
+	unsigned int cnt = 0;
+	
+	
+	while(cnt <= count)
+	{
+		m_fr = f_write(&m_file, (void *) buffer, writeSize, &bw);
+		if(m_fr != FR_OK || bw != writeSize)
+		{
+			module_debug_strg("error while writing: %x wrote %d of %d", m_fr, bw, count);
+			break;
+		}
+		buffer += writeSize + skipSize;
+		cnt += writeSize + skipSize;
+	}
+}
+
 void MessageStorage::readFromFile(char * buffer,  unsigned int count)
 {
 	if(!m_fileOpen)
@@ -629,7 +670,9 @@ void MessageStorage::deleteFile(const char * fileName)
 	m_fr = f_unlink(fileName);
 }
 
-unsigned int MessageStorage::traverseDirectory(char *path, bool deleteFiles)
+unsigned int MessageStorage::traverseDirectory(char *path, 
+											   unsigned int *seqNumberCounter,
+											   bool deleteFiles)
 {
 	unsigned int count = 0;
 	FILINFO     fno;
@@ -671,10 +714,11 @@ unsigned int MessageStorage::traverseDirectory(char *path, bool deleteFiles)
 			
 			if(deleteFiles)
 				deleteFile(fn);
-			else if(sscanf(fn, "%d", &fileSeq))
-				if(fileSeq >= m_nextMessageSeqNumber)
+			else if(sscanf(fn, "%d", &fileSeq) && seqNumberCounter != NULL)	
+				// update sequence numbers
+				if(fileSeq >= *seqNumberCounter)
 				{
-					m_nextMessageSeqNumber = fileSeq+1;
+					*seqNumberCounter = fileSeq+1;
 					count++;
 				}
 		  }
@@ -745,8 +789,14 @@ void MessageStorage::seekToPos(unsigned int pos){}
 void MessageStorage::closeFile(){}
 void MessageStorage::deleteFile(const char * fileName){}
 void MessageStorage::writeToFile(char * buffer, unsigned int count){}
+
+void writeToFileWithReadStep(char * buffer, unsigned int count, 
+							 int writeSize, int skipSize) {}
+
+unsigned int traverseDirectory(char *dirName, unsigned int *seqNumberCounter, 
+							   bool deleteFiles) { return 0;}
+
 void MessageStorage::readFromFile(char * buffer, unsigned int count){}
-unsigned int MessageStorage::traverseDirectory(char *dirName, bool deleteOld){ return -1; }
 bool MessageStorage::mountStorage(){ return false; }
 void MessageStorage::unmountStorage(){}
 unsigned int MessageStorage::getTimestamp(){ return -1; }
