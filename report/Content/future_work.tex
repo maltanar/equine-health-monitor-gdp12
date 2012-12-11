@@ -1,0 +1,23 @@
+\chapter{Future Work}
+\TODO{}write a nice intro paragraph for future work: huge project - first prototype - realizations during prototyping/integration - unforeseen limitations during planning stage - proposed solutions and fixes - project scope can be extended
+
+In this section further development possibilities for the current prototype will be discussed.
+
+The device is designed as an equine health monitor, however the need for a health monitor is not only limited to horses. As there are almost no horse specific parts used in the system, the device could be adapted for the use on human subjects or agents of other mammal species. The only adaptation that has to be made is the usage of a target specific heart rate monitor. 
+
+The scope of the project is rather large. It is possible improve some of the features to evolve it into a more specialized system. One possible solution could be a tracking system using GPS and accelerometer data. These data can also be used for health-related applications such as tracking the movement of the animals and detecting extraordinary situations. 
+
+Another field of application could be professional horse training, to monitor the heart rate in relation to the covered distance over an average of the velocity which allows to analyze the improvements of a horse’s stamina over time.
+
+As the system works as a health profiler, it is possible extend it by adding signal analysis features to perform autonomous diagnosis or issue warnings when there is a problem with the vital signs. Further research has to be undertaken to determine relations of parameters and indicators for certain diseases.
+
+In the current implementation, the gut sound monitor works periodically. The problem with this approach is introduced noise when the horse is moving. One way to improve the behavior is to disabling the audio recording conditionally, if the horse is moving and delay it until the horse stays at a stable position for a period of time. The (already available) accelerometer and GPS data can be used to implement this feature.
+
+\begin{itemize}
+\item TODO: Improve web interface to behave more like a standalone application (ajax)
+\item  TODO: Improve the web interface to deliver a mobile device version of the website
+\item  TODO: Replace XBee with a faster 802.11 based wireless connection - energy cost / bit is too high for ZigBee - we want to transmit relatively large files (Audio) - low duty cycle
+\item  TODO: Use XBee pin sleep with cyclic sleep mode - this way the base station doesn’t have to wait for a monitoring node to connect before a request can be dispatched
+\item  TODO: Get sample recordings from horses that will make it possible to perform an acoustic  profile. This can be used to improve the design of the audio acquisition module.
+\item  TODO: Add other possible improvements
+\end{itemize}

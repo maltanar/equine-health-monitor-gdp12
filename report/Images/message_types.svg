@@ -1,0 +1,1245 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.1"
+   width="606.9375"
+   height="544"
+   id="svg6629">
+  <defs
+     id="defs6631" />
+  <metadata
+     id="metadata6634">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(-76.528887,-474.6479)"
+     id="layer1">
+    <g
+       transform="translate(347.02889,480.6479)"
+       id="g5280">
+      <g
+         transform="translate(4,4)"
+         id="g5282">
+        <rect
+           width="139.44223"
+           height="19"
+           x="0"
+           y="0"
+           id="rect5284"
+           style="fill:#a8a8a8;fill-opacity:0.6;stroke:#a8a8a8;stroke-width:2;stroke-opacity:0.6" />
+      </g>
+      <g
+         id="g5286">
+        <rect
+           width="139.44223"
+           height="19"
+           x="0"
+           y="0"
+           id="rect5288"
+           style="fill:#ffffff;stroke:#000000;stroke-width:2" />
+      </g>
+      <g
+         transform="translate(4,23)"
+         id="g5290">
+        <rect
+           width="139.44223"
+           height="55"
+           x="0"
+           y="0"
+           id="rect5292"
+           style="fill:#a8a8a8;fill-opacity:0.6;stroke:#a8a8a8;stroke-width:2;stroke-opacity:0.6" />
+      </g>
+      <g
+         transform="translate(0,19)"
+         id="g5294">
+        <rect
+           width="139.44223"
+           height="55"
+           x="0"
+           y="0"
+           id="rect5296"
+           style="fill:#ffffff;stroke:#000000;stroke-width:2" />
+      </g>
+      <g
+         transform="translate(0,14.5)"
+         id="g5298">
+        <text
+           x="70"
+           y="-2"
+           id="text5300"
+           style="text-anchor:middle">
+          <tspan
+             id="tspan5302"
+             xml:space="preserve"
+             style="font-size:12px;text-decoration: underline;fill:#000000;font-family:Arial">MessagePacket</tspan>        </text>
+      </g>
+      <g
+         transform="translate(0,36)"
+         id="g5304">
+        <text
+           x="2"
+           y="-2"
+           id="text5306"
+           style="text-anchor:start">
+          <tspan
+             id="tspan5308"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">MessageType</tspan>        </text>
+        <text
+           x="2"
+           y="12.8"
+           id="text5310"
+           style="text-anchor:start">
+          <tspan
+             id="tspan5312"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">relTimestampS</tspan>        </text>
+        <text
+           x="2"
+           y="27.6"
+           id="text5314"
+           style="text-anchor:start">
+          <tspan
+             id="tspan5316"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">*payload</tspan>        </text>
+      </g>
+    </g>
+    <g
+       transform="translate(134.02889,646.6479)"
+       id="g5318">
+      <g
+         transform="translate(4,4)"
+         id="g5320">
+        <rect
+           width="139.44223"
+           height="19"
+           x="0"
+           y="0"
+           id="rect5322"
+           style="fill:#a8a8a8;fill-opacity:0.6;stroke:#a8a8a8;stroke-width:2;stroke-opacity:0.6" />
+      </g>
+      <g
+         id="g5324">
+        <rect
+           width="139.44223"
+           height="19"
+           x="0"
+           y="0"
+           id="rect5326"
+           style="fill:#ffffff;stroke:#000000;stroke-width:2" />
+      </g>
+      <g
+         transform="translate(4,23)"
+         id="g5328">
+        <rect
+           width="139.44223"
+           height="85"
+           x="0"
+           y="0"
+           id="rect5330"
+           style="fill:#a8a8a8;fill-opacity:0.6;stroke:#a8a8a8;stroke-width:2;stroke-opacity:0.6" />
+      </g>
+      <g
+         transform="translate(0,19)"
+         id="g5332">
+        <rect
+           width="139.44223"
+           height="85"
+           x="0"
+           y="0"
+           id="rect5334"
+           style="fill:#ffffff;stroke:#000000;stroke-width:2" />
+      </g>
+      <g
+         transform="translate(0,14.5)"
+         id="g5336">
+        <text
+           x="70"
+           y="-2"
+           id="text5338"
+           style="text-anchor:middle">
+          <tspan
+             id="tspan5340"
+             xml:space="preserve"
+             style="font-size:12px;text-decoration: underline;fill:#000000;font-family:Arial">SensorMessage</tspan>        </text>
+      </g>
+      <g
+         transform="translate(0,36)"
+         id="g5342">
+        <text
+           x="2"
+           y="-2"
+           id="text5344"
+           style="text-anchor:start">
+          <tspan
+             id="tspan5346"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">DeviceType</tspan>        </text>
+        <text
+           x="2"
+           y="12.8"
+           id="text5348"
+           style="text-anchor:start">
+          <tspan
+             id="tspan5350"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">endTimestampS</tspan>        </text>
+        <text
+           x="2"
+           y="27.6"
+           id="text5352"
+           style="text-anchor:start">
+          <tspan
+             id="tspan5354"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">sampleIntervalMs</tspan>        </text>
+        <text
+           x="2"
+           y="42.400002"
+           id="text5356"
+           style="text-anchor:start">
+          <tspan
+             id="tspan5358"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">arrayLength</tspan>        </text>
+        <text
+           x="2"
+           y="57.200001"
+           id="text5360"
+           style="text-anchor:start">
+          <tspan
+             id="tspan5362"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">*sensorMsgArray</tspan>        </text>
+      </g>
+    </g>
+    <g
+       transform="translate(349.02889,650.1479)"
+       id="g5364">
+      <g
+         transform="translate(4,4)"
+         id="g5366">
+        <rect
+           width="139.44223"
+           height="19"
+           x="0"
+           y="0"
+           id="rect5368"
+           style="fill:#a8a8a8;fill-opacity:0.6;stroke:#a8a8a8;stroke-width:2;stroke-opacity:0.6" />
+      </g>
+      <g
+         id="g5370">
+        <rect
+           width="139.44223"
+           height="19"
+           x="0"
+           y="0"
+           id="rect5372"
+           style="fill:#ffffff;stroke:#000000;stroke-width:2" />
+      </g>
+      <g
+         transform="translate(4,23)"
+         id="g5374">
+        <rect
+           width="139.44223"
+           height="76"
+           x="0"
+           y="0"
+           id="rect5376"
+           style="fill:#a8a8a8;fill-opacity:0.6;stroke:#a8a8a8;stroke-width:2;stroke-opacity:0.6" />
+      </g>
+      <g
+         transform="translate(0,19)"
+         id="g5378">
+        <rect
+           width="139.44223"
+           height="76"
+           x="0"
+           y="0"
+           id="rect5380"
+           style="fill:#ffffff;stroke:#000000;stroke-width:2" />
+      </g>
+      <g
+         transform="translate(0,14.5)"
+         id="g5382">
+        <text
+           x="70"
+           y="-2"
+           id="text5384"
+           style="text-anchor:middle">
+          <tspan
+             id="tspan5386"
+             xml:space="preserve"
+             style="font-size:12px;text-decoration: underline;fill:#000000;font-family:Arial">ConfigMessage</tspan>        </text>
+      </g>
+      <g
+         transform="translate(0,36)"
+         id="g5388">
+        <text
+           x="2"
+           y="-2"
+           id="text5390"
+           style="text-anchor:start">
+          <tspan
+             id="tspan5392"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">DeviceType</tspan>        </text>
+        <text
+           x="2"
+           y="12.8"
+           id="text5394"
+           style="text-anchor:start">
+          <tspan
+             id="tspan5396"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">isReadRequest</tspan>        </text>
+        <text
+           x="2"
+           y="27.6"
+           id="text5398"
+           style="text-anchor:start">
+          <tspan
+             id="tspan5400"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">arrayLength</tspan>        </text>
+        <text
+           x="2"
+           y="42.400002"
+           id="text5402"
+           style="text-anchor:start">
+          <tspan
+             id="tspan5404"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">*configMsgArray</tspan>        </text>
+      </g>
+    </g>
+    <g
+       transform="translate(534.02889,649.1479)"
+       id="g5406">
+      <g
+         transform="translate(4,4)"
+         id="g5408">
+        <rect
+           width="139.44223"
+           height="19"
+           x="0"
+           y="0"
+           id="rect5410"
+           style="fill:#a8a8a8;fill-opacity:0.6;stroke:#a8a8a8;stroke-width:2;stroke-opacity:0.6" />
+      </g>
+      <g
+         id="g5412">
+        <rect
+           width="139.44223"
+           height="19"
+           x="0"
+           y="0"
+           id="rect5414"
+           style="fill:#ffffff;stroke:#000000;stroke-width:2" />
+      </g>
+      <g
+         transform="translate(4,23)"
+         id="g5416">
+        <rect
+           width="139.44223"
+           height="54"
+           x="0"
+           y="0"
+           id="rect5418"
+           style="fill:#a8a8a8;fill-opacity:0.6;stroke:#a8a8a8;stroke-width:2;stroke-opacity:0.6" />
+      </g>
+      <g
+         transform="translate(0,19)"
+         id="g5420">
+        <rect
+           width="139.44223"
+           height="54"
+           x="0"
+           y="0"
+           id="rect5422"
+           style="fill:#ffffff;stroke:#000000;stroke-width:2" />
+      </g>
+      <g
+         transform="translate(0,14.5)"
+         id="g5424">
+        <text
+           x="70"
+           y="-2"
+           id="text5426"
+           style="text-anchor:middle">
+          <tspan
+             id="tspan5428"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">DebugMessage</tspan>        </text>
+      </g>
+      <g
+         transform="translate(0,36)"
+         id="g5430">
+        <text
+           x="2"
+           y="-2"
+           id="text5432"
+           style="text-anchor:start">
+          <tspan
+             id="tspan5434"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">timestampS</tspan>        </text>
+        <text
+           x="2"
+           y="12.8"
+           id="text5436"
+           style="text-anchor:start">
+          <tspan
+             id="tspan5438"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">*debugData</tspan>        </text>
+      </g>
+    </g>
+    <g
+       transform="translate(84.028887,934.6479)"
+       id="g5440">
+      <g
+         transform="translate(4,4)"
+         id="g5442">
+        <rect
+           width="83.665337"
+           height="19"
+           x="0"
+           y="0"
+           id="rect5444"
+           style="fill:#a8a8a8;fill-opacity:0.6;stroke:#a8a8a8;stroke-width:2;stroke-opacity:0.6" />
+      </g>
+      <g
+         id="g5446">
+        <rect
+           width="83.665337"
+           height="19"
+           x="0"
+           y="0"
+           id="rect5448"
+           style="fill:#ffffff;stroke:#000000;stroke-width:2" />
+      </g>
+      <g
+         transform="translate(4,23)"
+         id="g5450">
+        <rect
+           width="83.665337"
+           height="55"
+           x="0"
+           y="0"
+           id="rect5452"
+           style="fill:#a8a8a8;fill-opacity:0.6;stroke:#a8a8a8;stroke-width:2;stroke-opacity:0.6" />
+      </g>
+      <g
+         transform="translate(0,19)"
+         id="g5454">
+        <rect
+           width="83.665337"
+           height="55"
+           x="0"
+           y="0"
+           id="rect5456"
+           style="fill:#ffffff;stroke:#000000;stroke-width:2" />
+      </g>
+      <g
+         transform="translate(0,14.5)"
+         id="g5458">
+        <text
+           x="42"
+           y="-2"
+           id="text5460"
+           style="text-anchor:middle">
+          <tspan
+             id="tspan5462"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">GPSMessage</tspan>        </text>
+      </g>
+      <g
+         transform="translate(0,36)"
+         id="g5464">
+        <text
+           x="2"
+           y="-2"
+           id="text5466"
+           style="text-anchor:start">
+          <tspan
+             id="tspan5468"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">latitude</tspan>        </text>
+        <text
+           x="2"
+           y="12.8"
+           id="text5470"
+           style="text-anchor:start">
+          <tspan
+             id="tspan5472"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">longitude</tspan>        </text>
+        <text
+           x="2"
+           y="27.6"
+           id="text5474"
+           style="text-anchor:start">
+          <tspan
+             id="tspan5476"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">validPosFix</tspan>        </text>
+      </g>
+    </g>
+    <g
+       transform="translate(214.02889,934.1479)"
+       id="g5478">
+      <g
+         transform="translate(4,4)"
+         id="g5480">
+        <rect
+           width="109.56175"
+           height="19"
+           x="0"
+           y="0"
+           id="rect5482"
+           style="fill:#a8a8a8;fill-opacity:0.6;stroke:#a8a8a8;stroke-width:2;stroke-opacity:0.6" />
+      </g>
+      <g
+         id="g5484">
+        <rect
+           width="109.56175"
+           height="19"
+           x="0"
+           y="0"
+           id="rect5486"
+           style="fill:#ffffff;stroke:#000000;stroke-width:2" />
+      </g>
+      <g
+         transform="translate(4,23)"
+         id="g5488">
+        <rect
+           width="109.56175"
+           height="54"
+           x="0"
+           y="0"
+           id="rect5490"
+           style="fill:#a8a8a8;fill-opacity:0.6;stroke:#a8a8a8;stroke-width:2;stroke-opacity:0.6" />
+      </g>
+      <g
+         transform="translate(0,19)"
+         id="g5492">
+        <rect
+           width="109.56175"
+           height="54"
+           x="0"
+           y="0"
+           id="rect5494"
+           style="fill:#ffffff;stroke:#000000;stroke-width:2" />
+      </g>
+      <g
+         transform="translate(0,14.5)"
+         id="g5496">
+        <text
+           x="55"
+           y="-2"
+           id="text5498"
+           style="text-anchor:middle">
+          <tspan
+             id="tspan5500"
+             xml:space="preserve"
+             style="font-size:12px;text-decoration: underline;fill:#000000;font-family:Arial">AccelerometerMsg</tspan>        </text>
+      </g>
+      <g
+         transform="translate(0,36)"
+         id="g5502">
+        <text
+           x="2"
+           y="-2"
+           id="text5504"
+           style="text-anchor:start">
+          <tspan
+             id="tspan5506"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">x</tspan>        </text>
+        <text
+           x="2"
+           y="12.8"
+           id="text5508"
+           style="text-anchor:start">
+          <tspan
+             id="tspan5510"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">y</tspan>        </text>
+        <text
+           x="2"
+           y="27.6"
+           id="text5512"
+           style="text-anchor:start">
+          <tspan
+             id="tspan5514"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">z</tspan>        </text>
+      </g>
+    </g>
+    <g
+       transform="translate(213.52889,811.6479)"
+       id="g5516">
+      <g
+         transform="translate(4,4)"
+         id="g5518">
+        <rect
+           width="126.49403"
+           height="19"
+           x="0"
+           y="0"
+           id="rect5520"
+           style="fill:#a8a8a8;fill-opacity:0.6;stroke:#a8a8a8;stroke-width:2;stroke-opacity:0.6" />
+      </g>
+      <g
+         id="g5522">
+        <rect
+           width="126.49403"
+           height="19"
+           x="0"
+           y="0"
+           id="rect5524"
+           style="fill:#ffffff;stroke:#000000;stroke-width:2" />
+      </g>
+      <g
+         transform="translate(4,23)"
+         id="g5526">
+        <rect
+           width="126.49403"
+           height="55"
+           x="0"
+           y="0"
+           id="rect5528"
+           style="fill:#a8a8a8;fill-opacity:0.6;stroke:#a8a8a8;stroke-width:2;stroke-opacity:0.6" />
+      </g>
+      <g
+         transform="translate(0,19)"
+         id="g5530">
+        <rect
+           width="126.49403"
+           height="55"
+           x="0"
+           y="0"
+           id="rect5532"
+           style="fill:#ffffff;stroke:#000000;stroke-width:2" />
+      </g>
+      <g
+         transform="translate(0,14.5)"
+         id="g5534">
+        <text
+           x="63.5"
+           y="-2"
+           id="text5536"
+           style="text-anchor:middle">
+          <tspan
+             id="tspan5538"
+             xml:space="preserve"
+             style="font-size:12px;text-decoration: underline;fill:#000000;font-family:Arial">RawTemperatureMsg</tspan>        </text>
+      </g>
+      <g
+         transform="translate(0,36)"
+         id="g5540">
+        <text
+           x="2"
+           y="-2"
+           id="text5542"
+           style="text-anchor:start">
+          <tspan
+             id="tspan5544"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">vObject</tspan>        </text>
+        <text
+           x="2"
+           y="12.8"
+           id="text5546"
+           style="text-anchor:start">
+          <tspan
+             id="tspan5548"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">tEnvironment</tspan>        </text>
+      </g>
+    </g>
+    <g
+       transform="translate(82.528887,811.6479)"
+       id="g5550">
+      <g
+         transform="translate(4,4)"
+         id="g5552">
+        <rect
+           width="114.54183"
+           height="19"
+           x="0"
+           y="0"
+           id="rect5554"
+           style="fill:#a8a8a8;fill-opacity:0.6;stroke:#a8a8a8;stroke-width:2;stroke-opacity:0.6" />
+      </g>
+      <g
+         id="g5556">
+        <rect
+           width="114.54183"
+           height="19"
+           x="0"
+           y="0"
+           id="rect5558"
+           style="fill:#ffffff;stroke:#000000;stroke-width:2" />
+      </g>
+      <g
+         transform="translate(4,23)"
+         id="g5560">
+        <rect
+           width="114.54183"
+           height="55"
+           x="0"
+           y="0"
+           id="rect5562"
+           style="fill:#a8a8a8;fill-opacity:0.6;stroke:#a8a8a8;stroke-width:2;stroke-opacity:0.6" />
+      </g>
+      <g
+         transform="translate(0,19)"
+         id="g5564">
+        <rect
+           width="114.54183"
+           height="55"
+           x="0"
+           y="0"
+           id="rect5566"
+           style="fill:#ffffff;stroke:#000000;stroke-width:2" />
+      </g>
+      <g
+         transform="translate(0,14.5)"
+         id="g5568">
+        <text
+           x="57.5"
+           y="-2"
+           id="text5570"
+           style="text-anchor:middle">
+          <tspan
+             id="tspan5572"
+             xml:space="preserve"
+             style="font-size:12px;text-decoration: underline;fill:#000000;font-family:Arial">HeartRateMessage</tspan>        </text>
+      </g>
+      <g
+         transform="translate(0,36)"
+         id="g5574">
+        <text
+           x="2"
+           y="-2"
+           id="text5576"
+           style="text-anchor:start">
+          <tspan
+             id="tspan5578"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">bpm</tspan>        </text>
+      </g>
+    </g>
+    <g
+       transform="translate(363.52889,813.3979)"
+       id="g5580">
+      <g
+         transform="translate(4,4)"
+         id="g5582">
+        <rect
+           width="114.54183"
+           height="19"
+           x="0"
+           y="0"
+           id="rect5584"
+           style="fill:#a8a8a8;fill-opacity:0.6;stroke:#a8a8a8;stroke-width:2;stroke-opacity:0.6" />
+      </g>
+      <g
+         id="g5586">
+        <rect
+           width="114.54183"
+           height="19"
+           x="0"
+           y="0"
+           id="rect5588"
+           style="fill:#ffffff;stroke:#000000;stroke-width:2" />
+      </g>
+      <g
+         transform="translate(4,23)"
+         id="g5590">
+        <rect
+           width="114.54183"
+           height="71.5"
+           x="0"
+           y="0"
+           id="rect5592"
+           style="fill:#a8a8a8;fill-opacity:0.6;stroke:#a8a8a8;stroke-width:2;stroke-opacity:0.6" />
+      </g>
+      <g
+         transform="translate(0,19)"
+         id="g5594">
+        <rect
+           width="114.54183"
+           height="71.5"
+           x="0"
+           y="0"
+           id="rect5596"
+           style="fill:#ffffff;stroke:#000000;stroke-width:2" />
+      </g>
+      <g
+         transform="translate(0,14.5)"
+         id="g5598">
+        <text
+           x="57.5"
+           y="-2"
+           id="text5600"
+           style="text-anchor:middle">
+          <tspan
+             id="tspan5602"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">ConfigSensor</tspan>        </text>
+      </g>
+      <g
+         transform="translate(0,36)"
+         id="g5604">
+        <text
+           x="2"
+           y="-2"
+           id="text5606"
+           style="text-anchor:start">
+          <tspan
+             id="tspan5608"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">DeviceType</tspan>        </text>
+        <text
+           x="2"
+           y="12.8"
+           id="text5610"
+           style="text-anchor:start">
+          <tspan
+             id="tspan5612"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">enableSensor</tspan>        </text>
+        <text
+           x="2"
+           y="27.6"
+           id="text5614"
+           style="text-anchor:start">
+          <tspan
+             id="tspan5616"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">sensorIntervalMs</tspan>        </text>
+        <text
+           x="2"
+           y="42.400002"
+           id="text5618"
+           style="text-anchor:start">
+          <tspan
+             id="tspan5620"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">samplePeriodMs</tspan>        </text>
+      </g>
+    </g>
+    <g
+       transform="translate(389.02889,554.6479)"
+       id="g5622">
+      <path
+         d="m 0,0 0,46 -185,0 0,45"
+         id="path5624"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-dasharray:23, 0" />
+      <g
+         transform="matrix(0,-1,1,0,-185,92)"
+         id="g5626">
+        <polygon
+           points="0,0 8,6 16,0 8,-6 "
+           id="polygon5628"
+           style="fill:#000000;stroke:#000000;stroke-width:1" />
+      </g>
+    </g>
+    <g
+       transform="translate(417.02889,554.6479)"
+       id="g5630">
+      <path
+         d="m 0,0 0,47.75 0,0 0,46.75"
+         id="path5632"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-dasharray:23, 0" />
+      <g
+         transform="matrix(0,-1,1,0,0,95.5)"
+         id="g5634">
+        <polygon
+           points="0,0 8,6 16,0 8,-6 "
+           id="polygon5636"
+           style="fill:#000000;stroke:#000000;stroke-width:1" />
+      </g>
+    </g>
+    <g
+       transform="translate(445.02889,554.6479)"
+       id="g5638">
+      <path
+         d="m 0,0 0,47.25 159,0 0,46.25"
+         id="path5640"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-dasharray:23, 0" />
+      <g
+         transform="matrix(0,-1,1,0,159,94.5)"
+         id="g5642">
+        <polygon
+           points="0,0 8,6 16,0 8,-6 "
+           id="polygon5644"
+           style="fill:#000000;stroke:#000000;stroke-width:1" />
+      </g>
+    </g>
+    <g
+       transform="translate(204.02889,750.6479)"
+       id="g5646">
+      <path
+         d="m 0,0 0,158 -78,0 0,25"
+         id="path5648"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-dasharray:23, 0" />
+      <g
+         transform="matrix(0,-1,1,0,-78,184)"
+         id="g5650">
+        <polygon
+           points="0,0 8,6 16,0 8,-6 "
+           id="polygon5652"
+           style="fill:#000000;stroke:#000000;stroke-width:1" />
+      </g>
+    </g>
+    <g
+       transform="translate(269.02889,934.6479)"
+       id="g5654">
+      <path
+         d="m 0,-1 0,-25 -65,0 0,-157.5"
+         id="path5656"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-dasharray:23, 0" />
+      <g
+         transform="matrix(0,-1,1,0,0,0)"
+         id="g5658">
+        <polygon
+           points="0,0 8,6 16,0 8,-6 "
+           id="polygon5660"
+           style="fill:#000000;stroke:#000000;stroke-width:1" />
+      </g>
+    </g>
+    <g
+       transform="translate(140.02889,811.6479)"
+       id="g5662">
+      <path
+         d="m 0,-1 0,-29.5 64,0 0,-30.5"
+         id="path5664"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-dasharray:23, 0" />
+      <g
+         transform="matrix(0,-1,1,0,0,0)"
+         id="g5666">
+        <polygon
+           points="0,0 8,6 16,0 8,-6 "
+           id="polygon5668"
+           style="fill:#000000;stroke:#000000;stroke-width:1" />
+      </g>
+    </g>
+    <g
+       transform="translate(277.02889,811.6479)"
+       id="g5670">
+      <path
+         d="m 0,-1 0,-29.5 -73,0 0,-30.5"
+         id="path5672"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-dasharray:23, 0" />
+      <g
+         transform="matrix(0,-1,1,0,0,0)"
+         id="g5674">
+        <polygon
+           points="0,0 8,6 16,0 8,-6 "
+           id="polygon5676"
+           style="fill:#000000;stroke:#000000;stroke-width:1" />
+      </g>
+    </g>
+    <g
+       transform="translate(420.02889,813.3979)"
+       id="g5678">
+      <path
+         d="m 0,-1 0,-33.125 0,0 0,-34.125"
+         id="path5680"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-dasharray:23, 0" />
+      <g
+         transform="matrix(0,-1,1,0,0,0)"
+         id="g5682">
+        <polygon
+           points="0,0 8,6 16,0 8,-6 "
+           id="polygon5684"
+           style="fill:#000000;stroke:#000000;stroke-width:1" />
+      </g>
+    </g>
+    <g
+       transform="translate(534.02889,815.6479)"
+       id="g5686">
+      <g
+         transform="translate(4,4)"
+         id="g5688">
+        <rect
+           width="139.44223"
+           height="19"
+           x="0"
+           y="0"
+           id="rect5690"
+           style="fill:#a8a8a8;fill-opacity:0.6;stroke:#a8a8a8;stroke-width:2;stroke-opacity:0.6" />
+      </g>
+      <g
+         id="g5692">
+        <rect
+           width="139.44223"
+           height="19"
+           x="0"
+           y="0"
+           id="rect5694"
+           style="fill:#ffffff;stroke:#000000;stroke-width:2" />
+      </g>
+      <g
+         transform="translate(4,23)"
+         id="g5696">
+        <rect
+           width="139.44223"
+           height="55"
+           x="0"
+           y="0"
+           id="rect5698"
+           style="fill:#a8a8a8;fill-opacity:0.6;stroke:#a8a8a8;stroke-width:2;stroke-opacity:0.6" />
+      </g>
+      <g
+         transform="translate(0,19)"
+         id="g5700">
+        <rect
+           width="139.44223"
+           height="55"
+           x="0"
+           y="0"
+           id="rect5702"
+           style="fill:#ffffff;stroke:#000000;stroke-width:2" />
+      </g>
+      <g
+         transform="translate(0,14.5)"
+         id="g5704">
+        <text
+           x="70"
+           y="-2"
+           id="text5706"
+           style="text-anchor:middle">
+          <tspan
+             id="tspan5708"
+             xml:space="preserve"
+             style="font-size:12px;text-decoration: underline;fill:#000000;font-family:Arial">String</tspan>        </text>
+      </g>
+      <g
+         id="g5710" />
+    </g>
+    <g
+       transform="translate(604.02889,722.1479)"
+       id="g5712">
+      <path
+         d="m 0,0 0,46.75 0,0 0,45.75"
+         id="path5714"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-dasharray:23, 0" />
+      <g
+         transform="matrix(0,-1,1,0,0,93.5)"
+         id="g5716">
+        <polygon
+           points="0,0 8,6 16,0 8,-6 "
+           id="polygon5718"
+           style="fill:#000000;stroke:#000000;stroke-width:1" />
+      </g>
+    </g>
+    <g
+       transform="translate(369.02889,554.1479)"
+       id="g5720">
+      <g
+         transform="translate(0,17.5)"
+         id="g5722">
+        <text
+           x="12"
+           y="-2"
+           id="text5724"
+           style="text-anchor:middle">
+          <tspan
+             id="tspan5726"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">[1</tspan>          <tspan
+             id="tspan5728"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">]</tspan>        </text>
+      </g>
+    </g>
+    <g
+       transform="translate(398.02889,555.1479)"
+       id="g5730">
+      <g
+         transform="translate(0,17.5)"
+         id="g5732">
+        <text
+           x="12"
+           y="-2"
+           id="text5734"
+           style="text-anchor:middle">
+          <tspan
+             id="tspan5736"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">[1</tspan>          <tspan
+             id="tspan5738"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">]</tspan>        </text>
+      </g>
+    </g>
+    <g
+       transform="translate(424.02889,554.1479)"
+       id="g5740">
+      <g
+         transform="translate(0,17.5)"
+         id="g5742">
+        <text
+           x="12"
+           y="-2"
+           id="text5744"
+           style="text-anchor:middle">
+          <tspan
+             id="tspan5746"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">[1</tspan>          <tspan
+             id="tspan5748"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">]</tspan>        </text>
+      </g>
+    </g>
+    <g
+       transform="translate(170.02889,754.1479)"
+       id="g5750">
+      <g
+         transform="translate(0,14.5)"
+         id="g5752">
+        <text
+           x="18"
+           y="-2"
+           id="text5754"
+           style="text-anchor:middle">
+          <tspan
+             id="tspan5756"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">[1..n]</tspan>        </text>
+        <text
+           x="16"
+           y="12.8"
+           id="text5758"
+           style="text-anchor:middle">
+          <tspan
+             id="tspan5760" />
+        </text>
+      </g>
+    </g>
+    <g
+       transform="translate(389.02889,749.1479)"
+       id="g5762">
+      <g
+         transform="translate(0,14.5)"
+         id="g5764">
+        <text
+           x="16"
+           y="-2"
+           id="text5766"
+           style="text-anchor:middle">
+          <tspan
+             id="tspan5768"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">[1..n]</tspan>        </text>
+        <text
+           x="16"
+           y="12.8"
+           id="text5770"
+           style="text-anchor:middle">
+          <tspan
+             id="tspan5772" />
+        </text>
+      </g>
+    </g>
+    <g
+       transform="translate(583.02889,722.1479)"
+       id="g5774">
+      <g
+         transform="translate(0,17.5)"
+         id="g5776">
+        <text
+           x="12"
+           y="-2"
+           id="text5778"
+           style="text-anchor:middle">
+          <tspan
+             id="tspan5780"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">[1</tspan>          <tspan
+             id="tspan5782"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">]</tspan>        </text>
+      </g>
+    </g>
+    <g
+       transform="translate(571.02889,957.2729)"
+       id="g5784">
+      <polygon
+         points="89.083665,0 103.58566,9.4453642 103.58566,40.480132 0,40.480132 0,0 "
+         id="polygon5786"
+         style="fill:#ffffff;stroke:#000000;stroke-width:1" />
+      <line
+         x1="89.083664"
+         y1="0"
+         x2="89.083664"
+         y2="9.445364"
+         id="line5788"
+         style="fill:#ffffff;stroke:#000000;stroke-width:1" />
+      <line
+         x1="89.083664"
+         y1="9.445364"
+         x2="103.58566"
+         y2="9.445364"
+         id="line5790"
+         style="fill:#ffffff;stroke:#000000;stroke-width:1" />
+      <g
+         transform="translate(0,17.375)"
+         id="g5792">
+        <text
+           x="52"
+           y="-2"
+           id="text5794"
+           style="text-anchor:middle">
+          <tspan
+             id="tspan5796"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">\</tspan>          <tspan
+             id="tspan5798"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">0 terminated</tspan>        </text>
+        <text
+           x="52"
+           y="12.8"
+           id="text5800"
+           style="text-anchor:middle">
+          <tspan
+             id="tspan5802"
+             xml:space="preserve"
+             style="font-size:12px;fill:#000000;font-family:Arial">string</tspan>        </text>
+      </g>
+    </g>
+    <g
+       transform="translate(604.02889,889.6479)"
+       id="g5804">
+      <line
+         x1="0"
+         y1="0"
+         x2="19"
+         y2="67.625"
+         id="line5806"
+         style="stroke:#000000;stroke-width:2;stroke-dasharray:3, 6" />
+    </g>
+  </g>
+</svg>

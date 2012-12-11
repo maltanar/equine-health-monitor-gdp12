@@ -1,0 +1,47 @@
+%----------------
+% Preamble
+%----------------
+
+% important input encoding definitions
+\usepackage[utf8x]{inputenc}		% set character encoding to unicode
+\usepackage{babel}			% important for correct hyphenation (english = default)
+
+
+% font & paragraph settings
+\usepackage{lmodern}				% set font to latin modern type
+\usepackage{parskip}				% create a break after paragraphs instead of indenting
+
+% load & configure packages
+\usepackage{amsmath}				% required to set Math Formulas		
+\usepackage{amsfonts}				% set of mathmatical symbols
+\usepackage{graphicx}				% enables the inclusion of graphics
+\usepackage{subfigure}				% enables displaying figures side-by-side
+\usepackage{listings}				% enable the embedding code into the document
+\usepackage[svgnames				% use svg names for predefined colors
+			,hyperref				% colors for hyperred
+			,table					% autoload colortbl
+			]{xcolor}				% enable the use of colors
+\usepackage{cite} 					% required for Biliography support
+%\usepackage{pdfpages}				% simplifies the insertation of multipage pdf / ps documents
+
+% some typographic shannaniganz
+% prevent single parentless lines that disturb aesthetic aspecst of the document
+\clubpenalty = 10000 % Schusterjungen (beginningline)
+\widowpenalty = 10000 % Hurenkinder (endline)
+\displaywidowpenalty = 10000 % Hurenkinder (after formula)
+
+% set up PDF Export options
+\usepackage[colorlinks=true			% links should be colored
+			,hyperfigures=false		% make figures hyper links
+			,hyperindex=true 		% set up hyperlinked indeces
+			,raiselinks=true 		% raise up links (for HyperTeX backend
+			,pageanchor=true		% put an anchor on every page	
+			,citecolor=teal 		% Color of citation links
+ 			,linkcolor=teal 		% Color for TOC and Pagenumbers
+ 			,urlcolor=teal  		% Color of URLs in the text
+ 			,filecolor=teal 		% Color during printing		
+			]{hyperref}				% enable hyperlinks in pdf documets
+									% hyperref has to be the last package to be included
+
+
+  			
