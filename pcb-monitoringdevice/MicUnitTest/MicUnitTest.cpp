@@ -47,7 +47,10 @@ void saveAudioSample(uint16_t audioLenS)
 		{
 			buffer_count++;
 			
-			msgStore->flushAudioSample((char *) new_buffer, bufferSize * sizeof(uint16_t));
+			msgStore->flushAudioSample((char *) new_buffer, // pointer to buffer
+									   bufferSize * sizeof(uint16_t),	// total size of buffer
+									   true // remove the right channel assuming 16 bits per sample
+									   );
 		}
 		EMU_EnterEM1();
 		micStatus = mic->getStatus();
