@@ -23,3 +23,27 @@
 \textbf{\#TODO: #1}
 }}}
 
+% custom design of the abstract section
+\newenvironment{ecsabstract}
+{
+	\thispagestyle{empty}
+	\null\vfil
+	\begin{center}
+		\setlength{\parskip}{0pt}
+		{\normalsize \UNIVERSITY \par}
+		\bigskip
+		{\underline{ABSTRACT} \par}
+		\bigskip
+		{\normalsize \faculty \par}
+		\bigskip
+		{\normalsize {A Group Design Project report submitted as part of}\par
+		{the European Masters on Embedded Computing Systems (EMECS)}\par}
+		\bigskip
+		{\normalsize\bf \mytitle \par}
+		\medskip
+		{\normalsize by \myauthor, \myauthori, \myauthorii, \myauthoriii \myauthoriv \par}
+		\bigskip
+	  \end{center}
+}{\clearpage}
+
+\newenvironment{test}{\bfseries}{}

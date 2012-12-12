@@ -33,11 +33,12 @@
 \setcounter{page}{1}
 \include{Content/cover}	% include adds a vertical space
 \pagebreak
-\begin{abstract}
+\begin{ecsabstract}
 \input{Content/abstract.tex}
-\end{abstract}
+\end{ecsabstract}
+
 \tableofcontents		% add table of contents
-\pagebreak	
+\newpage	
 \listoffigures			% add table of figures
 \listoftables			% add table of tables
 \lstlistoflistings
@@ -54,16 +55,16 @@
 \input{Content/pcb_design.tex}
 \input{Content/future_work.tex}
 \input{Content/project_management.tex}
+\clearpage
 
 %-------------Appendix----------------------------
-\pagebreak
 \appendix
 \input{Content/appendix.tex}
+\clearpage
 
 
 %--------------Credits----------------------------
-\section{Bibliography}
 \bibliographystyle{ecs}
 \bibliography{references}	% print the biblography
-
+\addcontentsline{toc}{chapter}{Bibliography}
 \end{document}
