@@ -240,7 +240,85 @@ We chose the 3-axis  ADXL350 \footnote{\url{http://www.analog.com/en/mems-sensor
 
 
 \subsection{Gut Sound Monitoring}
-\TODO{Insert content from document}
+One key feature of the desired Equine Health Monitoring System is the possibility to acquire and record sounds coming from horses guts which can come very useful for diagnosis of multiple health disorders in the digestive tract of the animal under observation.
+
+As it was mentioned in chapter \ref{chap:research} listening the gut is a common task performed by a specialist during a regular physical examination. This is done by placing a stethoscope in several parts of the animal’s trunk. Intermittent noises that will repeat every 15-30 seconds will be detected in a healthy animal. The specialist will monitor this sounds for an interval of 4-5 minutes. The aim of the designed system is to record and store those sounds which will eliminate the need for a physical examination in situ by a specialist.
+
+
+\subsubsection{Audio acquisition requirements}
+During the background research phase the group realized that a comprehensive digital database of recordings of gut noises is regrettably not available on the web. And despite of different attempts the group was not able to obtain an audio sample of good quality. Hence a proper signal profiling and characterization could not be performed. The quality parameters for audio samples were defined to meet the hearing capabilities of the final human user (a veterinary specialist) instead of the characteristics of the signal source.
+The recording of audio samples implies two challenges that are not shared by the other sensors in the system.
+\begin{itemize}
+\item \textbf{Real time constraints:} Audio acquisition is a real time..... need periodic accurate time sampling.. 
+\item \textbf{High data rate:} memory...
+\end{itemize}
+
+\begin{align*}
+\centering
+datarate_{audio}&=f_{sampling} * \frac{Bits}{Sample}* t_{recording} \\
+datarate_{audio}&=8000 Hz * 16 \frac{Bits}{Sample}* 240s
+\end{align*}
+
+
+\subsection{Component selection justification}
+The component ADMP441 from Analog Devices was chosen for the audio acquisition. This single-chip MEMS (Micro Electro Mechanical System) microphone provides very convenient characteristics which are summarized in the following table.
+
+\begin{table}
+\centering
+\begin{tabular}{|m{0.45\textwidth}|m{0.45\textwidth}|}
+\hline 
+	\textbf{Device Properties} &
+	\textbf{Corresponding Requirements}  \\ 
+\hline
+	Single chip solution: MEMS sensor, signal conditioning, analog-to-digital converter, antialiasing filters, power management
+	&
+	Ease of integration. No need for extra components (codecs/amplifiers)\\ 
+\hline 
+	I2S digital interface 
+	&
+	Ease of integration, industry standard \\
+\hline
+	Low voltage supply and current consumption: \newline
+	3.3 Vdd \newline
+	Normal mode: 2.5 mA \newline
+	Standby mode: 0.8 mA \newline
+	Power down mode: 4.5 uA
+	&
+	Low energy consumption \\
+\hline
+	16-24 bit samples \newline
+	High SNR: 61 dBA \newline
+	High sensitivity: −26 dBFS \newline
+	Flat frequency response from 60 -15000 Hz
+	&
+	Audio quality suitable for the project scope, high intelligibility \\
+\hline
+	Small size: 4.72mm × 3.76mm × 1mm smd package 
+	&
+	Low weight, portability
+\\\hline	
+\end{tabular} 
+\caption{MEMS microphone properties}
+\label{tab:microphone_properties}
+\end{table}
+
+A scheme of the required signal processing stages in general digital audio system are shown in figure \TODO{Ref}.
+The first stage consists of a transducer or microphone that will react to the sound waves in the air and produce an electric signal. This electrical signal has to be properly conditioned for the following steps, this includes amplification and filtering. The analog signal needs to be sampled and quantized. This will generate a set of binary words corresponding to each sample. Commercially available Analog to Digital Converters will provide a serial flow of bits, this is known as pulse code modulation (PCM).
+
+\paragraph*{Microphone placement:} TODO: describe the plastic coupling piece and the stethoscope head, which enable the sensing of gut sounds. Add picture of the device.
+
+\paragraph*{Interface:} The ADMP44 chip uses I2S protocol as interface. I2S, also known as Inter-IC Sound, Integrated Interchip Sound, or IIS, is an serial bus interface standard used for connecting digital audio devices together. It is used to transmit PCM (Pulse Code Modulation) audio data.
+
+\paragraph*{Driver:} The I2S standard is supported by the microcontroller’s Universal Synchronous Asynchronous Receiver Transmitter (USART) which simplified the implementation of the driver for this sensor.
+Driver: The implementation of a driver for fetching audio data was a rather complex task. 
+Normally specialized electronic devices such as Digital Signal Processors (DSP) and audio codecs are employed to satisfy the requirements of recording, storage and processing. But in this project, in order to keep a minimal design and low power consumption no extra processing units were added to handle the audio functionalities and the general purpose microcontroller was used instead. 
+Advanced hardware features of the microcontroller are used to perform this tasks as it will be 
+ explained in the following sections.
+DMA... ping pong.
+
+In order to provide a permanent input of audio samples without interruptions double buffered DMA transactions to move data from the USART to the final storage device were used. This strategy is explained in detail in section XX TODO: add section. 
+
+
 
 
 \subsection{Data Storage}
