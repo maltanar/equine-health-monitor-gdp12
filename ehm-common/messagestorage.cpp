@@ -529,6 +529,8 @@ void MessageStorage::startAudioSample()
 	char fnBuffer[13];
 	sprintf(fnBuffer, "%d", m_nextAudioSeqNumber);
 	
+	module_debug_strg("creating %s under %s..", fnBuffer, SUBDIR_AUDIO);
+	
 	// create new file and write data
 	changeDirectory(SUBDIR_AUDIO);
 	openFile(fnBuffer, true, false);		
@@ -548,6 +550,9 @@ void MessageStorage::endAudioSample()
 {
 	closeFile();
 	changeDirectory("..");
+	m_nextAudioSeqNumber++;
+	
+	module_debug_strg("next audio seqnr is %d", m_nextAudioSeqNumber);
 }				   
 
 	
@@ -637,7 +642,7 @@ void MessageStorage::writeToFileWithReadStep(char * buffer, unsigned int count,
 	unsigned int cnt = 0;
 	
 	
-	while(cnt <= count)
+	while(cnt < count)
 	{
 		m_fr = f_write(&m_file, (void *) buffer, writeSize, &bw);
 		if(m_fr != FR_OK || bw != writeSize)
