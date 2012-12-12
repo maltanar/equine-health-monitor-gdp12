@@ -1,14 +1,14 @@
 \chapter{Appendix}
 
 \section{PCB layout}
-\begin{figure}[Htb]
+\begin{figure}[htb]
 \includegraphics[width=\columnwidth]{Images/dummy}
 %\includegraphics[width=\columnwidth]{Images/pcb_layout_top}
 \caption{PCB layout top}
 \label{fig:pcb_layout_top}
 \end{figure}
 
-\begin{figure}[Htb]
+\begin{figure}[htb]
 \includegraphics[width=\columnwidth]{Images/dummy}
 %\includegraphics[width=\columnwidth]{Images/pcb_layout_bottom}
 \caption{PCB layout bottom}
@@ -16,6 +16,24 @@
 \end{figure}
 \clearpage
 
+\section{Price List}
+\label{sec:price_list}
+Please refer to table \ref{tab:pricelist}.
+\begin{table}[hb]
+\centering
+\begin{tabular}{|l|l|l|}\hline%
+\bfseries Component & \bfseries Price (GBP) & \bfseries Retail Price (GBP)\\\hline
+\csvreader[ %
+	head to column names,
+	late after line=\\
+]{Data/price_list.csv}{}%
+{\Component & \Price & \Retail}%
+\hline
+\end{tabular}
+\caption{Component Price List}
+\label{tab:pricelist}
+\end{table}
+\clearpage
 
 \section{Part List}
 \label{sec:part_list}
@@ -25,8 +43,9 @@ Please refer to table \ref{tab:part_list_1} and \ref{tab:part_list_2} for the pa
 \scriptsize
 \begin{tabular}{|l|l|l|m{2.3cm}|l|l|l|}\hline%
 \bfseries Part & \bfseries Value & \bfseries Device & \bfseries Description & \bfseries Package & \bfseries Manufacturer & \bfseries Man. part nr. \\\hline
-\csvreader[head to column names,
-late after line=\\
+\csvreader[ %
+	head to column names,
+	late after line=\\
 ]{Data/partlist_part1.csv}{}%
 {\Part & \Value & \Device & \Description & \Package & \Manufacturer & \PartNr}%
 \hline
