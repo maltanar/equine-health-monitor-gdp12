@@ -7,9 +7,10 @@
 				,paper=a4			
 				,fontsize=11pt
 				,abstract=true		% center headline of abstract section								
+				%,chapterprefix=on
 				]{scrreprt}			% Document class: Koma Report
 \usepackage{scrhack}	%Fixes problems when using Koma in combination with Hyperref, Listing und Float
-
+\usepackage[nouppercase,headsepline,plainfootsepline]{scrpage2}
 % load your personal praemble
 \input{praemble}
 
@@ -28,6 +29,16 @@
 \input{dsl.tex}
 
 \begin{document}
+\pagestyle{scrheadings}
+\automark[section]{chapter}
+\clearscrheadfoot
+\ohead{\pagemark}
+\ihead{\headmark}
+\ifoot[]{}
+\ofoot[]{}
+\cfoot[\pagemark]{}% Optional argument controls chapter-starting pages
+
+
 %--------------Preface-------------------------
 \pagenumbering{roman}
 \setcounter{page}{1}
