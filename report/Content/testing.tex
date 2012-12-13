@@ -38,6 +38,21 @@ It takes 39 minutes to transmit a 4 minute gut sound recording, which conflicts 
 
 The current solution for this problem, is to store audio recording on a removable SD card in the monitoring device. Proper solutions for this problem are discussed in the Future Work Chapter (\ref{chap:future_work})
 
+\section{System Integration testing}
+\begin{figure}
+\centering
+\includegraphics[width=0.9\textwidth]{Images/integration_crop}
+\caption{System Integration on Energy Micro DK}
+\label{fig:integration}
+\end{figure}
+After the individual hardware subsystem prototypes had been verified, the units were connected to build a prototype of the complete system. Gradually all the sensors were integrated to the final monitoring device PCB prototype. Integration testing was done on the Energy Micro DK and integrated software debugging was done before the PCB was received. The prototype can be seen in figure \ref{fig:integration}.
+
+In this stage, the monitoring device with its subsystems and the base station were tested. Measurement data was successfully transferred from the monitoring device over the wireless link and stored in the database in the base station. After the prototype of the complete system was tested and verified the modules were soldered on the PCB.
+
+The final stage of integration on the PCB went without problems, or required changes to the software of the system.  
+
+
+
 \section{Field Testing}
 Throughout the development process, the team did not have access to a horse and there is almost no sample gut sound recordings available online. After the integration and PCB production phases were complete, the whole system \TODO{} was tested on human subjects since the subsystems of the monitoring device are usable on humans as well. The only horse-specific part of the system was the gut sound monitor - although it is also usable on humans, the design was not made with humans or species other than horses in mind. 
 
