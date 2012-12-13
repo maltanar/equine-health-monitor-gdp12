@@ -227,10 +227,8 @@ for our project. UP500 is a GPS receiver module with embedded antenna offered in
 \item{Data acquisition:}
 For maximum energy efficient operation, the GPS driver configures the GPS module to use LEUART interface with DMA. DMA transfers incoming NMEA messages into a fixed size buffer when new data is available. The LEUART module is configured to generate an interrupt whenever it receives the newline character (0x0A). Since every NMEA message ends with a newline, an interrupt is generated every time a complete message is received, and the contents of the DMA buffer are copied to another internal buffer for processing at a later time.
 
-\item{Parsing NMEA messages:} \TODO{} simple string parsing, comma delimited fields,NMEA message types GPRMC and GGPA are handled
-\begin{itemize}
-\item output: valid position fix, latitude and longitude
-\end{itemize}
+\item{Parsing NMEA messages:} 
+The received NMEA data from the GPS is a set of comma-delimited string fields, so retrieving the position fix information is a simple matter of string tokenization. Our implementation supports reading out the latitude, longitude, number of satellites in view and whether the generated position fix is valid or not.
 
 \item{Sleep mode:} The UP500 does not have a dedicated sleep pin, but once satellite data has been acquired it is possible to put the device into a sleep-like mode where the power consumption becomes quite low. This is done by turning off the power to the $V_{cc}$ supply pin, while keeping the $V_{bat}$ supply pin active. By keeping ephemeris data in RAM, the GPS is thus able to establish the position quickly when the $V_{cc}$ supply is reinstated. Switching the $V_{cc}$ supply is done via a transistor attached to a GPIO pin, consult section\ref{sec:pcb_gps} for more details.
 \end{itemize}
