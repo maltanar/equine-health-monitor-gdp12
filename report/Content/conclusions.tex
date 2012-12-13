@@ -1,74 +1,42 @@
 \chapter{Conclusions}
+\label{chap:conclusions}
+In this final chapter, we reflect upon the achievements of the project and how they relate to the initial objectives and set of specifications. We also evaluate the project management aspects and include a section with self-criticism on design and implementation where we discuss possible future improvements to the project.
+
 \section{Success}
-A working prototype for an equine health monitor has been built. The project can be further developed into a commercial product. It also provides many research possibilities in the related fields. 
+\label{sec:success}
+A working prototype for the proposed equine health monitor system has been built from scratch. Except for transferring the acquired gut audio wirelessly and lac of an explicit “real time mode” the prototype is feature complete with regard to the specification. 
+
+The monitoring device prototype consists of a battery-powered custom printed circuit board inside a splash-resistant case with an on-board battery charger. It offers acquisition of temperature, heart rate, acceleration and GPS position data, and the sending of the acquired data to the base station over a wireless link. It is also fitted with a microphone in a custom stethoscope head setup which allows recording of gut sounds onto the local storage (micro SD card). Acquired sensor data is saved on the SD card when the wireless connection is not available.
+
+The base station prototype, which consists of a Raspberry Pi development board and a ZigBee transceiver, receives the data sent by the monitoring devices and displays the information on a web interface. It also supports configuring the sampling periods of the sensors, which eliminates the need for an explicit real time mode.
+
+The general objectives specified for the project are also met. Scalability was a desired feature to be able to monitor multiple horses simultaneously. A distributed system with one base station and multiple monitoring devices was designed meet this requirement. Power consumption was critical for the battery-powered monitoring devices. Long battery life is achieved through power-aware design with the help of periodic-sampling strategy and minimal processing on the monitoring device. The collected data is accessible via web and this enables users to retrieve data easily.  
+
+The project can be further developed into a commercial product. It also provides many research possibilities in the related fields. 
+
+\section{Teamwork and Project Management}
+\label{sec:teamwork_prjmgmt}
+The team ran into many unexpected problems in various fields and managed to solve most of them in a quick and efficient way:
 
 \begin{itemize}
-\item it has a potential for further research, lots of interesting possibilities
-\item well documented, structured for future developers
-\item commercial success potential
+\item The situation of the sixth team member was unclear, therefore the team did the task distribution in a way that it would minimize the problems in case of late arrival or quitting. After he quit, the team discarded or reallocated his tasks. 
+\item The slightly late assignment of the project to the group delayed the development stage, however the team managed to meet the deadlines through extra hard work, careful planning and contingency
+\item The PCB production was not on time, therefore the team ordered more PCB’s from other manufacturers when the deadline we set ourselves for PCB production approached. 
+\item Since none of the team members has a background in bioscience or a related field, consultation to an expert was needed and the team used the information gathered from consultation sessions to make a more realistic approach to the problem. 
+\item The team managed its human and hardware resources well by parallelizing tasks. Testing each unit separately enabled a faster integration. Integration on DK before the PCB arrived made PCB integration and debugging easier. 
+\item The team did well on budget management to reduce costs, using requested sample chips from the manufacturers/suppliers, and winning one of the starter kits used for the prototyping stage from the Energy Micro Design Competition.
 \end{itemize}
 
+\section{Criticism and Future Work}
+\label{sec:future_work}
+Due to a combination of lack of thorough research, inexperience and other factors, the team made several design and implementation decisions which eventually proved to be rather sub-optimal and impacted the quality of the final product. We provide a brief discussion of these issues in the following subsections, as well as their remedies. We also propose a number of improvements that can be made to the system to increase its usability and extend the possible applications.
 
-Objectives specified for the project are met. Scalability was a desired feature to be able to monitor multiple horses simultaneously. A distributed system with one base station and multiple monitoring devices was designed meet this requirement. Power consumption was critical for the battery-powered monitoring devices. Long battery life is achieved through power-aware design with the help of periodic-sampling strategy and minimal processing on the monitoring device. The collected data is accessible via web and this enables users to retrieve data easily.  
+\subsection{ZigBee for audio transmission}
+During the testing phase of the wireless communication module of our system the team realized that the chosen solution is not able to deliver the bandwidth that we require to transfer audio recording from the monitoring devices to the base station in a reasonable amount of time. See section \ref{sec:wireless_testing} for a more detailed discussion. The main point of criticism here is that what the assumed to be the available bandwidth of 250 kbps is the raw maximum bandwidth for the connection. A more thorough reading of the datasheet was required to realize this.
 
-\begin{itemize}
-\item Long battery life is achieved through the power-aware design
-\begin{itemize}
-\item Periodic sampling
-\item sleep modes
-\item minimal processing on the monitoring device
-\end{itemize}
-\item distributed system addresses the scalability problem
-\item web server done for easy accessibility
-\item a low-cost, splash proof case for pcb. Stethoscope head from mechanical workshop for the microphone. But a special design can be made, e.g. with straps etc. PCB can be made smaller.
-\end{itemize}
+The bandwidth issue aside, ZigBee is still far from ideal for audio transmission. The problem is that the ZigBee protocol is designed for low bandwidth requirements, for even though it is a low power protocol, the energy cost per transmitted byte is a lot higher than for other wireless solutions, such as 802.11 or Bluetooth. 
 
-The team had to face some problems and managed to solve most of them in a quick and efficient way. The situation of the sixth member was not clear, therefore the team did the task distribution in a way that it would minimize the problems in case of late arrival or quitting. After he quitted, the team discarded or reallocated his tasks. 
-
-Late assignment of the project to the group delayed the development stage however the team managed to meet the deadlines although it affected some of the design decisions... 
-
-The PCB production was not on time, therefore we ordered more PCB’s from other manufacturers when the deadline we set ourselves for PCB production approached. 
-
-Since none of the team members has a background in bioscience or a related field, consultation to an expert was needed and the team used the information gathered from consultation sessions to make a more realistic approach to the problem. 
-
-The team managed its human and hardware resources well by parallelizing tasks. Testing each unit enabled a faster integration. Integration on DK before the PCB arrived made PCB integration and debugging easier. 
-
-The team did a good budget management to reduce costs. We requested sample ICs from the manufacturers/suppliers. This was especially important for ANT development kit which is quite expensive. Also, we joined a design competition and won a starter kit containing MCU we are using.
-
-Things we managed well:
-\begin{itemize}
-\item sixth member being far and then quitting
-\item late start of the project
-\item taking quick action against pcb production delay
-\item consulting the experts for a more realistic approach  
-\item parallelization of tasks, using developers and the devices efficiently
-\item testing each unit and integration on DK before PCB arrived made the PCB integration stage faster
-\item ordering samples, ANT module was very expensive and we managed to borrow one 
-\end{itemize}
-
-\section{Criticism}
-The team did not have much time to perform an in depth research to choose the optimum tools and components for the project. During the development stage some lessons learned:
-\TODO{}
-\begin{itemize}
-\item Zigbee was chosen because... the throughput of X can be achieved with zigbee. another wireless protocol maybe better (Bluetooth?)..
-\item some components arrived much later than expected. that delayed prototyping subsystems. what could be done for that? backup plans? but we learned our lesson and didn’t do the same mistake when pcb manufacturing was delayed
-\item Gantt chart was kind of unrealistic, integration and building subsystems are assumed to be finished at the same time
-\end{itemize}
-
-
-\section{Future Work}
-\label{chap:future_work}
-The scope of this project is rather broad and the size of the project is quite large given the limited timeframe. For this and other reasons mentioned throughout the report the state of the system is far from being perfect, yet it is a functional prototype of the envisioned Equine Health Monitor. 
-
-We would like to use this chapter to discuss solutions to problems in the system design and implementation that we discovered, and propose a number of improvements that can be made to the system to increase its usability and extend the possible applications.
-
-
-\subsection{Solutions for design problems}
-During the testing phase of the wireless communication module of our system we realized, that the chosen solution is not able to deliver the bandwidth that we require to transfer audio recording from the monitoring devices to the base station in a reasonable amount of time. 
-
-The problem is that the ZigBee protocol is designed for low bandwidth requirements, for even it is a low power protocol, the energy cost per transmitted byte is a lot higher than for other wireless solutions, such as 802.11 or Bluetooth.
-
-Because we do not require a constant connection, but are able transmit data periodically in a burst transmit style, it is feasible to use an alternative solution and run it at a low duty cycle. 
+Because the system does not require a constant connection, but is able transmit data periodically in a burst transmit style, it is feasible to use an alternative solution and run it at a low duty cycle. 
 
 To be more specific in terms of our design, there are pin compatible replacements for XBee devices that implement the 802.11 standard and the manufacturer of the XBee devices is working on a 802.11 based XBee version as well (currently available as a development kit, not retail)
 
@@ -76,10 +44,22 @@ Replacing the XBees with alternative devices doesn’t require modifications to 
 
 An audio compression scheme is then recommended if the system is required to perform audio recordings often and/or send this data over the wireless connection. Such a scheme was not implemented in the project mainly the short amount of time available for development and that a deeper knowledge of the signals is required but could be implemented in an improved version of the system.
 
-\subsection{Possible improvements}
+\subsection{Scope of C++ development}
+Notwithstanding the advantages of using C++ for developing such a system as discussed in section \ref{sec:dev_paradigm}, the team sometimes took writing C++ wrappers to lower levels of hardware than necessary and eventually realized this is ineffective both performance- and time-wise. Creating C++ wrappers for MCU peripherals should be avoided unless a built and tested library is already in place.
+
+\subsection{Choice of persistent storage}
+Despite its widespread use and low cost per capacity, SD cards with FAT file system are not ideal for use on the monitoring device due to the high write current of SD cards and the blocking nature of issuing different commands over SPI and waiting for the response. A flash memory that is directly mapped to the address space of the MCU would be a better solution as it would have lower current consumption and allow saving audio data onto persistent storage directly via DMA.
+
+\subsection{Task scheduling}
+The simple deferred readings system described in section \ref{sec:task_scheduling} can cause problems if the deferred tasks take too long to execute. Even worse, the whole system will effectively “freeze” if a task blocks the execution indefinitely due to hardware or software error. Introducing an appropriate tickless Real-Time Operating System for task scheduling and allowing the base station to reset unresponsive nodes in software can remedy this problem.
+
+\subsection{Gantt chart and development plan}
+The initial development planning and the created Gantt chart was unrealistic, for example in the sense that integration and building subsystems are assumed to run in parallel and be finished at the same time. Though the sensor C++ interfaces made the integration phase considerably easier there were not enough developer resources available to simultaneously prototype sensors and develop the integration framework at the same time. The integration thus did not start until the subsystems prototyping stage was complete. Combined with other delays, this pushed the development over the grace period and caused overlaps with the report writing stage. In future development plans, this should be taken into account and even wider grace periods should be allocated for development involving a large number of peripherals - especially with energy efficiency focus.
+
+\subsection{Other possible improvements}
 The device is designed as an equine health monitor, however the need for a health monitor is not only limited to horses. As there are almost no horse specific parts used in the system, the device could be adapted for the use on human subjects or agents of other mammal species. The only adaptation that has to be made is the usage of a target specific heart rate monitor. 
 
-The scope of the project is rather large. It is possible improve some of the features to evolve it into a more specialized system. One possible solution could be a tracking system using GPS and accelerometer data. These data can also be used for health-related applications such as tracking the movement of the animals and detecting extraordinary situations. 
+The number of sensors in the project is rather large. It is possible improve some of the features to evolve it into a more specialized system. One possible solution could be a tracking system using GPS and accelerometer data. These data can also be used for health-related applications such as tracking the movement of the animals and detecting extraordinary situations. 
 
 Another field of application could be professional horse training, to monitor the heart rate in relation to the covered distance over an average of the velocity which allows to analyze the improvements of a horse’s stamina over time.
 
@@ -87,10 +67,9 @@ As the system works as a health profiler, it is possible extend it by adding sig
 
 In the current implementation, the gut sound monitor works periodically. The problem with this approach is introduced noise when the horse is moving. One way to improve the behavior is to disabling the audio recording conditionally, if the horse is moving and delay it until the horse stays at a stable position for a period of time. The (already available) accelerometer and GPS data can be used to implement this feature.
 
-In the current state of the system the webinterface is not very user friendly when it comes to analyzing large amounts of collected data. This could be improved by using advances web interface technologies like Ajax to build dynamic version of the website that behaves more like a desktop application than a website.
+In the current state of the system the web interface is not very user friendly when it comes to analysing large amounts of collected data. This could be improved by using advances web interface technologies like Ajax to build dynamic version of the website that behaves more like a desktop application than a website.
 
-As accessibility is an important goal of the project it would be a useful addition to extend the website so that a handheld optimized version of the website is delivered when the user accesses the base station with a smartphone.
+As accessibility is an important goal of the project it would be a useful addition to extend the website so that a hand-held optimized version of the website is delivered when the user accesses the base station with a smartphone.
 
-The limitations of the used XBee devices was discussed in section \ref{sec:wireless_testing}. To be able to transmit audio recordings the ZigBee network should be replaced with a faster wireless connection. Pin compatible XBee replacement ICs based on the 802.11 standard exist and require only a modification on the software part of the system.
 
-Even though the system was designed with energy efficiency in mind from the very beginning, there are subsystems that require further optimization for low energy consumption. The XBee devices are not sent to sleep in the current system, because the delay before they manage to reestablish a connection is too long.
+Even though the system was designed with energy efficiency in mind from the very beginning, there are subsystems that require further optimization for low energy consumption. The XBee devices are not sent to sleep in the current system, because the delay before they manage to re-establish a connection is too long.  
