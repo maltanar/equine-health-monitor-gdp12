@@ -24,23 +24,17 @@ Wireless communication between the monitoring device and the base station is ano
 
 Gut sound monitoring is the last of the main design challenges. To be able to do any kind of examination based on the audio data, the length of the recording has to be in the minute range. This requires a wireless protocol with a bandwidth that allows to transmit the data in a reasonable amount of time and limits the processing that can be done during recording because the processor should not be involved in the optimal case.
 
-\TODO{Rewrite/Extend next paragraph}
-
-After discussions and research, a good compromise was found which offers a reasonable degree of fulfillment for each challenge.
-
-
 \section{Proposed System}
 The system that we propose to tackle the design challenges is a distributed system, consisting of wireless monitoring devices optimized for low energy consumption and stationary base station that collects data from monitoring devices and presents it to the user over a web interface. 
 
-This design stands in contrast to the first proposal for the system design in which there is no distinction between monitoring station and base station and the user interacts directly with the system over a wireless protocol commonly available in handheld devices and laptops (Bluetooth) or connects to the device via USB. We realized early that this design was suboptimal, as it is neither scalable nor suited for running on battery power over an extended period of time as Bluetooth is an energy hog and the data processing cannot be offloaded but has to be performed on the device itself.
+This design stands in contrast to the first proposal for the system design in which there is no distinction between monitoring station and base station and the user interacts directly with the system over a wireless protocol commonly available in handheld devices and laptops (Bluetooth) or connects to the device via USB. We realized early that this design was suboptimal, as it’s neither scalable nor suited for running on battery power over an extended period of time as Bluetooth is an energy hog and the data processing cannot be offloaded but has to be performed on the device itself.
 
 Separating the roles in the system into distinct devices gives the possibility to design nodes that are optimized for their role in the overall system, which is especially important in this case, as  one of the key focus areas of this project is to build a battery powered device with a long battery runtime. This can only be achieved if the goal is kept in mind during all stages of the design - from the selection of the used components to the design of the system software.
-
 
 \subsection{Distributed system}
 \begin{figure}[htb]
 \centering
-\includegraphics[width=\textwidth]{Images/dummy}
+\includegraphics[width=\textwidth]{Images/gdp_system_block}
 \caption{Block Diagram: Distributed system}
 \label{fig:block_system}
 \end{figure}

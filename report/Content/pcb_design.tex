@@ -1,14 +1,17 @@
 \chapter{PCB design}
 In order to make a complete system and test it on adequate subjects without any harm to the circuitry it was decided to make a custom PCB and encapsulate it in a splash proof casing. PCB not only eliminates the accidental connection losses between the components as it usually happens on breadboards and protoboards but also keeps the traces short and ensures the components function according to their specification.
  
-The schematic and layout were designed using CadSoft Eagle software version 6.1.0. It is not considered to be the most user friendly software in terms of the usage interface, but is fairly simple and straightforward. Furthermore, the user community is very large, therefore it is possible to find various component footprints already made by others to be used in the design. This decreases the overall time required to make a PCB design. Nevertheless, as we were using very specific components  (ANT, GPS, etc.) a footprint for them had to be designed manually by consulting the datasheet. 
+The schematic and layout were designed using CadSoft Eagle software version 6.1.0. It is not considered to be the most user friendly software in terms of the usage interface, but is fairly simple and straightforward. Furthermore, the user community is very large, therefore it is possible to find various component footprints already made by others to be used in the design. This decreases the overall time required to make a PCB design. Nevertheless, as we were using very specific components  (ANT, GPS, etc.) a footprint for them had to be designed manually by consulting the datasheets ( TMP006\footnote{\url{http://www.ti.com/lit/ds/symlink/tmp006.pdf}}, GPS\footnote{\url{http://www.fastraxgps.com/showfile.cfm?guid=17fc51dd-0618-49aa-b62e-020234006b29}},
+AD441 Microphone\footnote{\url{http://www.analog.com/static/imported-files/data_sheets/ADMP441.pdf}},
+ADXL350 Accelerometer\footnote{\url{http://www.analog.com/static/imported-files/data_sheets/ADXL350.pdf}},
+ANT\footnote{\href{http://www.thisisant.com/assets/resources/Datasheets/D00001266_AP2_RF_Transceiver_Module_Datasheet_Rev1.8.pdf}{www.thisisant.com}}).
 
 
 \section{Schematic}
 This section will describe the connections between different components of the system, their intended use and operational principles. Full schematic of the system can be seen in section \ref{sec:pcb_schematics} of the Appendix. It is separated into different sheets for ease of reading.
 
 \subsection{Power conditioning}
-This part is responsible for providing energy to the rest of the board. The circuitry consists of two stages, see \TODO{}Appendix\_Powerchapter\_LDO.pdf First stage incorporates a constant current constant voltage single cell Lithium Ion battery charger centered around a ADP2291 chip from Analog Devices. The second stage is a low dropout voltage (LDO) regulator based on a ADP1706 chip from the same manufacturer.
+This part is responsible for providing energy to the rest of the board. The circuitry consists of two stages: the first stage incorporates a constant current constant voltage single cell Lithium Ion battery charger centered around a ADP2291 chip from Analog Devices. The second stage is a low dropout voltage (LDO) regulator based on a ADP1706 chip from the same manufacturer.
 
 
 
@@ -41,9 +44,10 @@ Capacitor C6 determines the time of all operation modes. The ratio between the f
 
 
 \subsubsection{LDO regulator}
-The LDO regulator takes in the provided voltage by the battery and outputs a fixed value of 3.3V required to power all on-board devices. Decision to use this type of regulator was made from the fact that the difference between input and output voltage is very small. Therefore, using a traditional linear regulator in this case is not an option. Our chosen device has a maximum dropout voltage of 55mV at 100mA output current. This figure increases to 345mV at output current of 1A respectively. The latter dropout will never be achieved, as in the worst case scenario when all peripherals are operational the maximum current consumption will be \TODO{check:} datasheet GPS, ANT, Xbee SD card + MCU 9.6mA
- all peripherals combined will hardly ever pass the 100mA current consumption point.
+The LDO regulator takes in the provided voltage by the battery and outputs a fixed value of 3.3V required to power all on-board devices. Decision to use this type of regulator was made from the fact that the difference between input and output voltage is very small. Therefore, using a traditional linear regulator in this case is not an option. Our chosen device has a maximum dropout voltage of 55mV at 100mA output current. This figure increases to 345mV at output current of 1A respectively. 
+The latter dropout will never be achieved, as in the worst case scenario when all peripherals are operational the maximum current consumption will be 150mA. 
  
+
 This LDO regulator was designed for operation with small value ceramic capacitors for space saving applications. Nevertheless, using a larger value output capacitors improves the transient response. Hence, as space is not an issue a value of 150uF was chosen. The regulator has a built in accidental short circuit protection. If for any reason the output becomes shorted, the regulator will conduct the maximum amount of 1.5A current into the short, increasing the junction temperature to critical level and triggering the thermal protection as a result turning off the output. 
 
 A soft start function is implemented by connecting the C3 capacitor to ADJ pin of the regulator. This ensures a gradual output voltage ramp-up. The ramp up time is calculated using the following formula $T_{ramp-up} = 0.8V × (C3/1.2uA)$ Tramp-up represents the time it takes for the output to reach 90\% from 0\%. In current configuration where the value of C3 is 10nf the ramp-up time is 6.67 ms.
@@ -53,7 +57,7 @@ To insure a stable power supply to all components organic solid capacitors with 
 
 
 \subsection{MCU}
-As was mentioned earlier the MCU used for the project is EFM32GG332 based on ARM Cortex M3 core with a 1024KB of Flash and capable of running at a 48MHz speed. The chip has several clock sources and different crystal oscillators are used to generate that clock. XT1 is a high speed oscillator (HFXTAL) rated at 48MHz and running in a fundamental mode \TODO{}see Appendix\_MCU\_decoupl\_osc\_reset.pdf. 
+As was mentioned earlier the MCU used for the project is EFM32GG332 based on ARM Cortex M3 core with a 1024KB of Flash and capable of running at a 48MHz speed. The chip has several clock sources and different crystal oscillators are used to generate that clock. XT1 is a high speed oscillator (HFXTAL) rated at 48MHz and running in a fundamental mode see figure \ref{fig:pcb_schematics_4}. 
 
 XT2 is a low frequency oscillator (LFXTAL) rated at 32.768KHz and is produced by MEMS processing technology. This oscillator is used for peripherals running in low energy modes and operates in fundamental mode as well. The MCU will not work with a high speed oscillator that is specified to operate in an overtone mode. To insure that the crystal operates correctly, it has to have a certain load capacitance, in our case for XT1 this is 18pF and for XT2 it is 7pF. 
 
@@ -62,7 +66,7 @@ In case there is a need to reset the MCU it can be done by using the S1 global r
 A standard approach for decoupling is used. One large capacitor C2 rated at 150uF is used for the whole system with 0.1uF C7-C12 capacitors used to decouple separate power pins. In our design we are not using ADC of the MCU; therefore it was not necessary to separate the digital and analog power domains. Separation is usually done to ensure better isolation and noise suppression between the power domains.
 
 
-For programming and debugging the custom made PCB a debug interface consisting of clock input (SWCLK), data in/out lines (SWDIO) and serial wire output (SWO) had to be exposed, see \TODO{}see Appendix\_Debug\_Mic.pdf. An external development kit was used to program/debug the PCB. By supplying the power to the PCB from the development kit via VMCU pin it was possible to measure the current consumption of a target with an Energy Aware profiler.
+For programming and debugging the custom made PCB a debug interface consisting of clock input (SWCLK), data in/out lines (SWDIO) and serial wire output (SWO) had to be exposed, see figure \ref{fig:pcb_schematics_2}. An external development kit was used to program/debug the PCB. By supplying the power to the PCB from the development kit via VMCU pin it was possible to measure the current consumption of a target with an Energy Aware profiler.
 
 
 \subsection{I2C devices}

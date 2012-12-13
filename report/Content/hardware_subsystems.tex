@@ -286,7 +286,7 @@ While in the case of other sensors like the temperature sensor and GPS for examp
 \end{description}
 
 
-\subsubsection{Sampling parameters and component selection justification}
+\subsubsection{Sampling parameters}
 Taking in consideration the requirements as well as the capabilities of the selected system microcontroller platform the audio sampling parameters were set as shown in table \ref{tab:sampling_parameters}. Other audio related projects in this platform were also used as a reference for setting this parameters. 
 
 \begin{table}[htb]
@@ -327,7 +327,7 @@ Size_{audio}&=8000 Hz * 16 \frac{Bits}{Sample}* 240s \\
 As it can be noted this is a very high amount of data and thus the use of a external memory device for storage is required as it is explained in section \ref{sec:data_storage}.
 
 \subsubsection{Component selection justification}
-The component ADMP441 from Analog Devices was chosen for the audio acquisition peripheral. This single-chip MEMS (Micro Electro Mechanical System) microphone provides very convenient characteristics which are summarized in the following table.
+The component ADMP441 from Analog Devices\footnote{\url{http://www.analog.com/static/imported-files/data_sheets/ADMP441.pdf}} was chosen for the audio acquisition peripheral. This single-chip MEMS (Micro Electro Mechanical System) microphone provides very convenient characteristics which are summarized in the following table.
 
 \begin{table}[htb]
 \centering
@@ -377,7 +377,7 @@ The Universal Synchronous Asynchronous Receiver Transmitter (USART) hardware mod
 \textbf{Driver:} One of the available USART ports was configured to work as I2S master providing the clock signals needed for the synchronous data transmission. The sampling frequency is set as a function of the baudrate set for the port interface. After having configured properly the reception of samples from the peripheral is triggered by using the AUTO\_TX feature of the USART port. In this mode the microcontroller will always generate the clock signals for the slave device as long as the port is enabled.
 
 
-To support the continuous data flow of audio samples coming from the microphone double-buffered DMA transactions are used. This method is explained in detail the section XX. TODO: add correct reference to DMA section.
+To support the continuous data flow of audio samples coming from the microphone double-buffered DMA transactions are used. This method is explained in detail the section \ref{sec:dma}.
 
 
 \subsection{Data Storage}
@@ -389,19 +389,16 @@ We had three possibilities to store data: SD card, internal flash memory and ext
 We decided to use a microSD card in this project. The SD Card can be removed from the monitoring device by the user to copy the data when needed, since a wide range of devices are SD card compatible. This advantage overcomes the external flash chip soldered on PCB. 
 
 \textbf{Interface:}
-SD Cards are based on flash memory technology. They support 3 communication modes: SD 1-bit, SD 4-bit and SPI mode\footnote{\url{https://www.sdcard.org/downloads/pls/simplified_specs/Part_1_Physical_Layer_Simplified_Specification_Ver_3.01_Final_100518.pdf}}. The former two are similar. The main difference is that in SD 1-bit mode, the data is transferred over 1-bit wire in a synchronous serial fashion while in SD 4-bit mode, data transfer is done over 4-bit bus. 
+SD Cards are based on flash memory technology. They support 3 communication modes: SD 1-bit, SD 4-bit and SPI mode\footnote{\url{http://bit.ly/VCKHYR}}. The former two are similar. The main difference is that in SD 1-bit mode, the data is transferred over 1-bit wire in a synchronous serial fashion while in SD 4-bit mode, data transfer is done over 4-bit bus. 
 
 SD 4-bit mode can provide speed benefits over SPI mode. However it is not recommended in software solutions since it requires CRC calculation for each of the four wires and may result in a big computational effort \footnote{\url{http://alumni.cs.ucr.edu/~amitra/sdcard/Additional/sdcard_appnote_foust.pdf}}
 
 Also, accessing the complete SD Card Specifications to build an SD standard device requires licenses from SD Card Association \footnote{\url{https://www.sdcard.org/developers/howto/}}. Therefore, in this project, the card is used in SPI mode. 
 
 \textbf{Driver:}
-To implement microSD prototype system, an existing FAT file system and a low-level disk interface module were used. The card was connected to one of the SPI interfaces of the microcontroller. MicroSD cards support up to 208 MHz clock frequency depending on the SD Card class they belong to\footnote{\url{https://www.sdcard.org/downloads/pls/simplified_specs/Part_1_Physical_Layer_Simplified_Specification_Ver_3.01_Final_100518.pdf}}. 
+To implement microSD prototype system, an existing FAT file system and a low-level disk interface module were used. The card was connected to one of the SPI interfaces of the microcontroller. MicroSD cards support up to 208 MHz clock frequency depending on the SD Card class they belong to. 
 
 On the other hand, the clock system of the Energy Micro microcontroller allows maximum SPI bit rate to be at half speed of the source clock in master mode. Theoretically, SPI clock can be up to 24 MHz when the source clock is set to 48 MHz. However, this is not true in practice because there is an upper speed limit caused by delays of inputs and outputs of the microcontroller which is not specified by the manufacturers\footnote{\url{http://forum.energymicro.com/topic/288-microsd-card-spi-baudrate/}}. 
-
-Therefore our microSD driver sets SPI clock speed at \TODO{:}is it 7MHz? X Mhz at which it operates safely.   
-
 
 \section{Wireless Interfaces}
 \subsection{Data transmission - ZigBee}
