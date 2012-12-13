@@ -32,7 +32,7 @@ bool FATFS_isFilesystemAvailable()
 uint64_t FATFS_speedTest(uint32_t kilobytesToWrite, bool keepTestFile)
 {
 	const char *filename = "stst.raw";
-	uint32_t data = 0xDEADBEEF;
+	uint8_t data[1024];
 	UINT bw;
 	uint32_t bwTotal = 0;
 	FIL logfile;
@@ -57,17 +57,16 @@ uint64_t FATFS_speedTest(uint32_t kilobytesToWrite, bool keepTestFile)
 	uint64_t start = AlarmManager::getInstance()->getMsTimestamp();
 	// write the number of desired kilobytes
 	for(int i = 0; i < kilobytesToWrite; i++)
-		for(int j = 0; j < 256; j++)
+	{
+		bw = 0;
+		fr = f_write(&logfile, &data, 1024, &bw);
+		if(fr != FR_OK || bw != 1024)
 		{
-			bw = 0;
-			fr = f_write(&logfile, &data, 4, &bw);
-			if(fr != FR_OK || bw != 4)
-			{
-				module_debug_fatfs("f_write failed! %x %d", fr, bw);
-				goto done;
-			}
-			bwTotal += bw;
+			module_debug_fatfs("f_write failed! %x %d", fr, bw);
+			goto done;
 		}
+		bwTotal += bw;
+	}
   done:
 	// get end timestamp
 	uint64_t end = AlarmManager::getInstance()->getMsTimestamp();

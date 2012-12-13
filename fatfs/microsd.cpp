@@ -46,8 +46,12 @@
 //#define CS_LOW()   GPIO->P[4].DOUTCLR = 0x10;  /**< Chip Selection in SPI mode. Enable when card is selected. */
 //#define CS_HIGH()  GPIO->P[4].DOUTSET = 0x10;  /**< Chip Selection in SPI mode. Enable when card is deselected. */
 
-#define CS_LOW()   GPIO_PinOutClear(MICROSD_USARTCFG.csPort, MICROSD_USARTCFG.csPin)
-#define CS_HIGH()  GPIO_PinOutSet(MICROSD_USARTCFG.csPort, MICROSD_USARTCFG.csPin)
+#define CS_LOW()   GPIO->P[spiCsPort].DOUTCLR = 1 << spiCsPin;
+#define CS_HIGH()  GPIO->P[spiCsPort].DOUTSET = 1 << spiCsPin;
+
+static GPIO_Port_TypeDef spiCsPort;
+static unsigned int spiCsPin;
+USART_TypeDef *spi;
 
 extern DSTATUS Stat;    /**< Disk status */
 
@@ -63,11 +67,13 @@ static BYTE wait_ready(void);
  *****************************************************************************/
 void MICROSD_init(void)
 {
-  USART_TypeDef *spi;
-
   /* Enabling clock to USART 0 */
   CMU_ClockEnable(MICROSD_USARTCFG.clockPoint, true);
   CMU_ClockEnable(cmuClock_GPIO, true);
+  
+  // copy port and pin defs to local vars
+  spiCsPort = MICROSD_USARTCFG.csPort;
+  spiCsPin  = MICROSD_USARTCFG.csPin;
 
   spi = MICROSD_USART;
 
@@ -128,8 +134,6 @@ void MICROSD_deinit(void)
  *****************************************************************************/
 uint8_t xfer_spi(uint8_t data)
 {
-  USART_TypeDef *spi = MICROSD_USART;
-
   spi->TXDATA = data;
   while (!(spi->STATUS & USART_STATUS_TXC))
   {
@@ -231,7 +235,6 @@ int rcvr_datablock(BYTE *buff, UINT btr)
     return 0;
   }
 
-  USART_TypeDef *spi = MICROSD_USART;
   /* Clear send and receive buffer */
   spi->CMD = USART_CMD_CLEARRX | USART_CMD_CLEARTX;
   /* Store old configuration. */

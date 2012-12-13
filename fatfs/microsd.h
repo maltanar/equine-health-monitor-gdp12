@@ -73,8 +73,10 @@ void MICROSD_deinit(void);
 #define MICROSD_USARTCFG	(USARTManagerPortConfigs[SD_USART_PORT])
 #define MICROSD_USART		(MICROSD_USARTCFG.usartBase)
 
-#define FCLK_SLOW() (MICROSD_USART->CLKDIV = 256 * (48000000 / (2 * 100000) - 1));  /**< 100K at 48MHz */
-#define FCLK_FAST() (MICROSD_USART->CLKDIV = 256 * (48000000 / (2 * 7000000) - 1)); /**< 7MHz at 48MHz */
+#define FCLK_SLOW() (spi->CLKDIV = 256 * (48000000 / (2 * 100000) - 1));  /**< 100K at 48MHz */
+#define FCLK_FAST() (spi->CLKDIV = 256 * (48000000 / (2 * 12000000) - 1)); /**< 7MHz at 48MHz */
+
+extern USART_TypeDef *spi;
 
 void deselect(void);
 void power_on(void);
