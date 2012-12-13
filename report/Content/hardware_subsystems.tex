@@ -286,12 +286,12 @@ While in the case of other sensors like the temperature sensor and GPS for examp
 \end{description}
 
 
-\subsection{Sampling parameters and component selection justification}
+\subsubsection{Sampling parameters and component selection justification}
 Taking in consideration the requirements as well as the capabilities of the selected system microcontroller platform the audio sampling parameters were set as shown in table \ref{tab:sampling_parameters}. Other audio related projects in this platform were also used as a reference for setting this parameters. 
 
 \begin{table}[htb]
 \centering
-\begin{tabular}{|l|l|m{4cm}|}
+\begin{tabular}{|l|l|m{8cm}|}
 \hline
 	\textbf{Parameter} &
 	\textbf{Value} &
@@ -326,7 +326,7 @@ Size_{audio}&=8000 Hz * 16 \frac{Bits}{Sample}* 240s \\
 
 As it can be noted this is a very high amount of data and thus the use of a external memory device for storage is required as it is explained in section \ref{sec:data_storage}.
 
-\subsection{Component selection justification}
+\subsubsection{Component selection justification}
 The component ADMP441 from Analog Devices was chosen for the audio acquisition peripheral. This single-chip MEMS (Micro Electro Mechanical System) microphone provides very convenient characteristics which are summarized in the following table.
 
 \begin{table}[htb]
