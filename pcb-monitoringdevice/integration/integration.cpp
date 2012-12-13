@@ -16,6 +16,7 @@
 #include "alarmmanager.h"
 #include "messagestorage.h"
 #include "anthrmsensor.h"
+#include "mcusetup.h"
 
 #include "audio.h"
 
@@ -36,6 +37,7 @@ extern void __iar_dlmalloc_stats();
 #define SENSOR_COUNT				4
 #define DATA_SEND_PERIOD			10
 #define MAX_DEBUG_MSG				255
+#define DISABLE_ZIBEE
 
 // End Section: Local definitions and macros ---------------------------------
 
@@ -56,6 +58,7 @@ typedef struct {
 	uint8_t period;
 	uint8_t readOffset;
 	uint8_t samples;
+	uint8_t baseOffset;
 	bool enabled;
 	bool requestChange;
 } SensorParameters;
@@ -63,8 +66,6 @@ typedef struct {
 // End Section: Local Type Definitions ----------------------------------------
 
 // Section: Local Helper Function Declarations --------------------------------
-
-void initializeMCU();						// initialize clocks, debug
 void initializeDevicePowerPins();			// config GPIOs used for pwr control
 void saveAudioSample(uint16_t audioLenS);	// save audio sample of given length
 void md_printf(int len);					// print over ZigBee / DebugMsg
@@ -92,35 +93,39 @@ SensorParameters sensorParam[SENSOR_COUNT] =
 {
 	// GPS configuration
 	{
-		.period = 10,
+		.period = 60,
 		.readOffset = 5,
+		.baseOffset = 0,
 		.samples = 1,
 		.enabled = true,
-		.requestChange = false
+		.requestChange = true
 	},
 	// Accelerometer configuration
 	{
-		.period = 5,
+		.period = 10,
 		.readOffset = 1,
+		.baseOffset = 0,
 		.samples = 10,
 		.enabled = true,
-		.requestChange = false
+		.requestChange = true
 	},
 	// Temperature sensor configuration
 	{
-		.period = 5,
+		.period = 30,
 		.readOffset = 1,
+		.baseOffset = 5,
 		.samples = 1,
 		.enabled = true,
-		.requestChange = false
+		.requestChange = true
 	},
 	// Heart Rate Monitor configuration
 	{
-		.period = 5,
-		.readOffset = 2,
+		.period = 20,
+		.readOffset = 10,
+		.baseOffset = 10,
 		.samples = 1,
 		.enabled = true,
-		.requestChange = false
+		.requestChange = true
 	}
 };
 	
@@ -144,14 +149,14 @@ void antSensorHandler(AlarmID id);
 int main(void)
 {
 	// set up debug output and clocks
-	initializeMCU();
+	initializeMCU(true, false);
+	
+	// store the alarm manager instance
+	alarmManager = AlarmManager::getInstance();
 	
 	// store the message storage instance
 	msgStore = MessageStorage::getInstance();
 	msgStore->initialize("/", true);	// TODO FINAL remove the true
-	
-	// store the alarm manager instance
-	alarmManager = AlarmManager::getInstance();
 	
 	// recover the RTC from storage, if possible
 	recoverRTC();
@@ -198,7 +203,7 @@ int main(void)
 		
 		if(dataSaveFlag)
 		{
-			sendOrSaveData();
+			//sendOrSaveData();
 		}
 		
 		
@@ -251,32 +256,6 @@ int main(void)
 
 
 // Section: Local helper function implementations ----------------------------
-
-void initializeMCU()
-{
-	// handle chip errata
-	CHIP_Init();
-	
-	// enable SWO output for printf over SWO
-	TRACE_SWOSetup();
-	// enable trace during deep sleep as well
-	// consumes additional power but worth it for debugging
-	EMU->CTRL |= EMU_CTRL_EMVREG_FULL;
-	
-	// configure the system clocks
-	SystemHFXOClockSet(48000000); 
-	
-	// enable the external crystal oscillators
-	CMU_OscillatorEnable(cmuOsc_HFXO, true, true);
-	CMU_OscillatorEnable(cmuOsc_LFXO, true, true);
-	
-	// select the external crystal oscillators and deselect old ones
-	CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
-	CMU_OscillatorEnable(cmuOsc_HFRCO, false, false);
-	CMU_ClockSelectSet(cmuClock_LFA, cmuSelect_LFXO);
-	CMU_ClockSelectSet(cmuClock_LFB, cmuSelect_LFXO);
-}
-
 
 void saveAudioSample(uint16_t audioLenS)
 {
@@ -379,9 +358,12 @@ void configureDataCollection()
 bool configureZigBee()
 {
 	zigbeeOK = false;
-	
-	// Xbee hard reset - turn power off for 150 ms
+	xbee =  NULL;
+		
 	XBEE_POWER(false);
+
+#ifndef	DISABLE_ZIBEE
+	// Xbee hard reset - turn power off for 150 ms and back on
 	alarmManager->lowPowerDelay(150);
 	XBEE_POWER(true);
 	
@@ -399,7 +381,13 @@ bool configureZigBee()
     if (error_code != GBEE_NO_ERROR) {
          printf("Error: unable to configure device, code: %02x\n", error_code);
     } else
-		printf("ZigBee OK!");
+		printf("ZigBee OK! \n");
+#endif
+	
+	if(zigbeeOK)
+		printf("ZigBee is enabled! \n");
+	else
+		printf("ZigBee is not enabled! \n");
 	
 	return zigbeeOK;
 }
@@ -409,12 +397,15 @@ void sendOrSaveData()
 	printf("***** send or save data *****\n");
 	uint16_t size;
 	dataSaveFlag = false;
-	saveRTC();
+	//saveRTC();
 	
+	// do not attempt to get status if zigbee wasn't initalized
 	if(!zigbeeOK)
 	{
-		msgStore->flushAllToDisk();
+		//msgStore->flushAllToDisk();
+		return;
 	}
+	
 	char * buf = NULL;
 	
 	printf("Xbee status: %d \n", xbee->xbee_status());
@@ -526,21 +517,7 @@ void tempSensorHandler(AlarmID id)
 		tmp = TemperatureSensor::getInstance();
 		// put device to sleep
 		tmp->setSleepState(true);
-		// create the wakeup alarm
-		wakeupAlarmID = alarmManager->createAlarm(params->period,
-												  false, &tempSensorHandler);
-		// create the read alarm
-		readAlarmID = alarmManager->createAlarm(params->period,
-												  false, &tempSensorHandler);
-		
-		// offset the read alarm - it needs to be triggered after the wakeup
-		alarmManager->setAlarmTimeout(readAlarmID, params->period + 
-									  params->readOffset);
-		
-		// initialize the control block structure
-		control->requestWakeup = true;
-		control->requestSleep = false;
-		control->requestSamples = 0;
+		// set the sensor object
 		control->sensor = tmp;
 	} 
 	
@@ -548,12 +525,62 @@ void tempSensorHandler(AlarmID id)
 	{
 		// want to change sensor parameters
 		params->requestChange = false;
-		printf("changing sensor parameters... \n");
-		// TODO implement the actual changes
+		printf("changing sensor parameters for sensor %d... \n", i);
+		
+		// TODO retrieve new params from ConfigMessage
+		
+		// enable / disable the device
+		if(params->enabled)
+		{
+			// turn on / enable the device
+			printf("enabling sensor %d... \n", i);
+			// create the wakeup alarm
+			wakeupAlarmID = alarmManager->createAlarm(params->period,
+											  false, &tempSensorHandler);
+			// create the read alarm
+			readAlarmID = alarmManager->createAlarm(params->period,
+											  false, &tempSensorHandler);
+
+			// offset the read alarm - it needs to be triggered after the wakeup
+			alarmManager->setAlarmTimeout(readAlarmID, params->period + 
+								  params->readOffset + params->baseOffset);
+			
+			// offset wake alarms by base offset as well
+			alarmManager->setAlarmTimeout(wakeupAlarmID, params->period + 
+								  params->baseOffset);
+
+			// initialize the control block structure
+			control->requestWakeup = false;
+			control->requestSleep = false;
+			control->requestSamples = 0;
+		} 
+		else
+		{
+			// turn off / disable the device
+			printf("disabling sensor %d... \n", i);
+			// stop the alarms
+			if(wakeupAlarmID != ALARM_INVALID_ID)
+			{
+				alarmManager->stopAlarm(wakeupAlarmID);
+				wakeupAlarmID = ALARM_INVALID_ID;
+			}
+			if(readAlarmID != ALARM_INVALID_ID)
+			{
+				alarmManager->stopAlarm(readAlarmID);
+				readAlarmID = ALARM_INVALID_ID;
+			}
+			// put the device to sleep or turn off power if supported
+			control->sensor->setSleepState(true);
+			
+			// initialize the control block structure
+			control->requestWakeup = false;
+			control->requestSleep = false;
+			control->requestSamples = 0;
+		}
 	}
 	else
 	{
-		// sensor has already been created - take action depending on
+		// no change request - take action depending on
 		// alarm identifier
 		if(id == wakeupAlarmID)
 		{
@@ -581,31 +608,75 @@ void acclSensorHandler(AlarmID id)
 	// detect first run - create and configure sensor
 	if(acc == NULL)
 	{
-		printf("Configuring ADXL350...\n");
+		printf("Configuring accelerometer...\n");
 		// get the sensor instance
 		acc = AccelerationSensor::getInstance();
 		// put device to sleep
 		acc->setSleepState(true);
-		// create the wakeup alarm
-		wakeupAlarmID = alarmManager->createAlarm(params->period,
-												  false, &acclSensorHandler);
-		// create the read alarm
-		readAlarmID = alarmManager->createAlarm(params->period,
-												  false, &acclSensorHandler);
-		
-		// offset the read alarm - it needs to be triggered after the wakeup
-		alarmManager->setAlarmTimeout(readAlarmID, params->period + 
-									  params->readOffset);
-		
-		// initialize the control block structure
-		control->requestWakeup = true;
-		control->requestSleep = false;
-		control->requestSamples = 0;
+		// set the sensor object
 		control->sensor = acc;
 	} 
+	
+	if(params->requestChange)
+	{
+		// want to change sensor parameters
+		params->requestChange = false;
+		printf("changing sensor parameters for sensor %d... \n", i);
+		
+		// TODO retrieve new params from ConfigMessage
+		
+		// enable / disable the device
+		if(params->enabled)
+		{
+			// turn on / enable the device
+			printf("enabling sensor %d... \n", i);
+			// create the wakeup alarm
+			wakeupAlarmID = alarmManager->createAlarm(params->period,
+											  false, &acclSensorHandler);
+			// create the read alarm
+			readAlarmID = alarmManager->createAlarm(params->period,
+											  false, &acclSensorHandler);
+
+			// offset the read alarm - it needs to be triggered after the wakeup
+			alarmManager->setAlarmTimeout(readAlarmID, params->period + 
+								  params->readOffset + params->baseOffset);
+			
+			// offset wake alarms by base offset as well
+			alarmManager->setAlarmTimeout(wakeupAlarmID, params->period + 
+								  params->baseOffset);
+
+			// initialize the control block structure
+			control->requestWakeup = false;
+			control->requestSleep = false;
+			control->requestSamples = 0;
+		} 
+		else
+		{
+			// turn off / disable the device
+			printf("disabling sensor %d... \n", i);
+			// stop the alarms
+			if(wakeupAlarmID != ALARM_INVALID_ID)
+			{
+				alarmManager->stopAlarm(wakeupAlarmID);
+				wakeupAlarmID = ALARM_INVALID_ID;
+			}
+			if(readAlarmID != ALARM_INVALID_ID)
+			{
+				alarmManager->stopAlarm(readAlarmID);
+				readAlarmID = ALARM_INVALID_ID;
+			}
+			// put the device to sleep or turn off power if supported
+			control->sensor->setSleepState(true);
+			
+			// initialize the control block structure
+			control->requestWakeup = false;
+			control->requestSleep = false;
+			control->requestSamples = 0;
+		}
+	}
 	else
 	{
-		// sensor has already been created - take action depending on
+		// no change request - take action depending on
 		// alarm identifier
 		if(id == wakeupAlarmID)
 		{
@@ -639,29 +710,72 @@ void gpsSensorHandler(AlarmID id)
 		gps = GPSSensor::getInstance();
 		gps->initialize();
 		gps->setParseOnReceive(true);
-		// put device to sleep
-		gps->setSleepState(true);
-		
-		// create the wakeup alarm
-		wakeupAlarmID = alarmManager->createAlarm(params->period,
-												  false, &gpsSensorHandler);
-		// create the read alarm
-		readAlarmID = alarmManager->createAlarm(params->period,
-												  false, &gpsSensorHandler);
-		
-		// offset the read alarm - it needs to be triggered after the wakeup
-		alarmManager->setAlarmTimeout(readAlarmID, params->period + 
-									  params->readOffset);
-		
-		// initialize the control block structure
-		control->requestWakeup = true;
-		control->requestSleep = false;
-		control->requestSamples = 0;
+		// set the sensor object
 		control->sensor = gps;
 	} 
+	
+	if(params->requestChange)
+	{
+		// want to change sensor parameters
+		params->requestChange = false;
+		printf("changing sensor parameters for sensor %d... \n", i);
+		
+		// TODO retrieve new params from ConfigMessage
+		
+		// enable / disable the device
+		if(params->enabled)
+		{
+			// turn on / enable the device
+			printf("enabling sensor %d... \n", i);
+			// create the wakeup alarm
+			wakeupAlarmID = alarmManager->createAlarm(params->period,
+											  false, &gpsSensorHandler);
+			// create the read alarm
+			readAlarmID = alarmManager->createAlarm(params->period,
+											  false, &gpsSensorHandler);
+
+			// offset the read alarm - it needs to be triggered after the wakeup
+			alarmManager->setAlarmTimeout(readAlarmID, params->period + 
+								  params->readOffset + params->baseOffset);
+			
+			// offset wake alarms by base offset as well
+			alarmManager->setAlarmTimeout(wakeupAlarmID, params->period + 
+								  params->baseOffset);
+			
+			gps->setSleepState(true);
+
+			// initialize the control block structure
+			control->requestWakeup = false;
+			control->requestSleep = false;
+			control->requestSamples = 0;
+		} 
+		else
+		{
+			// turn off / disable the device
+			printf("disabling sensor %d... \n", i);
+			// stop the alarms
+			if(wakeupAlarmID != ALARM_INVALID_ID)
+			{
+				alarmManager->stopAlarm(wakeupAlarmID);
+				wakeupAlarmID = ALARM_INVALID_ID;
+			}
+			if(readAlarmID != ALARM_INVALID_ID)
+			{
+				alarmManager->stopAlarm(readAlarmID);
+				readAlarmID = ALARM_INVALID_ID;
+			}
+			// put the device to sleep or turn off power if supported
+			GPSSensor::setPower(false, false);
+			
+			// initialize the control block structure
+			control->requestWakeup = false;
+			control->requestSleep = false;
+			control->requestSamples = 0;
+		}
+	}
 	else
 	{
-		// sensor has already been created - take action depending on
+		// no change request - take action depending on
 		// alarm identifier
 		if(id == wakeupAlarmID)
 		{
@@ -670,7 +784,14 @@ void gpsSensorHandler(AlarmID id)
 		else if(id == readAlarmID)
 		{
 			control->requestSamples = params->samples;
-			control->requestSleep = true;
+			// GPS specific: do not request sleep if no location fix was not
+			// obtained
+			printf("GPS valid position fix: %d sats: %d \n", gps->isValidPosFix(),
+				   gps->getNumSatellitesInView());
+			if(gps->getNumSatellitesInView())
+				control->requestSleep = gps->isValidPosFix();
+			else
+				control->requestSleep = true;
 		}
 	}
 }
@@ -695,24 +816,72 @@ void antSensorHandler(AlarmID id)
 		ant->initializeNetwork();
 		// put device to sleep
 		ant->setSleepState(true);
-		
-		// create the wakeup alarm
-		wakeupAlarmID = alarmManager->createAlarm(params->period,
-												  false, &antSensorHandler);
-		// create the read alarm
-		readAlarmID = alarmManager->createAlarm(params->period,
-												  false, &antSensorHandler);
-		
-		// offset the read alarm - it needs to be triggered after the wakeup
-		alarmManager->setAlarmTimeout(readAlarmID, params->period + 
-									  params->readOffset);
-		
-		// initialize the control block structure
-		control->requestWakeup = true;
-		control->requestSleep = false;
-		control->requestSamples = 0;
+		// set the sensor object
 		control->sensor = ant;
 	} 
+	
+	if(params->requestChange)
+	{
+		// want to change sensor parameters
+		params->requestChange = false;
+		printf("changing sensor parameters for sensor %d... \n", i);
+		
+		// TODO retrieve new params from ConfigMessage
+		
+		// enable / disable the device
+		if(params->enabled)
+		{
+			// turn on / enable the device
+			printf("enabling sensor %d... \n", i);
+			// create the wakeup alarm
+			wakeupAlarmID = alarmManager->createAlarm(params->period,
+											  false, &antSensorHandler);
+			// create the read alarm
+			readAlarmID = alarmManager->createAlarm(params->period,
+											  false, &antSensorHandler);
+
+			// offset the read alarm - it needs to be triggered after the wakeup
+			alarmManager->setAlarmTimeout(readAlarmID, params->period + 
+								  params->readOffset + params->baseOffset);
+			
+			// offset wake alarms by base offset as well
+			alarmManager->setAlarmTimeout(wakeupAlarmID, params->period + 
+								  params->baseOffset);
+			
+			// turn on device power
+			ANTHRMSensor::setPower(true);
+			ant->setParseOnReceive(true);
+
+			// initialize the control block structure
+			control->requestWakeup = false;
+			control->requestSleep = false;
+			control->requestSamples = 0;
+		} 
+		else
+		{
+			// turn off / disable the device
+			printf("disabling sensor %d... \n", i);
+			// stop the alarms
+			if(wakeupAlarmID != ALARM_INVALID_ID)
+			{
+				alarmManager->stopAlarm(wakeupAlarmID);
+				wakeupAlarmID = ALARM_INVALID_ID;
+			}
+			if(readAlarmID != ALARM_INVALID_ID)
+			{
+				alarmManager->stopAlarm(readAlarmID);
+				readAlarmID = ALARM_INVALID_ID;
+			}
+			// put the device to sleep or turn off power if supported
+			ANTHRMSensor::setPower(false);
+			ant->setParseOnReceive(false);
+			
+			// initialize the control block structure
+			control->requestWakeup = false;
+			control->requestSleep = false;
+			control->requestSamples = 0;
+		}
+	}
 	else
 	{
 		// sensor has already been created - take action depending on
@@ -720,6 +889,7 @@ void antSensorHandler(AlarmID id)
 		if(id == wakeupAlarmID)
 		{
 			control->requestWakeup = true;
+			ant->setParseOnReceive(true);
 		}
 		else if(id == readAlarmID)
 		{

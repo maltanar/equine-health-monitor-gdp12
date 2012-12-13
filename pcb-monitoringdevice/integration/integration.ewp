@@ -1910,6 +1910,9 @@
       <name>$PROJ_DIR$\..\..\efm32-common\leuartport.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\efm32-common\mcusetup.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\efm32-common\spiport.cpp</name>
     </file>
     <file>

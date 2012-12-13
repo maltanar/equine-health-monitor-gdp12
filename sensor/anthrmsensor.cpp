@@ -33,9 +33,15 @@ void ANTHRMSensor::setPower(bool vccOn)
 #endif
 }
 
+void ANTHRMSensor::setParseOnReceive(bool enabled)
+{
+	m_parseOnReceive = enabled;
+}
+
 ANTHRMSensor::ANTHRMSensor() :
   Sensor(typeHeartRate, sizeof(HeartRateMessage), ANTHRM_DEFAULT_RATE)
 {	
+	m_parseOnReceive = false;
 	m_isInitialized = false;
 	
 	// initialize message structures
@@ -108,17 +114,17 @@ char ANTHRMSensor::setSleepState(bool sleepState)
 {
 	module_debug_ant("sleep %d", sleepState);
     // TODO implement
-	/*if(sleepState)
+	if(sleepState)
 	{
-		//ANT_CloseChannel(m_ucAntChannel);
+		ANT_CloseChannel(m_ucAntChannel);
 		GPIO_PinOutSet(GPIO_ANT_SLEEP);
 	}
 	else
 	{
 		GPIO_PinOutClear(GPIO_ANT_SLEEP);
-		//AlarmManager::getInstance()->lowPowerDelay(5, sleepModeEM1);
-		//ANT_OpenChannel(m_ucAntChannel);
-	}*/
+		AlarmManager::getInstance()->lowPowerDelay(10, sleepModeEM1);
+		ANT_OpenChannel(m_ucAntChannel);
+	}
     return 0;
 }
 
@@ -254,6 +260,8 @@ void ANTHRMSensor::processUARTRxChar(uint8_t c)
 		{
 			putRxBuffer();                   // put buffer back in queue
 			module_debug_ant("checksum %x OK!", c);
+			if(m_parseOnReceive)
+				sampleSensorData();
 		} 
 		else
 			module_debug_ant("checksum %x not OK! expected %x", c, m_ucCheckSum);
@@ -315,6 +323,8 @@ bool ANTHRMSensor::waitForResponse(uint8_t channel, uint8_t responseID,
 {
 	uint8_t rcv_channel, rcv_msgcode;
 	uint8_t * rcv_msg;
+	
+	m_parseOnReceive = false;
 	
 	// TODO "loop of death" until expected msg arives is a bad idea - should have
 	// an explicitly settable timeout mode

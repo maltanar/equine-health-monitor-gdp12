@@ -106,6 +106,7 @@ public:
 	void setPairedDeviceID(uint16_t id);
 	void closeChannel();
 	void openChannel();
+	void setParseOnReceive(bool enabled);
   
 private:
 	// ------ start of singleton pattern specific section ------
@@ -123,6 +124,7 @@ private:
 	HeartRateMessage m_hrmMessage;
 	bool m_isConnected;
 	bool m_isInitialized;
+	bool m_parseOnReceive;
 	
 	// rx-tx queues and buffers
 	ANTSerialBuffer m_stRxBuffer[ANT_SERIAL_QUEUE_RX_SIZE];

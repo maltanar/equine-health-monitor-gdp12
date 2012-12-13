@@ -43,6 +43,15 @@ int main(void)
 		alm->lowPowerDelay(900, sleepModeEM2);
 	}
 	
+	testCount = 2;
+	
+	while(testCount--)
+	{
+		printf("Speed test - 512 KB: \n");
+		FATFS_speedTest(512);
+		alm->lowPowerDelay(900, sleepModeEM2);
+	}
+	
 	
 	printf("deinitializing filesystem... \n");
 	FATFS_deinitializeFilesystem();

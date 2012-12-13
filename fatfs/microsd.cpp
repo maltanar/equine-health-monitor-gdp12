@@ -133,11 +133,10 @@ void MICROSD_deinit(void)
  *     Byte received
  *****************************************************************************/
 uint8_t xfer_spi(uint8_t data)
-{
+{  
+  while (!(spi->STATUS & USART_STATUS_TXBL)) ;
   spi->TXDATA = data;
-  while (!(spi->STATUS & USART_STATUS_TXC))
-  {
-  }
+  while(!(spi->STATUS & USART_STATUS_RXDATAV)) ;
   return (uint8_t)(spi->RXDATA);
 }
 

@@ -33,7 +33,7 @@ void MessageStorage::initialize(char * storageRoot, bool deleteOldQueue)
 		return;
 	}
 	
-	strcpy(storageRoot, m_storageRoot);
+	strcpy(m_storageRoot, storageRoot);
 	
 	// mount the actual storage device we use for storing data
 	module_debug_strg("mounting storage...");
@@ -42,10 +42,19 @@ void MessageStorage::initialize(char * storageRoot, bool deleteOldQueue)
 	else
 		module_debug_strg("storage not available!");
 	
+	uint8_t cnt = 15;
+	
+	module_debug_strg("starting speed tests...");
+	while(cnt--)
+		FATFS_speedTest(8);
+	
+	module_debug_strg("end of speed tests...");
+	
 	module_debug_strg("changing to storage root: %s", m_storageRoot);
 	// change to storage root
 	changeDirectory(m_storageRoot);
 	
+	module_debug_strg("creating storage subdirs...");
 	// create subdirectories
 	createDirectory(SUBDIR_QUEUE);
 	createDirectory(SUBDIR_AUDIO);
@@ -519,7 +528,7 @@ void MessageStorage::writeRTCStorage(unsigned int rtcValue)
 		return;
 	
 	openFile("rtc", true, false);
-	seekToPos(0);
+	//seekToPos(0);
 	writeToFile((char *) &rtcValue, sizeof(unsigned int));
 	closeFile();
 }
@@ -612,6 +621,7 @@ void MessageStorage::closeFile()
 	}
 	
 	m_fr = f_close(&m_file);
+	f_sync(&m_file);
 	m_fileOpen = false;
 }
 
@@ -624,6 +634,7 @@ void MessageStorage::writeToFile(char * buffer, unsigned int count)
 	}
 	
 	UINT bw;
+	f_sync(&m_file);
 	m_fr = f_write(&m_file, (void *) buffer, count, &bw);
 	if(m_fr != FR_OK || bw != count)
 		module_debug_strg("error while writing: %x wrote %d of %d", m_fr, bw, count);

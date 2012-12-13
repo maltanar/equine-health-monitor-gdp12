@@ -21,7 +21,7 @@ void initializeMCU(bool setupSWODebug, bool SWOWhileSleep)
 	
 	// select the external crystal oscillators and deselect old ones
 	CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
-	CMU_OscillatorEnable(cmuOsc_HFRCO, false, false);
+	//CMU_OscillatorEnable(cmuOsc_HFRCO, false, false);
 	CMU_ClockSelectSet(cmuClock_LFA, cmuSelect_LFXO);
 	CMU_ClockSelectSet(cmuClock_LFB, cmuSelect_LFXO);
 
