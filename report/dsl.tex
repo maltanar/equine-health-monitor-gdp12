@@ -25,6 +25,11 @@
 \textbf{\#TODO: #1}
 }}}
 
+\newenvironment{acknowledgements}{%
+  \renewcommand*{\abstractname}{Acknowledgments} \abstract}{%
+  \endabstract
+}
+
 % custom design of the abstract section
 \newenvironment{ecsabstract}
 {
