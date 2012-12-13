@@ -92,7 +92,7 @@ While it is intuitive to model the functionality that reads data from each senso
 
 The problem with this approach is the fact that the alarm handler callback functions are executed inside the interrupt context. If the alarm handler takes a long time to execute (for example, read a large amount of data from the sensor) this will result in staying in the interrupt context for a long time. Even though the EFM32 supports nested interrupts, it is considered to be bad practice to have big interrupt service routines since it can introduce instabilities into the system. Our solution to the problem was to adopt the deferred procedure call (DPC) approach for periodic readings. Illustrated in figure \ref{fig:deferred_reading} a DCP shifts the execution of time consuming data acquisition functions to the main context instead of doing them inside the interrupt context..
 
-\begin{figure}
+\begin{figure}[htb]
 \centering
 \includegraphics[width=\textwidth]{Images/deferred_reading}
 \caption{Deferred reading}
@@ -110,8 +110,9 @@ In order not to lose any acquired samples when the wireless connection to the ba
 
 It is possible to model the message storage requirements of the monitoring device on two levels: in main memory and in SD card. Sensor readings are placed in the main memory when retrieved and stay there until they either get sent to the base station or become saved to the SD card. When the base station connection becomes available, the messages stored in the SD card are read out and sent first.Therefore, if we view the sampled data as a queue of messages, the way the rest of the system interacts with this queue is actually irrelevant whether the data is stored in memory or on disk. 
 
-\begin{figure}
-\includegraphics[width=0.5\textwidth]{Images/dummy}
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.7\textwidth]{Images/message_storage}
 \caption{Class Diagram: MessageStorage}
 \label{fig:class_message_storage}
 \end{figure}
@@ -120,8 +121,9 @@ Our \textit{MessageStorage} class takes advantage of this and offers a simple en
 
 Messages that will be stored on disk or in memory are serialized in the same manner as they are serialized when they are prepared for transmission over the wireless connection. Details of the message structure and the serialization process can be found in section \ref{sec:message_serialization}.
 
-\begin{figure}
-\includegraphics[width=0.5\textwidth]{Images/dummy}
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.95\textwidth]{Images/message_storage_lifecycle}
 \caption{ messages inside MessageStorage}
 \label{fig:class_message_storage_dynamic}
 \end{figure}
@@ -144,8 +146,9 @@ SW usage: setup, triggers, irq when done
 why? decreases load on CPU and allows more sleep, guarantees better timings for time-critical/BW-critical operations - TODO Jose
 
 \paragraph{Double-buffered DMA (Ping pong)}
-\begin{figure}
-\includegraphics[width=0.5\textwidth]{Images/dummy}
+\begin{figure}[htb]
+\centering
+\includegraphics[width=\textwidth]{Images/ping_pong}
 \caption{Ping Pong diagram}
 \label{fig:ping_pong}
 \end{figure}
@@ -254,7 +257,6 @@ A file based sql database (sqlite3) is used to share the collected data and info
 
 \subsubsection*{Message queues}
 POSIX message queues are used to implement reactive communication between the processes, e.g. if the user requested a change of configuration in the web interface. The R\&S module will check the message queue periodically and react to them as promptly as possible. In case of messages that affect the base station the commands are executed almost immediately, in case of messages that concern monitoring devices, the messages are queued until the device connects to the base station, and the message can be dispatched.
-\TODO{more details about mqueues?}
 
 \subsection{Receive and store module}
 The receive and store module sets up and controls the  ZigBee network and provides measurement data storage facilities in a sqlite3 database. It implements a simple state machine, waiting for incoming messages over the ZigBee network or the IPC message queue.

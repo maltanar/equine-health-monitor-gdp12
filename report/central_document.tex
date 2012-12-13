@@ -9,10 +9,10 @@
 				,abstract=true		% center headline of abstract section								
 				,chapterprefix=on
 				,pointlessnumbers
-				,idxtotoc
 				]{scrreprt}			% Document class: Koma Report
 \usepackage{scrhack}	%Fixes problems when using Koma in combination with Hyperref, Listing und Float
-%\setkomafont{chapterprefix}{}
+\setkomafont{chapterprefix}{\LARGE}
+\setkomafont{chapter}{\Huge}
 \usepackage[nouppercase,headsepline,plainfootsepline]{scrpage2}
 % load your personal praemble
 \input{praemble}

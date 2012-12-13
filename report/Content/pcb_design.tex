@@ -6,13 +6,6 @@ The schematic and layout were designed using CadSoft Eagle software version 6.1.
 
 \section{Schematic}
 This section will describe the connections between different components of the system, their intended use and operational principles. Full schematic of the system can be seen in section \ref{sec:pcb_schematics} of the Appendix. It is separated into different sheets for ease of reading.
- 
-\begin{figure}
-\centering
-\includegraphics[width=0.8\textwidth]{Images/dummy}
-\caption{Block Diagram: Parts}
-\label{fig:block_parts}
-\end{figure}
 
 \subsection{Power conditioning}
 This part is responsible for providing energy to the rest of the board. The circuitry consists of two stages, see \TODO{}Appendix\_Powerchapter\_LDO.pdf First stage incorporates a constant current constant voltage single cell Lithium Ion battery charger centered around a ADP2291 chip from Analog Devices. The second stage is a low dropout voltage (LDO) regulator based on a ADP1706 chip from the same manufacturer.
@@ -31,7 +24,7 @@ The charger works in step-by-step sequence illustrated by diagram \ref{fig:charg
 
 \begin{figure}
 \centering
-\includegraphics[width=0.8\textwidth]{Images/dummy}
+\includegraphics[width=0.7\textwidth]{Images/battery_charging}
 \caption{Battery charging sequence}
 \label{fig:charger_sequence}
 \end{figure}
@@ -132,7 +125,7 @@ Difference in thermal time constants can generate temperature mismatches between
 
 \begin{figure}
 \centering
-\includegraphics[width=0.5\textwidth]{Images/dummy}
+\includegraphics[width=0.4\textwidth]{Images/constant_matching}
 \caption{Constant matching}
 \label{fig:constant_matching}
 \end{figure}
@@ -141,7 +134,7 @@ The second factor addresses the thermal isolation problem. The sensor has to be 
 
 \begin{figure}
 \centering
-\includegraphics[width=0.7\textwidth]{Images/dummy}
+\includegraphics[width=0.7\textwidth]{Images/temp_barrier}
 \caption{Thermal barrier}
 \label{fig:thermal_barrier}
 \end{figure}
@@ -154,7 +147,7 @@ Several modules have integrated antennas in them, these are ANT, Xbee and GPS. N
 
 \begin{figure}
 \centering
-\includegraphics[width=0.5\textwidth]{Images/dummy}
+\includegraphics[width=0.5\textwidth]{Images/voltage_noise.jpg}
 \caption{Measured voltage noise}
 \label{fig:voltage_noise}
 \end{figure}
@@ -192,22 +185,21 @@ It did increase the risk of damaging both of the components. Nevertheless, after
 
 
 \section{Case design}
-Several options for the case have been considered, including the usage of rapid prototyping facilities to make a custom case to fit the PCB. Due to high cost of the material used in production and limitations set on our budget it was decided to exclude this option. Case for the PCB was ordered through Maplin online store and rapid prototyping facilities were used to make a custom part that would attach the MEMS microphone board to the head of a stethoscope instead. Case is made of plastic, which is not the best solution, considering the horse might damage it while rolling around. The optimal solution would be to use a metal case, this would prevent it from being damaged in the harsh exploitation environment. Nevertheless, this is not an option, as metal would act as a shield for RF signals either completely blocking them or diminishing to an unacceptable level. 
-
-\begin{figure}
+\begin{figure}[htb]
 \centering
-\includegraphics[width=0.4\textwidth]{Images/dummy}
+\includegraphics[width=0.5\textwidth]{Images/case_inside.jpg}
 \caption{Exposed System in a case}
 \label{fig:case_monitor}
 \end{figure}
+Several options for the case have been considered, including the usage of rapid prototyping facilities to make a custom case to fit the PCB. Due to high cost of the material used in production and limitations set on our budget it was decided to exclude this option. Case for the PCB was ordered through Maplin online store and rapid prototyping facilities were used to make a custom part that would attach the MEMS microphone board to the head of a stethoscope instead. Case is made of plastic, which is not the best solution, considering the horse might damage it while rolling around. The optimal solution would be to use a metal case, this would prevent it from being damaged in the harsh exploitation environment. Nevertheless, this is not an option, as metal would act as a shield for RF signals either completely blocking them or diminishing to an unacceptable level. 
 
 The head of the stethoscope was then integrated into the case and isolated to ensure a decent level of splash proofness, as depicted in figure \ref{fig:case_monitor}.
 
 The Complete encapsulated system is shown in figure \ref{fig:complete_monitor}. The stethoscope head protrudes slightly from the case enabling a better contact with the horse under test. The case is certified to be splash proof according to IP54. This way the PCB might be protected even in rainy weather. 
 
-\begin{figure}
+\begin{figure}[htb]
 \centering
-\includegraphics[width=0.4\textwidth]{Images/dummy}
+\includegraphics[width=0.4\textwidth]{Images/case_closed.jpg}
 \caption{Completed encapsulated system}
 \label{fig:complete_monitor}
 \end{figure}
