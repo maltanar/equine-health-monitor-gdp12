@@ -2,15 +2,15 @@
 
 \section{PCB layout}
 \begin{figure}[htb]
-%\includegraphics[width=\columnwidth]{Images/dummy}
-\includegraphics[width=\columnwidth]{Images/pcb_layout_top}
+\includegraphics[width=\columnwidth]{Images/dummy}
+%\includegraphics[width=\columnwidth]{Images/pcb_layout_top}
 \caption{PCB layout top}
 \label{fig:pcb_layout_top}
 \end{figure}
 
 \begin{figure}[htb]
-%\includegraphics[width=\columnwidth]{Images/dummy}
-\includegraphics[width=\columnwidth]{Images/pcb_layout_bottom}
+\includegraphics[width=\columnwidth]{Images/dummy}
+%\includegraphics[width=\columnwidth]{Images/pcb_layout_bottom}
 \caption{PCB layout bottom}
 \label{fig:pcb_layout_bottom}
 \end{figure}
@@ -98,7 +98,7 @@ Please refer to table \ref{tab:part_list_1} and \ref{tab:part_list_2} for the pa
 \begin{sidewaystable}
 \scriptsize
 \begin{tabular}{|l|l|l|m{2.3cm}|l|l|l|}\hline%
-\bfseries Part & \bfseries Value & \bfseries Device & \bfseries Description & \bfseries Package & \bfseries Manufacturer & \bfseries Man. part nr. \\\hline
+\bfseries Part & \bfseries Value & \bfseries Device & \bfseries Description & \bfseries Package & \bfseries Manufacturer & \bfseries Man. part Nr. \\\hline
 \csvreader[head to column names,
 late after line=\\
 ]{Data/partlist_part2.csv}{}%
@@ -108,7 +108,40 @@ late after line=\\
 \caption{Part list part 2}
 \label{tab:part_list_2}
 \end{sidewaystable}
-
-
-
 \clearpage
+
+\section{Fieldtrip}
+\subsection{Gut Sound Recordings}
+\label{sec:gut_sound_recordings}
+Please refer to table \ref{tab:gut_sound_recordings}
+\begin{table}
+\centering
+\small
+\begin{tabular}{|c|l|p{2cm}|l|}\hline%
+\bfseries \# & \bfseries Description & \bfseries Part of the abdomen & \bfseries Link \\\hline
+\csvreader[head to column names,
+late after line=\\
+]{Data/gut_sound_recordings.csv}{}%
+{\Horse & \Type & \Part & \Link}%
+\hline
+\end{tabular}
+\caption{Gut sound recordings}
+\label{tab:gut_sound_recordings}
+\end{table}
+
+
+\subsection{Pictures}
+Please refer to figure \ref{fig:field_trip_a} and \ref{fig:field_trip_b}.
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.7\columnwidth]{Images/field_trip_a.jpg}
+\caption{Photo: Field trip (a)}
+\label{fig:field_trip_a}
+\end{figure}
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.7\columnwidth]{Images/field_trip_b.jpg}
+\caption{Photo: Field trip (b)}
+\label{fig:field_trip_b}
+\end{figure}
+
