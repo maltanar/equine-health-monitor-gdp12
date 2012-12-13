@@ -1,5 +1,5 @@
-\chapter{Testing}
-In order to verify the correct behavior of our system, independent unit tests of each each subsystem were performed, before integrating them into the rest of the system. The verification of the test results was done manually and not by using a set of autonomous testbenches, as the test-driven methodology is still new and uncommon in the field of embedded systems.
+\chapter{Testing and Results}
+In order to verify the correct behavior of our system, independent unit tests of each each subsystem were performed, before integrating them into the rest of the system. The verification of the test results was done manually and not by using a set of autonomous testbenches, as the test-driven methodology is still new and uncommon in the field of embedded systems. This chapter will describe how the system was tested and the results obtained from testing.
 
 \section{Unit testing}
 Individual unit tests were carried out to perform a functional verification of each hardware subsystem before the different parts were put together. These unit tests were implemented in the prototyping boards and were designed to exercise the basic functionality of each sensor. The collected data was logged through the debug interfaces of the boards.
@@ -81,7 +81,7 @@ The final stage of integration on the PCB went without problems, or required cha
 \section{Field Testing}
 Throughout the development process, the team did not have access to a horse and there is almost no sample gut sound recordings available online. After the integration and PCB production phases were complete, the system was tested on human subjects since the subsystems of the monitoring device are usable on humans as well. The only horse-specific part of the system was the gut sound monitor - although it is also usable on humans, the design was not made with humans or species other than horses in mind. 
 
-In the laboratory environment, the team could only test the gut sound monitor on human subjects to record heart beats since human gut sounds are not as periodic and loud as those of a horse. Human heart beat recordings were made without problems, and four beats of an approximately 65 BPM heartbeat with the S\_1 and S\_2 (respectively the "lub" and "dub" sounds) can be clearly seen in figure \ref{fig:heartbeat}
+In the laboratory environment, the team could only test the gut sound monitor on human subjects to record heart beats since human gut sounds are not as periodic and loud as those of a horse. Human heart beat recordings were made without problems, and four beats of an approximately 65 BPM heartbeat with the S1 and S1 sounds (respectively the "lub" and "dub" sounds) can be clearly seen in figure \ref{fig:heartbeat}
 
 \begin{figure}
 \centering
