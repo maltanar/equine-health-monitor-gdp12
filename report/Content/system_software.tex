@@ -29,7 +29,7 @@ The choice of object-oriented paradigm (OOP) and C++ may be considered unusual f
 \caption{Sampling comparison}
 \label{fig:sampling_comparison}
 \end{figure}
-We now discuss our definition of low energy periodic sampling for the monitoring device, and the relevant OOP basis we constructed towards its implementation. The basic idea behind low energy periodic sampling is that a receiving a continuous stream of data from all the sensors all the time is not necessary for monitoring purposes is unnecessary. Depending on the sensor type, receiving a sample with a period of tens of seconds, perhaps minutes can be sufficient for analysis. In this case, since the sensor and the microcontroller are not required to be active all the time, significant energy savings can be achieved by putting them into sleep mode until the start of the next period. This scheme can be further extended by introducing an additional period of sleep for the microcontroller after it awakens the sensor and waits for data. An illustration of how this compares with the continuous polling approach can be found in figure \ref{fig:sampling_comparison}, with a more detailed explanation of the power management phases in table \ref{tab:power_phases}. It can be seen that the low energy periodic sampling offers much less current consumption compared to polling.
+We now discuss our definition of low energy periodic sampling for the monitoring device, and the relevant OOP basis we constructed towards its implementation. The basic idea behind low energy periodic sampling is that a receiving a continuous stream of data from all the sensors all the time is not necessary for monitoring purposes. Depending on the sensor type, receiving a sample with a period of tens of seconds, perhaps minutes can be sufficient for analysis. In this case, since the sensor and the microcontroller are not required to be active all the time, significant energy savings can be achieved by putting them into sleep mode until the start of the next period. This scheme can be further extended by introducing an additional period of sleep for the microcontroller after it awakens the sensor and waits for data. An illustration of how this compares with the continuous polling approach can be found in figure \ref{fig:sampling_comparison}, with a more detailed explanation of the power management phases in table \ref{tab:power_phases}. It can be seen that the low energy periodic sampling offers much less current consumption compared to polling.
 
 \begin{table}
 \centering
@@ -132,20 +132,22 @@ Messages that will be stored on disk or in memory are serialized in the same man
 
 Figure \ref{fig:class_message_storage_dynamic} illustrates the lifetime of a message inside the MessageStorage class. The data is passed to MessageStore in the form of a MessagePacket pointer, which is first serialized into an internal dynamically allocated buffer and enqueued at the end of the message queue. If requested, this queue entry is flushed to disk and the allocated memory is freed. When the time comes to dequeue this entry for sending, the entry is first read back into memory if it was flushed to disk. The data in memory is then made available for sending via the ZigBee interface or otherwise processing the message data. Once the processing is complete, all resources held by the entry (files on disk or memory) can be freed or deleted.
 
+Audio samples are treated differently since they are too large to keep in memory - they are simply written to SD card as audio samples arrive. These entries are not tracked in a queue since audio samples are not currently being dequeued and sent to the base station. A sequence counter is kept and a new file is created for each new audio recording to avoid overwrites.
+
 If the system is rebooted, the class traverses the SD card storage directories to fill the queue with the unsent messages, and these become the first to be dequeued and sent to the base station.
 
 
 \subsubsection{Automated Data Acquisition: DMA and Double Buffering}
-Among the different on-chip peripherals included in the EFM32GG microcontroller is a DMA controller which allows for memory transfers without CPU intervention. 
+\label{sec:dma}
+Among the different on-chip peripherals included in the EFM32GG microcontroller is a highly configurable channel DMA controller. This device is able to take control of the system bus and perform data block transfers between different memory locations and between RAM and peripherals without the intervention of the CPU.
 
-\paragraph{Direct Memory Acess (DMA):}
-\TODO{} DMA allows blocks of data to be moved between RAM and peripherals, thus freeing CPU resources and allowing longer periods of sleep, as well as offering stable high bandwidth memory transfers for operations like audio acquisition.
-HW support: DMA engine
-SW usage: setup, triggers, irq when done
+The software must initialize a DMA channel with the DMA transfer attributes, the source and destination memory address, the number of bytes to be moved. The trigger to start the transfer can be provided by the software but in many cases it will be a peripheral like the USART which will generate a request.
+ 
 
 \paragraph{Advantages:}
-\TODO{} Direct Memory Access is a very valuable feature that allows for a better utilization of the system data bus and lower energy consumption.
-why? decreases load on CPU and allows more sleep, guarantees better timings for time-critical/BW-critical operations - TODO Jose
+Direct Memory Access allows for a better utilization of the system data bus and lower energy consumption. After being configured the DMA works without intervention from the CPU. This has the benefit of reducing the energy consumption and the workload of the CPU, and enables the system to stay in low energy modes when moving for instance data from the USART to the RAM, thus freeing CPU resources and allowing longer periods of sleep.
+
+DMA transmissions also provide stable high bandwidth memory transfers for operations like audio acquisition, which was particularly suited for our project.
 
 \paragraph{Double-buffered DMA (Ping pong)}
 \begin{figure}[htb]
@@ -154,7 +156,14 @@ why? decreases load on CPU and allows more sleep, guarantees better timings for 
 \caption{Ping Pong diagram}
 \label{fig:ping_pong}
 \end{figure}
-\TODO{} PIng pong; insert \ref{fig:ping_pong} and explain it.
+In some cases it is necessary to provide continuous data flow from or to a peripheral.  This is the case of audio acquisition in which samples arrive periodically during all the time while a recording is executed. The system must fetch all the samples before the sample buffer is overwritten by the peripheral.
+
+A single normal DMA transfer is not sufficient to cope with those requirements since the number of transactions is limited to a maximum of 1024 and there is not enough time to reconfigure the channel before the next sample has to be read out. A double-buffered strategy is used instead.
+A representation of the double-buffered DMA scheme, also called "ping-pong transfers", is given in figure \ref{fig:ping_pong}. Two separate buffers A and B are reserved in the RAM memory and one DMA channel is programmed in ping pong mode to use those channels alternatively. The primary descriptor of the channel will have the necessary configuration to perform transfers from the RX\_DATA register to the buffer A while the alternate descriptor will configure the it to use the buffer B as destination.
+
+For the case of our system, the EFM32 USART peripheral receives one audio sample coming from the microphone through I2S protocol, saves it in its RX\_DATA register and then signals that to the DMA engine. The DMA engine will in turn move that sample to currently configured RAM buffer (initially buffer A). That transaction repeats for a number of cycles that corresponds to the size of the buffer. When the buffer is full the engine will switch automatically to the alternate descriptor so that it is immediately ready for the fetch the new sample. At the moment it will also trigger an interrupt request to inform the system that a new buffer full of samples is ready to be read. The message storage implementation will then move the new buffer to the final location (in the microSD card) and concatenate all buffers into a single audio file.
+
+In order for this system to work correctly it must guaranteed that the time that the processor takes to read and process the data from the buffer is less than the time in which the DMA will fill a buffer. Using a quality microSD card, the write throughput to storage is about ten times what is required for the audio samples, so 
 
 
 \section{Wireless Communications}
