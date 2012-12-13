@@ -5,7 +5,7 @@ In this chapter building blocks of the proposed system, each of which were separ
 \section{Monitoring Device}
 The monitoring device is designed to be a simple device that acquires data from the sensors, stores the data and sends it to the base station when the ZigBee link is available. It contains a microcontroller, a set of sensors for data acquisition, a memory card to store data and a ZigBee module for wireless communications.
 
-\begin{figure}
+\begin{figure}[htb]
 \includegraphics[width=\textwidth]{Images/MonitoringDeviceBlockDiagram}
 \caption{Block Diagram: Monitoring Device}
 \label{fig:monitoring_device_block}
@@ -17,20 +17,22 @@ The following sub-chapters will discuss the implementation of each subcomponent 
 \subsection{The Microcontroller (MCU)}
 As the monitoring device is required to be a battery-operated system that contain a number of diverse peripherals, choosing the right central processing unit was essential. Reviewing existing microcontrollers in the market we opted for an EFM32 Giant Gecko microcontroller from Energy Micro, which contains a 32-bit ARM Cortex M3 core and a set of on-chip peripheral interfaces. The EFM32 was considered to be a good match for the requirements, as shown in the table \ref{tab:microcontroller_properties}.
 
-\begin{table}
+\begin{table}[htb]
 \begin{tabular}{|m{0.45\textwidth}|m{0.45\textwidth}|}
 \hline 
 	\textbf{Device Properties} & 
 	\textbf{Corresponding Requirements} \\ 
 \hline
+	\phantom{.}
 	\begin{itemize}
 	\item up to 48 MHz high-frequency operation
 	\end{itemize}&
+	\phantom{.}
 	\begin{itemize}
 	\item handle large data volumes from multiple sensors and audio
-	\end{itemize} \\
-	
+	\end{itemize} \\	
 \hline
+	\phantom{.}
 	\begin{itemize}
 	\item different levels of sleep
 	\item fast wake up time (2 $\mu S$)
@@ -44,26 +46,32 @@ As the monitoring device is required to be a battery-operated system that contai
 	\item low energy periodic sampling
 	\end{itemize} \\
 \hline
+	\phantom{.}
 	\begin{itemize}
 	\item 128 KB SRAM, 1MB flash memory
 	\end{itemize} &
+	\phantom{.}
 	\begin{itemize}
 	\item ease of development
 	\item suitable for overheads introduces by C++
 	\end{itemize} \\
 \hline
+	\phantom{.}
 	\begin{itemize}
 	\item 3 x USART with I2S support
 	\item 2 x low energy UART (LEUART)
 	\item 2 x I2C interfaces
 	\end{itemize} &
+	\phantom{.}
 	\begin{itemize}
 	\item various interfaces for peripherals and sensors
 	\end{itemize} \\
 \hline
+	\phantom{.}
 	\begin{itemize}
 	\item 64-pin TQFP package
 	\end{itemize} &
+	\phantom{.}
 	\begin{itemize}
 	\item ease of soldering (lack of BGA mounting equipment)
 	\end{itemize} \\
@@ -77,7 +85,7 @@ Some of the more specialized properties of the microcontroller which give it adv
 
 \subsubsection*{Energy Modes and Low Energy Peripherals} The EFM32 microcontrollers offer four levels of sleep, and some special peripherals (called low energy or LE peripherals) that are able to keep functioning even in deep sleep modes. Of particular interest to us are the LEUART interface which while deeper sleep modes provide more energy savings, it also becomes more difficult to implement a reasonable level of active functionality. An overview of sleep modes and available peripherals in each is presented in table \ref{tab:microcontroller_modes}.
 
-\begin{table}
+\begin{table}[htb]
 \centering
 \begin{tabular}{|l|l|m{6cm}|}
 \hline
@@ -110,9 +118,6 @@ Some of the more specialized properties of the microcontroller which give it adv
 \label{tab:microcontroller_modes}
 \end{table}
 
-\subsubsection*{Peripheral Reflex System (PRS)}
-Using a signal producers - signal consumers concept, it is possible to make peripherals in the EFM32 microcontroller directly communicate with each other without involving the CPU. Thus, an action can be automatically triggered in peripheral A when an event occurs in peripheral B. This can be used to achieve more stable time-critical operations and less software overhead, as well as saving energy since the CPU does not have to intervene.
-
 \subsubsection*{Direct Memory Access (DMA)} DMA allows blocks of data to be moved between RAM and peripherals without CPU intervention, thus freeing CPU resources and allowing longer periods of sleep, as well as offering stable high bandwidth memory transfers for operations like audio acquisition.
 
 Further details of how the PRS, DMA and different sleep modes are used in the system is provided in chapter \ref{chap:system_software}
@@ -121,16 +126,25 @@ Further details of how the PRS, DMA and different sleep modes are used in the sy
 \subsection{Heart Rate Monitor (HRM)}
 The heart rate is an important vital sign for any health monitor, although designing a portable device to acquire heart rate is not a trivial task. The issues of electrode placement, filtering out changes due to subject movement and processing the resulting ECG signal are challenging and time consuming. Another challenge specific to our project is acquiring both gut sounds and the heart rate; it is not possible to reliably acquire both signals from the same physical location so a wired microphone or electrode would have to be attached to the horse. 
 
-To address both these problems, we chose an ANT wireless module that can be used with any ANT+ compatible heart rate chest strap, commercially available for both horses and humans. Attaching a separate heart rate monitor chest strap and transmitting heart rate information wirelessly solves the problems mentioned above and brings the additional advantage of making the system usable for humans.
+To address both these problems, we chose an ANT wireless module (ANTAP281M4IB from Nordic Semiconductor / Dynastream) that can be used with any ANT+ compatible heart rate chest strap, commercially available for both horses and humans. Attaching a separate heart rate monitor chest strap and transmitting heart rate information wirelessly solves the problems mentioned above and brings the additional advantage of making the system usable for humans.
 
-\begin{table}
+
+\begin{table}[htb]
 \centering
 \begin{tabular}{|m{0.45\textwidth}|m{0.45\textwidth}|}
 \hline 
 	\textbf{Device Properties} &
 	\textbf{Corresponding Requirements}  \\ 
 \hline
-	low power  &
+	low power  
+	\begin{itemize}
+	\item peak rx current 17mA
+	\item peak tx current 15mA
+	\item idle (no RF activity) current 2$\mu A$
+	\item search current 2.8mA
+	\end{itemize}
+	automatically enter idle mode if no activity detected
+	&
 	low energy periodic sampling  \\ 
 \hline
 	simple UART interface &
@@ -140,24 +154,37 @@ To address both these problems, we chose an ANT wireless module that can be used
 	monitoring multiple horses \\
 \hline 
 \end{tabular} 
-\caption{Heart Rate Monitor properties}
-\label{tab:hrm_properties}
+\caption{ANT HRM interface properties}
+\label{tab:ant_properties}
 \end{table}
 
-\textbf{Interface:} \TODO{rephrase} LEUART with configurable baud rate, not lots of data so high BR does not make sense
+\textbf{Interface:}
+The ANT module handles most RF processing internally and offers a simple UART interface to the microcontroller with configurable baud rate. Since there message volume passed between the ANT and the EFM32 will be relatively small (less than a hundred bytes per message, and a message rate of 1-4 Hz while active) and because the messages can arrive asynchronously while the monitoring device is in sleep mode, a LEUART port with a baud rate of 4800 was used for the ANT module connection.
+
 
 \textbf{Driver:}
-\TODO{talk about ANT driver:} LEUART, configure \& open network with wildcard id, establish connection \& rcv heart rate. search timeout \& disconnection \& pairing.
+The ANT driver, whose implementation is based on the ANT+ HRM receiver example from Dynastream, can be described as consisting of three layers:
+
+\begin{description}
+\item{\bfseries Message reception and format validation layer:} 
+The LEUART port, which is able to receive data even while the EFM32 is sleeping in EM2, sends the characters to the ANT driver which validates the correctness of the received ANT messages according to the ANT message structure\footnote{\url{ http://www.thisisant.com/resources/ant-message-protocol-and-usage/}}.  Validated messages are passed to the ANT protocol layer for handling. Similarly, data received from the ANT protocol layer is packaged according to the ANT message format and put through the LEUART port.
+
+\item{\bfseries ANT Protocol layer:}
+This layer handles details of the ANT protocol such as configuring the RF channels and network key, and is largely based on the Dynastream standard  implementation. One important function is handling disconnections and device pairing. The current behaviour is to pair with the particular HRM chest strap as soon as a connection is made, and attempt to reconnect to the same device if disconnected. ANT+ specific messages are passed to the ANT+ layer and actual message sending/receiving happens through the interfaces to the message layer.
+
+\item{\bfseries ANT+ HRM protocol handling:}
+This layer handles the ANT+ data pages received from the heart rate monitor chest strap, which contain a variety of information about the monitored heart rate. Our current implementation only reads the computed heart rate in beats per minute and makes this data available through the standard Sensor interface. Please consult the ANT+ Heart Rate Monitor device profile document\footnote{\url{http://www.thisisant.com/resources/heart-rate-monitor/}} for more information.
+\end{description}
 
 
 \subsection{Temperature Sensor}
-5.1.3 Temperature Sensor
+
 As with many other warm-blooded animals, body temperature can be a valuable tool for diagnosis in horses. While electronic temperature measurements are usually done by an element that comes into physical contact with the subject, doing temperature measurements in this manner on a moving horse is likely to cause fluctuations in the read values. This is the reason we preferred to use a contactless temperature sensor for our implementation. 
 
-\TODO{Fix this} TMP006 [http://www.ti.com/lit/ds/symlink/tmp006.pdf] which is a contactless infrared temperature sensor from Texas Instruments was chosen for the project. 
+TMP006\footnote{\url{http://www.ti.com/lit/ds/symlink/tmp006.pdf}} which is a contactless infrared temperature sensor from Texas Instruments was chosen for the project. 
 
 
-\begin{table}
+\begin{table}[htb]
 \centering
 \begin{tabular}{|m{0.45\textwidth}|m{0.45\textwidth}|}
 \hline 
@@ -182,13 +209,13 @@ As with many other warm-blooded animals, body temperature can be a valuable tool
 \label{tab:temp_sensor_properties}
 \end{table}
 
-\textbf{Interface:} The TMP006 offers an SMBus-compatible interface, which is interoperable with I2C and was connected to the I2C interface on the microcontroller. Controlling device functionality and accessing measurement data is done via “write to register” and “read from register” commands. 
+\textbf{Interface:} The TMP006 offers an SMBus-compatible interface, which is interoperable with I2C and was connected to the I2C interface on the microcontroller. Controlling device functionality and accessing measurement data is done via "write to register" and "read from register" commands. 
 
-\textbf{Driver:} Our TMP006 driver configures device sleep state and conversion rate by writing values to the appropriate registers (TODO insert reference to TMP006 datasheet). The temperature measurement is provided by reading the two registers which contain the voltage generated by the thermopile and the die temperature. The temperature of the object can be calculated from these two data. However this calculation involves heavy floating point arithmetic and it is rather inefficient on the microcontroller. Therefore, the “raw” temperature reading consisting of these two values is not processed on the monitoring device any further but sent to the base station, whose ARM11 core is much more efficient at handling this calculation. 
+\textbf{Driver:} Our TMP006 driver configures device sleep state and conversion rate by writing values to the appropriate registers. The temperature measurement is provided by reading the two registers which contain the voltage generated by the thermopile and the die temperature. The temperature of the object can be calculated from these two data. However this calculation involves heavy floating point arithmetic and it is rather inefficient on the microcontroller. Therefore, the "raw" temperature reading consisting of these two values is not processed on the monitoring device any further but sent to the base station, whose ARM11 core is much more efficient at handling this calculation. 
 
 
 \subsection{GPS}
-A popular peripheral in many consumer devices today, GPS (Global Positioning System) allows tracking the position of a sensor in terms of global coordinates. While not immediately useful for clinical purposes, the ability to track the location of horses on this level can be beneficial if recording of movements or activity recognition [TODO ref High Classification Rates for Continuous Cow Activity Recognition using Low-cost GPS Positioning Sensors and Standard Machine Learning Techniques.]  is desired over a longer period of time in a larger area (for free-roaming horses or other animals). 
+A popular peripheral in many consumer devices today, GPS (Global Positioning System) allows tracking the position of a sensor in terms of global coordinates. While not immediately useful for clinical purposes, the ability to track the location of horses on this level can be beneficial if recording of movements or activity recognition \TODO{REF:}  [High Classification Rates for Continuous Cow Activity Recognition using Low-cost GPS Positioning Sensors and Standard Machine Learning Techniques.]  is desired over a longer period of time in a larger area (for free-roaming horses or other animals). 
 
 Commercial drop-in GPS modules are available and straightforward to use, but power consumption while searching limits the possibilities for a battery-powered system with energy efficiency focus. We chose a UP500 GPS module from Fastrax \footnote{\url{http://www.fastraxgps.com/products/gpsantennamodules/500series/up500/}}
 for our project. UP500 is a GPS receiver module with embedded antenna offered in a very small package, and offers significant power savings by providing an option to save satellite data to RAM while still being able to wake up from this state and get a position fix within a few seconds (called a “hot start”). 
@@ -205,23 +232,25 @@ For maximum energy efficient operation, the GPS driver configures the GPS module
 \item output: valid position fix, latitude and longitude
 \end{itemize}
 
-\item{Sleep mode:} The UP500 does not have a dedicated sleep pin, but once satellite data has been acquired it is possible to put the device into a sleep-like mode where the power consumption becomes quite low. This is done by turning off the power to the $V_{cc}$ supply pin, while keeping the $V_{bat}$ supply pin active. By keeping ephemeris data in RAM, the GPS is thus able to establish the position quickly when the $V_{cc}$ supply is reinstated. Switching the $V_{cc}$ supply is done via a transistor attached to a GPIO pin, consult section \TODO{} for more details.
+\item{Sleep mode:} The UP500 does not have a dedicated sleep pin, but once satellite data has been acquired it is possible to put the device into a sleep-like mode where the power consumption becomes quite low. This is done by turning off the power to the $V_{cc}$ supply pin, while keeping the $V_{bat}$ supply pin active. By keeping ephemeris data in RAM, the GPS is thus able to establish the position quickly when the $V_{cc}$ supply is reinstated. Switching the $V_{cc}$ supply is done via a transistor attached to a GPIO pin, consult section\ref{sec:pcb_gps} for more details.
 \end{itemize}
 
 
 \subsection{Accelerometer}
-In addition to the location tracking capabilities provided by the GPS, it can be useful to measure smaller movements with higher precision. Accelerometer data collected in this manner can be used to detect lameness and injuries. The particular challenge for using an accelerometer in our system was the high sampling rate necessity - the collected acceleration data will not be useful at low sampling rates\footnote{\TODO{find a good citation for this}}. While high sampling rate itself is not a problem for the EFM32 microcontroller, it conflicts with low energy periodic sampling - if the microcontroller has to poll the device for new data at a high frequency, it will not have a lot of time to sleep. An accelerometer that contains an on-chip buffer can remedy this problem; the MCU can simply enable sampling, go back to sleep, and wake up when the desired number of samples have been acquired to read them from the sensor’s own buffer.
+In addition to the location tracking capabilities provided by the GPS, it can be useful to measure smaller movements with higher precision. Accelerometer data collected in this manner can be used to detect lameness and injuries. The particular challenge for using an accelerometer in our system was the high sampling rate necessity - the collected acceleration data will not be useful at low sampling rates\footnote{\TODO{find a good citation for this}}. 
+
+While high sampling rate itself is not a problem for the EFM32 microcontroller, it conflicts with low energy periodic sampling - if the microcontroller has to poll the device for new data at a high frequency, it will not have a lot of time to sleep. An accelerometer that contains an on-chip buffer can remedy this problem; the MCU can simply enable sampling, go back to sleep, and wake up when the desired number of samples have been acquired to read them from the sensor's own buffer.
 
 We chose the 3-axis  ADXL350 \footnote{\url{http://www.analog.com/en/mems-sensors/mems-accelerometers/adxl350/products/product.html}} digital accelerometer from Analog Devices for the project. It is capable of measuring acceleration in the ranges ±1g, ±2g, ±4g or ±8g and it has a FIFO buffer which allowed us to implement the scheme discussed in the previous paragraph.
 
-\begin{table}
+\begin{table}[htb]
 \centering
 \begin{tabular}{|m{0.45\textwidth}|m{0.45\textwidth}|}
 \hline 
 	\textbf{Device Properties} &
 	\textbf{Corresponding Requirements}  \\ 
 \hline
-	.
+	\phantom{.}
 	\begin{itemize}
 	\item Ultralow power: $45 \mu A$ in measurement mode and $0.1 \mu A$ in standby mode
 	\item FIFO buffer can hold up to 32 samples
@@ -233,36 +262,74 @@ We chose the 3-axis  ADXL350 \footnote{\url{http://www.analog.com/en/mems-sensor
 \label{tab:accelerometer_properties}
 \end{table}
 
-\textbf{Interface:} Similar to the TMP006, the ADXL350 is interfaced through the I2C bus; controlling device functionality and accessing measurement data is done via “write to register” and “read from register” commands. 
+\textbf{Interface:} Similar to the TMP006, the ADXL350 is interfaced through the I2C bus; controlling device functionality and accessing measurement data is done via "write to register" and "read from register" commands. 
 
-\textbf{Driver:} ADXL350 supports both SPI and I2C interfaces. In this project, it is used in I2C mode. The accelerometer offers a 32-level FIFO which has 4 modes of operation configured by control registers: Bypass, FIFO, Stream and Trigger Mode. The driver configures the FIFO in Bypass Mode which disables the FIFO. The 4-phase scheme (\TODO{I don’t know how to refer this}) is applied for power management. 
-
-
+\textbf{Driver:} ADXL350 supports both SPI and I2C interfaces. In this project, it is used in I2C mode. The accelerometer offers a 32-level FIFO which is used in Stream mode, meaning that samples will be continuously accumulated in the FIFO buffer at the desired sampling rate, and old samples will be discarded. Sample rate configuration, sleep and wakeup are all supported through writing to the appropriate registers, which have their own wrapper functions in the driver.
+ 
 \subsection{Gut Sound Monitoring}
 One key feature of the desired Equine Health Monitoring System is the possibility to acquire and record sounds coming from horses guts which can come very useful for diagnosis of multiple health disorders in the digestive tract of the animal under observation.
 
-As it was mentioned in chapter \ref{chap:research} listening the gut is a common task performed by a specialist during a regular physical examination. This is done by placing a stethoscope in several parts of the animal’s trunk. Intermittent noises that will repeat every 15-30 seconds will be detected in a healthy animal. The specialist will monitor this sounds for an interval of 4-5 minutes. The aim of the designed system is to record and store those sounds which will eliminate the need for a physical examination in situ by a specialist.
+As it was mentioned in chapter \ref{chap:research} listening the gut is a common task performed by a specialist during a regular physical examination. This is done by placing a stethoscope in several parts of the animal's trunk. Intermittent noises that will repeat every 15-30 seconds will be detected in a healthy animal. The specialist will monitor this sounds for an interval of 4-5 minutes. The aim of the designed system is to record and store those sounds which will eliminate the need for a physical examination in situ by a specialist.
 
 
 \subsubsection{Audio acquisition requirements}
-During the background research phase the group realized that a comprehensive digital database of recordings of gut noises is regrettably not available on the web. And despite of different attempts the group was not able to obtain an audio sample of good quality. Hence a proper signal profiling and characterization could not be performed. The quality parameters for audio samples were defined to meet the hearing capabilities of the final human user (a veterinary specialist) instead of the characteristics of the signal source.
-The recording of audio samples implies two challenges that are not shared by the other sensors in the system.
-\begin{itemize}
-\item \textbf{Real time constraints:} Audio acquisition is a real time..... need periodic accurate time sampling.. 
-\item \textbf{High data rate:} memory...
-\end{itemize}
+As part of the background research phase it was found that digital recordings of gut noises are regrettably not easily available on the web and despite of different attempts it was not possible to obtain an audio sample of good quality that could be used as a reference. Hence a proper signal profiling and characterization could not be performed. Because of that the audio acquisition system was designed so that it preserves the mayor amount of information present in the original signal and the parameters were selected to fulfill the hearing capabilities of the final human user (a veterinary specialist).
 
+The recording of audio samples implies two major challenges that are not shared by the other sensors in the system.
+
+\begin{description}
+\item[Real time constraints:]
+In order to acquire an audio stream without distortion accurate periodic sampling must be ensured. That means that during a recording task delays or failures in fetching the samples are inadmissible.
+
+\item[High data rate and memory usage:]
+While in the case of other sensors like the temperature sensor and GPS for example fetching a few bytes every 2-3 seconds is enough to provide reliable real-time information, storing an audio stream requires receiving thousands of samples per second. The system capabilities like memory size and bus bandwidth will impose physical barriers to the parameters use for audio sampling.
+\end{description}
+
+
+\subsection{Sampling parameters and component selection justification}
+Taking in consideration the requirements as well as the capabilities of the selected system microcontroller platform the audio sampling parameters were set as shown in table \ref{tab:sampling_parameters}. Other audio related projects in this platform were also used as a reference for setting this parameters. 
+
+\begin{table}[htb]
+\centering
+\begin{tabular}{|l|l|m{4cm}|}
+\hline
+	\textbf{Parameter} &
+	\textbf{Value} &
+	\textbf{Justification} \\
+\hline
+	Sampling frequency &
+	8000Hz &
+	The microcontroller is not able to handle the recording of higher frequencies.
+	Most of the information present in gut sounds is presumed to be in the low frequency range. \\
+\hline
+	Sample word size &
+	16bits &
+	High dynamic range. Available in many AD-converters. \\
+\hline
+	Recording time &
+	240 sec &
+	To mimic the examination done by a specialist \\
+\hline
+\end{tabular}
+\caption{Audio sampling paramters}
+\label{tab:sampling_parameters}
+\end{table}
+
+According to that the memory space in bytes required for one single recording can be calculated as follows:
 \begin{align*}
 \centering
-datarate_{audio}&=f_{sampling} * \frac{Bits}{Sample}* t_{recording} \\
-datarate_{audio}&=8000 Hz * 16 \frac{Bits}{Sample}* 240s
+Size_{audio}&=f_{sampling} * \frac{Bits}{Sample}* t_{recording} \\
+Size_{audio}&=8000 Hz * 16 \frac{Bits}{Sample}* 240s \\
+&= 128kbit/s * 240s \\
+&= 3.75MByte
 \end{align*}
 
+As it can be noted this is a very high amount of data and thus the use of a external memory device for storage is required as it is explained in section \ref{sec:data_storage}.
 
 \subsection{Component selection justification}
-The component ADMP441 from Analog Devices was chosen for the audio acquisition. This single-chip MEMS (Micro Electro Mechanical System) microphone provides very convenient characteristics which are summarized in the following table.
+The component ADMP441 from Analog Devices was chosen for the audio acquisition peripheral. This single-chip MEMS (Micro Electro Mechanical System) microphone provides very convenient characteristics which are summarized in the following table.
 
-\begin{table}
+\begin{table}[htb]
 \centering
 \begin{tabular}{|m{0.45\textwidth}|m{0.45\textwidth}|}
 \hline 
@@ -277,11 +344,13 @@ The component ADMP441 from Analog Devices was chosen for the audio acquisition. 
 	&
 	Ease of integration, industry standard \\
 \hline
-	Low voltage supply and current consumption: \newline
-	3.3 Vdd \newline
-	Normal mode: 2.5 mA \newline
-	Standby mode: 0.8 mA \newline
-	Power down mode: 4.5 uA
+	Low voltage supply and current consumption: 
+	\begin{itemize}
+	\item 3.3 Vdd 
+	\item Normal mode: 2.5 mA 
+	\item Standby mode: 0.8 mA
+	\item Power down mode: 4.5 uA
+	\end{itemize}
 	&
 	Low energy consumption \\
 \hline
@@ -301,37 +370,37 @@ The component ADMP441 from Analog Devices was chosen for the audio acquisition. 
 \label{tab:microphone_properties}
 \end{table}
 
-A scheme of the required signal processing stages in general digital audio system are shown in figure \TODO{Ref}.
-The first stage consists of a transducer or microphone that will react to the sound waves in the air and produce an electric signal. This electrical signal has to be properly conditioned for the following steps, this includes amplification and filtering. The analog signal needs to be sampled and quantized. This will generate a set of binary words corresponding to each sample. Commercially available Analog to Digital Converters will provide a serial flow of bits, this is known as pulse code modulation (PCM).
-
-\paragraph*{Microphone placement:} TODO: describe the plastic coupling piece and the stethoscope head, which enable the sensing of gut sounds. Add picture of the device.
-
-\paragraph*{Interface:} The ADMP44 chip uses I2S protocol as interface. I2S, also known as Inter-IC Sound, Integrated Interchip Sound, or IIS, is an serial bus interface standard used for connecting digital audio devices together. It is used to transmit PCM (Pulse Code Modulation) audio data.
-
-\paragraph*{Driver:} The I2S standard is supported by the microcontroller’s Universal Synchronous Asynchronous Receiver Transmitter (USART) which simplified the implementation of the driver for this sensor.
-Driver: The implementation of a driver for fetching audio data was a rather complex task. 
-Normally specialized electronic devices such as Digital Signal Processors (DSP) and audio codecs are employed to satisfy the requirements of recording, storage and processing. But in this project, in order to keep a minimal design and low power consumption no extra processing units were added to handle the audio functionalities and the general purpose microcontroller was used instead. 
-Advanced hardware features of the microcontroller are used to perform this tasks as it will be 
- explained in the following sections.
-DMA... ping pong.
-
-In order to provide a permanent input of audio samples without interruptions double buffered DMA transactions to move data from the USART to the final storage device were used. This strategy is explained in detail in section XX TODO: add section. 
+\textbf{Interface:} The ADMP44 chip uses I2S protocol as interface. I2S, also known as Inter-IC Sound, Integrated Interchip Sound, or IIS, is an serial bus interface standard used for connecting digital audio devices together. It is used to transmit PCM (Pulse Code Modulation) audio data. PCM simply consists on the serial transmission of the binary encoded samples.
+The Universal Synchronous Asynchronous Receiver Transmitter (USART) hardware modules present in the EFM32 microcontroller include support for the I2S protocol.
 
 
+\textbf{Driver:} One of the available USART ports was configured to work as I2S master providing the clock signals needed for the synchronous data transmission. The sampling frequency is set as a function of the baudrate set for the port interface. After having configured properly the reception of samples from the peripheral is triggered by using the AUTO\_TX feature of the USART port. In this mode the microcontroller will always generate the clock signals for the slave device as long as the port is enabled.
+
+
+To support the continuous data flow of audio samples coming from the microphone double-buffered DMA transactions are used. This method is explained in detail the section XX. TODO: add correct reference to DMA section.
 
 
 \subsection{Data Storage}
-Relatively low throughput of ZigBee link between the base station and the monitoring devices makes gut sound streaming inconvenient considering the amount of audio data produced. \TODO{}: Here we can quote amount of audio\ldots. One possible solution was to stream a smaller amount of data and record a longer audio data into an on-board storage element. Therefore, a microSD card was incorporated into the system. 
+\label{sec:data_storage}
+A storage element is included in the monitoring device. It provides a significant benefit because it can be used to save data collected from all sensors when the base station is out of reach. This way the sensor data is not lost when there is no connection between the base station and the monitoring device. Also, relatively low throughput of ZigBee link between the base station and the monitoring devices makes gut sound streaming difficult considering the amount of audio data produced. Having a storage device makes it possible to complement the limits of wireless communication bandwidth by streaming a smaller amount of data and record a larger amount of audio data in it. 
 
-SD Card solution provides two other benefits to the system besides complementing the limits of wireless streaming. The SD Card can be used to save data collected from all sensors when the base station is out of reach. This way the sensor data is not lost when there is no connection between the base station and the monitoring device. Also, it can be removed by the user to copy the data when needed, since a wide range of devices are SD card compatible.  
+We had three possibilities to store data: SD card, internal flash memory and external flash memory chip. The internal flash memory of the MCU has 1024 kilobytes capacity half of which can be used to save data\footnote{\url{http://cdn.energymicro.com/dl/devices/pdf/d0126_efm32gg332_datasheet.pdf}}. Also, the maximum number of erase cycles of the internal flash is limited to 20000. Therefore after writing and erasing roughly 10 gigabytes of data, the internal flash memory would not be usable and reduces lifetime of the monitoring device. The external flash memory and the SD card have higher capacities than internal flash memory, therefore they are more preferable. 
 
-SD Cards are based on flash memory technology. They support 3 communication modes: SD 1-bit, SD 4-bit and SPI mode\footnote{\url{http://alumni.cs.ucr.edu/~amitra/sdcard/Additional/sdcard_appnote_foust.pdf}}. 
+We decided to use a microSD card in this project. The SD Card can be removed from the monitoring device by the user to copy the data when needed, since a wide range of devices are SD card compatible. This advantage overcomes the external flash chip soldered on PCB. 
 
-In SD 1-bit mode, the data is transferred over 1-bit wire in a synchronous serial fashion. SD 4-bit protocol is the same as SD 1-bit protocol except that bulk data transfer is done over 4-bit bus. SD 4-bit mode can provide speed benefits over SPI mode. However it is not recommended in software solutions since it requires CRC calculation for each of the four wires and may result in a big computational effort. Also, accessing the complete SD Card Specifications to build an SD standard device requires licenses from SD Card Association\footnote{\url{https://www.sdcard.org/developers/howto/}}. Therefore, in this project, the card is used in SPI mode. 
+\textbf{Interface:}
+SD Cards are based on flash memory technology. They support 3 communication modes: SD 1-bit, SD 4-bit and SPI mode\footnote{\url{https://www.sdcard.org/downloads/pls/simplified_specs/Part_1_Physical_Layer_Simplified_Specification_Ver_3.01_Final_100518.pdf}}. The former two are similar. The main difference is that in SD 1-bit mode, the data is transferred over 1-bit wire in a synchronous serial fashion while in SD 4-bit mode, data transfer is done over 4-bit bus. 
 
-\TODO{Check this:}TODO: Check this (“If your company is planning to manufacture or have manufactured SD standard devices  (eg. cell phones, cameras or computers) or SD ancillary products (eg. adapters or SD I/O cards), your company is required to:”, I think using SD bus is “manufacturing an SD standard device”)
+SD 4-bit mode can provide speed benefits over SPI mode. However it is not recommended in software solutions since it requires CRC calculation for each of the four wires and may result in a big computational effort \footnote{\url{http://alumni.cs.ucr.edu/~amitra/sdcard/Additional/sdcard_appnote_foust.pdf}}
 
-To implement microSD prototype system, an existing FAT file system and a low-level disk interface module were used. The card was connected to one of the SPI interfaces of the microcontroller. MicroSD cards support up to 208 MHz clock frequency [TODO citation]. The clock system of the Energy Micro microcontroller allows maximum SPI bit rate to be at half speed of the source clock in master mode \TODO{Citation: EFM32\_GG Ref}. Theoretically, SPI clock can be up to 24 MHz when the source clock is set to 48 MHz. However, there is an upper speed limit caused by delays of inputs and outputs of the microcontroller which is not specified by the manufacturers\footnote{\url{http://forum.energymicro.com/topic/288-microsd-card-spi-baudrate/}}. Our microSD driver sets SPI clock speed at \TODO{X} Mhz at which it operates safely.   
+Also, accessing the complete SD Card Specifications to build an SD standard device requires licenses from SD Card Association \footnote{\url{https://www.sdcard.org/developers/howto/}}. Therefore, in this project, the card is used in SPI mode. 
+
+\textbf{Driver:}
+To implement microSD prototype system, an existing FAT file system and a low-level disk interface module were used. The card was connected to one of the SPI interfaces of the microcontroller. MicroSD cards support up to 208 MHz clock frequency depending on the SD Card class they belong to\footnote{\url{https://www.sdcard.org/downloads/pls/simplified_specs/Part_1_Physical_Layer_Simplified_Specification_Ver_3.01_Final_100518.pdf}}. 
+
+On the other hand, the clock system of the Energy Micro microcontroller allows maximum SPI bit rate to be at half speed of the source clock in master mode. Theoretically, SPI clock can be up to 24 MHz when the source clock is set to 48 MHz. However, this is not true in practice because there is an upper speed limit caused by delays of inputs and outputs of the microcontroller which is not specified by the manufacturers\footnote{\url{http://forum.energymicro.com/topic/288-microsd-card-spi-baudrate/}}. 
+
+Therefore our microSD driver sets SPI clock speed at \TODO{:}is it 7MHz? X Mhz at which it operates safely.   
 
 
 \section{Wireless Interfaces}
@@ -351,11 +420,8 @@ The main advantage was that the prototyping could be sped up due to availability
 The wireless software module uses an existing open-source software library to handle the low level communication with the XBee hardware, and adds an object oriented interface as well as utility classes that allow to use and control the wireless connection at a high abstraction level. More details on the design of the software module are given in section \ref{sec:wireless_communication_software}
 
 
-\subsection{Communication with Heart Rate Monitor - ANT}
-\TODO{Not yet written}
-
-
-\section{Base Station}\begin{figure}
+\section{Base Station}
+\begin{figure}[htb]
 \includegraphics[width=\textwidth]{Images/BaseStationBlockDiagram}
 \caption{Block Diagram: Base Station}
 \label{fig:block_base_station}

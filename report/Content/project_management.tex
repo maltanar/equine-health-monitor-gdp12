@@ -1,32 +1,79 @@
 \chapter{Project Management}
 
+\section{Development Phases}
+To accomplish the objectives in the limited timeframe, development was planned in a way that would allow maximum parallelization of developer resources and tolerate unforeseen delays by leaving some unallocated time at the end. The development consisted of the following main stages:
 
-\section{Development Plan}
-The team initially consisted of 6 people. However one member, Ahsan Baig, had to drop the project after the sixth week since he had visa issues. The Gantt chart was created considering six project members. As it was unclear from the beginning if Ahsan would manage to arrive in time for the project he was given tasks that were extensions for the overall system and could be integrated in the later stages of the project, such as display and analysis of collected sensor data. Therefore he could not contribute to project much in the first weeks. His tasks were shared by other people or, as in the case of data analysis, discarded. 
+\begin{description}
+\item{\bfseries 1. Project planning and system design:}
+The first step was to define the scope of the project, identify the main tasks and come up with a Gantt chart to schedule the tasks. Since 	the project was assigned to the team in the second week of the semester, the team had to start working on the project later than the official start date, which resulted in a tighter schedule. The top-level system design was also completed in this stage. The  approach to design a distributed system with multiple energy-efficient wireless monitors and a base station was accepted. Functional requirements from the hardware were also determined according to the given specification.
 
-The meetings with Dr John Chad and Dr Neil Smyth about horse grass sickness were effective on excluding data analysis and diagnosis from the project scope. The reasons for this decision will be discussed in more detail in the \TODO{RESEARCH CHAPTER}.
+\item{\bfseries 2. Background research:}
+The team researched the existing solutions for equine health monitoring, identified the applications of the resulting system and familiarized themselves with energy efficient implementation methods. As stated in section \ref{sec:research_discussion}, discussions with field experts resulted in narrowing the scope of the implementation to a data collection tool for general monitoring and research since diagnosis of grass sickness was not considered feasible with our approach.
 
-The project was assigned to the team in the second week of the semester. Therefore the team had to start working on the project later than the official release date. This resulted in a tighter schedule and delayed the placement of component orders. \TODO{} However, the team managed to build a working prototype.  
+\item{\bfseries 3. Component research and ordering:}
+This stage consisted of searching for the hardware components that fulfilled the requirements identified in the previous stage. Decisions were made on the basis of energy efficiency, ease of development and stock availability of each component. Some components had to be ordered from non-ECS suppliers as they were not available from school suppliers. There were some delays in ordering and receiving the components which had a negative impact on the schedule because they prevented the team from starting with the next phase and pushed the work on hardware-dependent tasks in the system further back into the schedule.
+
+\item{\bfseries 4. Hardware subsystem prototyping:}
+In this stage the team members worked in parallel on getting each hardware subsystem functional, writing drivers for them as described in chapter \ref{chap:hardware_subsystems} and making the implementations energy efficient and stable. 
+
+\item{\bfseries 5. Integrating subsystems, system software:}
+This stage involved connecting together the implemented hardware subsystems into a single functional system, and creating the 	software frameworks on both the monitoring device and the base station to implement the desired data flow. A completely integrated prototype of the monitoring station on a development board allowed the team to test and verify the distributed nature of the system architecture before the custom PCB was ready.
+
+\item{\bfseries 6. PCB design, production and case:}
+Ran in parallel with the other tasks, this stage involved designing the final printed circuit board (PCB) that would later be placed inside a stable case and became the core of the monitoring device. The experience gained during the hardware subsystem prototyping stage was infused into the PCB design process, which meant that the design of each sub-module on the PCB was tested and verified before the final PCB was ordered. 
+
+\item{\bfseries 7. Testing the integrated system:}
+Once the integration and PCB production stages were complete, the system was integrated on the PCB and tested with separate unit tests for each hardware subsystem.  Due to careful individual prototyping and the previous successful integration on the development board of a complete prototype the final stage went relatively smooth and did not cause any delays in the schedule. The resulting completed prototype was also tested on human and horse subjects.
+\end{description}
+
+The time slots allocated for each task can be found in section \ref{sec:gantt_chart}, and a detailed allocation of tasks and subtasks to team members can be found in section \ref{sec:task_distribution}.
+
+Within the given timeframe the team managed to design and build a working prototype of the distributed system, which was almost feature complete according to the specifications. Please consult the chapter \ref{chap:results} for details.
+
+\section{Resources}
+\subsection{Hardware Development Tools}
+he core of the monitoring device system is based on an Energy Micro microcontroller. Because some of the team members had worked with Energy Micro devices in the past we had access to three Energy Micro starter kits (STK), and were supported by Energy Micro who supplied us with an additional starter kit\footnote{The team joined the \href{ http://forum.energymicro.com/forum/49-efm32-design-contest-2012/}{Energy Micro EFM32 Design Contest 2012}  with this project and qualified as one of the best design ideas. One of the starter kits was received as an award from this competition. The team will also compete at the final stage of the contest with the final product.}
+and a development kit (DVK). 
+
+Having access to four STKs enabled us to build build the subsystems in parallel on a very similar hardware platform that is also used for the final product. The more powerful DVK was used to integrate them before the custom PCB arrived. The custom PCB layout had to be sent for manufacturing as there are no facilities to produce the board in-house. Typical turnaround can be up to 7 days. Nevertheless, this is a very crucial component to the project and delay would result in significant setbacks. Hence, it had to be ordered with a faster turnaround.
+
+PCB assembly was done in the GDP lab using the following conventional tools: soldering and hot air stations, microscope, tweezers, etc. Hot plate was used for solder reflow of wafer chip scale components. Breadboards and wires were provided from the start of the project and aided in the prototyping stage. Oscilloscopes and multimeters were used for testing and fine-tuning the PCB modules.
+
+
+\subsection{Team}
+The development team initially consisted of 6 people. However one member, Ahsan Baig, had to drop the project after the sixth week since he could not enter the UK due to visa issues.
+
+The initial project planning was made considering six project members. As it was unclear from the beginning if Ahsan would manage to arrive in time for the project, he was mostly assigned tasks that were extensions for the overall system and could be integrated in the later stages of the project, such as display and analysis of collected sensor data. After it became certain he would not be working with the team his tasks were distributed among the rest of the team or, as in the case of data analysis, discarded. 
+
+
+\subsection{Research}
+To gain a deeper insight into the physiology of horses and horse related health issues, contact was established with experts in the field: Dr. John Chad, lecturer at Biological Sciences and Dr. Neil Smyth, lecturer at Development and Cell Biology, both from the University of Southampton.
+
+The initial contact led to a meeting where Dr. Neil Smyth took the time to give an enlightening presentation about the digestive system of horses.
+
+The discussion after the presentation helped us to have a more realistic view on the goals of our project and excluding data analysis and diagnosis from the project scope, because even expert veterinarians have difficulties diagnosing grass sickness disease. A discussion of the reasons for this decision are provided in the chapter \ref{chap:research}.
+
 
 
 \section{Task Distribution}
-Task distribution was made considering skills and interests of all group members. A high degree of parallelisation of tasks was needed to comply with the tight schedule. A shared document was used to record the tasks and their status which can be found in APPENDIX-TASKS. All members attended discussions about system design and did research on component selection. All members with their primary responsibilities are listed below. 
-
-\TODO{List each person’s major tasks}
+Project tasks were distributed considering skills and interests of all group members. A high degree of parallelisation of tasks was needed to comply with the tight schedule. A shared Google document was used to record the tasks and their status, which can be found in section \ref{sec:task_breakdown}. All members attended discussions about system design and did research on component selection. Apart from these, the primary responsibilities of the team members are listed below. 
 
 Jose Cubero:
 \begin{itemize}
 \item Audio acquisition
+\item DMA data transfers
 \item Internal flash storage
 \item Background research
+\item Field testing
 \end{itemize}
 
 Merve Oksar:
 \begin{itemize}
 \item Background research
-\item Data storage
-\item Debug interface
+\item Data storage and accelerometer subsystems
+\item Debug interface of the final product
 \item Report management
+\item Testing
 \end{itemize}
 
 Konke Radlow:
@@ -34,23 +81,34 @@ Konke Radlow:
 \item Wireless communication over ZigBee
 \item Base Station
 \item Web Interface
+\item Testing
 \end{itemize}
 
 Michail Sidorov:
 \begin{itemize}
-\item Breakout boards
-\item PCB 
+\item Schematic design
+\item Breakout board and PCB layout design
+\item Hardware assembly
 \item Budget planning and tracking
+\item Testing
 \end{itemize}
 
 Yaman Umuroglu: 
 \begin{itemize}
-\item Sensor system implementation
+\item System software
+\item ANT HRM, GPS, temperature sensor subsystems
 \item Integration
-\item Testing
 \item Project management 
 \end{itemize}
 
 
 \section{Budget Planning}
-The team had X budget for this project. The team chose components based on their price, quick availability and technical features. The components used in the project and their costs are listed in the \TODO{APPENDIX-BUDGET}. Samples were requested for some of the components. Therefore both the actual cost the team spent on the components and their actual prices are listed in the appendix 
+The team had 200£ of official budget for this project. The components were chosen based on their price, quick availability and technical features. The components used in the project and their costs are listed in section \ref{sec:price_list}. It was possible to obtain free samples for some of the components. To give an idea of both the team budget and how much it would cost to build a commercial device similar to ours, both the cost the team spent on the components and their actual prices are listed in the appendix.
+
+
+\section{Communication}
+The team was aware that good communication was essential to leverage to full potential of a team of five. It was set as a central principle that each group member should be aware of the tasks the other group members are working on, have knowledge about progress that was made and the troubles that were encountered. For this reason weekly group meetings were held to inform all members about each person's progress, and to distribute outstanding and new tasks to the group members. This allowed iterative refinements to the initial development plan stated in the Gantt chart.
+
+The meetings also served as a ground for important or critical decisions that required views from the entire group.
+
+An e-mail group and online document sharing over google docs was used to share information between the group members and the supervisor. The code was managed in a git code repository \footnote{url{http://code.google.com/p/equine-health-monitor-gdp12/}}.
