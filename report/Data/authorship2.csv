@@ -1,0 +1,30 @@
+Section, Author
+6 PCB design,Mike
+6.1 Schematic ,Mike
+6.1.1 Power conditioning,Mike
+6.1.2 MCU,Mike
+6.1.3 I2C devices,Mike
+6.1.4 RF devices ,Mike
+6.1.5 Microphone,Mike
+6.2 Layout,Mike
+6.2.1 Soldering ,Mike
+6.3 Case design,Mike
+7 Testing and Results,All
+7.1 Unit Testing,Jose
+7.2 Wireless Communication,Konke
+7.3 Field Testing,Merve
+8 Conclusions,All
+8.1 Success ,All
+8.2 Criticism ,All
+9 Future Work,"Konke, Merve, Jose"
+9.1 Solutions for design problems,"Konke, Merve, Jose"
+9.2 Possible improvements,"Konke, Merve, Jose"
+10 Project Management,"Merve, Konke, Yaman"
+10.1 Development Phases,"Merve, Konke, Yaman"
+10.2 Resources,"Merve, Konke, Yaman"
+10.2.1 Hardware Development Tools,"Merve, Konke, Yaman"
+10.2.2 Team,"Merve, Konke, Yaman"
+10.2.3 Research,"Merve, Konke, Yaman"
+10.3 Task Distribution,"Merve, Konke, Yaman"
+10.4 Budget Planning,Mike
+10.5 Communication,"Merve, Konke, Yaman"

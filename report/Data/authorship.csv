@@ -1,0 +1,45 @@
+Section, Author
+1 Introduction,All
+1.1 Project Brief,All
+1.2 Objectives,All
+2 Research,Merve
+2.1 Grass Sickness,Merve
+2.2 Literature Research,Merve
+2.3 Discussion With Bioscientists ,Merve
+3 System Design,"Merve, Yaman, Konke"
+3.1 Design Challenges,"Merve, Yaman, Konke"
+3.2 Proposed System,"Merve, Yaman, Konke"
+3.2.1 Distributed System,Konke
+3.2.2 Wireless Connection Between Nodes,Konke
+4 Hardware Subsystems,"Merve, Yaman"
+4.1 Monitoring Device,Merve
+4.1.1 The Microcontroller (MCU),Yaman
+4.1.2 Heart Rate Monitor,"Yaman, Merve"
+4.1.3 Temperature Sensor,"Merve, Yaman"
+4.1.4 GPS,"Merve, Yaman"
+4.1.5 Accelerometer,"Merve, Yaman"
+4.1.6 Gut Sound Monitoring,Jose
+4.1.7 Data Storage,Merve
+4.2 Wireless interfaces,Konke
+4.2.1 Data transmission - ZigBee,Konke
+4.3 Base Station,Konke
+5.3.1 Raspberry,Konke
+4.3.1 Hardware platform,Konke
+4.3.2 Raspberry Pi,Konke
+4.3.3 XBee ,Konke
+5 System Software,Yaman
+5.1 Monitoring Device ,Yaman
+5.1.1 Development Paradigm and Environment,Yaman
+"5.1.2 Low Energy Periodic Sampling, Sensor Interface and Drivers",Yaman
+5.1.3 Timekeeping and Alarm System,Yaman
+5.1.4 Task Scheduling and Sleep Management,Yaman
+5.1.5 Message Storage System .,Yaman
+5.1.6 DMA and double buffering,Jose
+5.2 Wireless Communications ,Konke
+5.2.1 XBee basics: Transparent vs. API ,Konke
+5.2.2 XBee Interface ,Konke
+5.2.3 Message handling ,Konke
+Base station software,Konke
+5.3.1 Inter-process communication,Konke
+5.3.2 Receive and store module,Konke
+5.3.3 Data presentation module ,Konke

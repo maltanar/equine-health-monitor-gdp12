@@ -184,6 +184,7 @@ Libgebee\footnote{\url{http://sourceforge.net/projects/libgbee}} is an open-sour
 Because library has been written for the ZNet 2.5 XBee standard which has been replaced by the ZB standard over the last year it was necessary to update the library source code by adding newly introduced frame-types and updating existing ones to the new standard. These additions might flow back into the official repository if the author is interested in a cooperation.
 
 The library also needed to be ported to the Energy Micro architecture before it could be used on the monitoring devices. Because the library aims at portability, it has a well defined interface between target system dependent functionality and the actual functionality of the library, which makes porting the library to a new architecture significantly easier. In our case, porting to the EFM32 architecture was almost trivial using the developed port/bus abstraction classes described in section \ref{sec:port_configuration} for the UART interface and the timekeeping class described in section \ref{sec:timekeeping} for operation timeouts.
+\clearpage
 
 
 \subsection{XBee Interface}
@@ -253,7 +254,7 @@ T_{abs} = RTC_{abs}- (T_{transmission} - T_{measurement})
 \end{center}
 
 To calculate the absolute time when a measurement was taken, the messages contain two relative timestamps - one that shows when the measurement was taken, and one that shows when the measurement was transmitted. The absolute time is calculated on the base station, right before the message is stored in the database.
-
+\clearpage
 
 \section{Base station software}
 There are two independent software modules running on the base station software that use different Inter-process communication methods (IPC) to cooperate with each other. The receive and store module (R\&S) is responsible for the communication with the monitoring devices and storing received data into a database. The data presentation module on the other hand provides a graphical user interface (GUI) for the collected data and allows the user to configure the base station and the monitoring devices connected to the network.
