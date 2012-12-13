@@ -1,25 +1,22 @@
 \chapter{PCB design}
-\TODO{} introduction that mentions why we designed our own PCB (small device that can be contained in splashproof case + lots of peripherals + attaching to a moving horse requires extra stability).
+In order to make a complete system and test it on adequate subjects without any harm to the circuitry it was decided to make a custom PCB and encapsulate it in a splash proof casing. PCB not only eliminates the accidental connection losses between the components as it usually happens on breadboards and protoboards but also keeps the traces short and ensures the components function according to their specification.
+ 
+The schematic and layout were designed using CadSoft Eagle software version 6.1.0. It is not considered to be the most user friendly software in terms of the usage interface, but is fairly simple and straightforward. Furthermore, the user community is very large, therefore it is possible to find various component footprints already made by others to be used in the design. This decreases the overall time required to make a PCB design. Nevertheless, as we were using very specific components  (ANT, GPS, etc.) a footprint for them had to be designed manually by consulting the datasheet. 
 
 
 \section{Schematic}
-The schematic and layout were designed using CadSoft Eagle software version 6.1.0 It is not considered to be the most user friendly software in terms of the usage interface, but is fairly simple and straightforward. Furthermore, the user community is very large, therefore it is possible to find various component footprints already made by others to be used in the design. This decreases the overall time required to make a PCB design. Nevertheless, as we were using very specific components  (ANT, GPS, etc.) a footprint for them had to be designed manually by consulting the datasheet. 
-
-\begin{figure}
-\centering
-\includegraphics[width=0.8\textwidth]{Images/dummy}
-\caption{Block Diagram: Parts}
-\label{fig:block_parts}
-\end{figure}
+This section will describe the connections between different components of the system, their intended use and operational principles. Full schematic of the system can be seen in section \ref{sec:pcb_schematics} of the Appendix. It is separated into different sheets for ease of reading.
 
 \subsection{Power conditioning}
-The power conditioning circuitry consists of two stages. First stage incorporates a constant current constant voltage single cell Lithium Ion battery charger centered around a ADP2291 chip from Analog Devices.  The second stage is a low dropout voltage (LDO) regulator based on a ADP1706 chip from the same manufacturer. For schematics see \TODO{Ref }Appendix X. 
+This part is responsible for providing energy to the rest of the board. The circuitry consists of two stages, see \TODO{}Appendix\_Powerchapter\_LDO.pdf First stage incorporates a constant current constant voltage single cell Lithium Ion battery charger centered around a ADP2291 chip from Analog Devices. The second stage is a low dropout voltage (LDO) regulator based on a ADP1706 chip from the same manufacturer.
 
 
-\subsection{Battery charger}
-The input voltage of the charger is in the range of 5 to 12V, therefore no power supply providing higher voltage than this is allowed to be used. D1 acts a reverse voltage protection diode in case the power supply is connected with a reversed polarity to the board. In case this ever happens it will not cause any damage to the components. 
 
-C4 and C16 capacitors are used to filter out the noise that might come from the power supply. The chosen values of 820uf and 0.68uf are sufficient for this purpose. Resistors R2 and R6 placed in series with a battery provide current measurements for the charger. Hence, the charging current is adjusted by changing the R2 and R6 resistor values, that is currently set to 750mA. Internal LED driver is used to indicate the charging status of the battery. Charge status LED1 is ON when the battery is charging. Transistor Q1 acts as a pass device which provides a charging current to the battery. It was chosen with a reserve in parameter specifications. The device can handle continuous collector current of 3A and has a $V_{ceo}$ of 60V. This enables the device to function properly not only in the current setup but in a scenario when a higher current is required for faster charging. As a driver requirement the transistor has to have a certain minimum PNP beta (hfe coefficient), which for current configuration has to be no less than Imax / 40mA, where 40 mA is the base drive current and Imax is the charging current. This gives us the minimum beta of 18.75 that the transistor has to have. The chosen one has an hfe of 80 at collector current equal to 1A. 
+\subsubsection{Battery charger}
+The input voltage of the charger is in the range of 4.5 to 12V, therefore no power supply providing higher voltage than this is allowed to be used. D1 acts a reverse voltage protection diode in case the power supply is connected with a reversed polarity to the board. In case this ever happens it will not cause any damage to the components. 
+
+
+C4 and C16 capacitors are used to filter out the noise that might come from the power supply. The chosen values of 820uf and 0.68uf are sufficient for this purpose. Resistors R2 and R6 placed in series with a battery provide current measurements for the charger. Hence, the charging current is adjusted by changing the R2 and R6 resistor values, that is currently set to 750mA. Internal LED driver is used to indicate the charging status of the battery. Charge status LED1 is ON when the battery is charging. Transistor Q1 acts as a pass device which provides a charging current to the battery. It was chosen with a reserve in parameter specifications. The device can handle continuous collector current of 3A and has a $V_{ceo}$ of 60V. This enables the device to function properly not only in the current setup but in a scenario when a higher current is required for faster charging. As a driver requirement the transistor has to have a certain minimum PNP beta (hfe coefficient), which for current configuration has to be no less than $I_{max} / 40mA $, where 40 mA is the base drive current and Imax is the charging current. This gives us the minimum beta of 18.75 that the transistor has to have. The chosen one has an hfe of 80 at collector current equal to 1A. 
 
 In order to keep it from overheating a thermal protection is used by utilizing the NTC1 thermistor. This enables the charger to monitor the temperature of a pass device and decrease the charging current accordingly. Shutdown temperature of the charger is set internally to 100C. 
 
@@ -27,22 +24,23 @@ The charger works in step-by-step sequence illustrated by diagram \ref{fig:charg
 
 \begin{figure}
 \centering
-\includegraphics[width=0.8\textwidth]{Images/dummy}
+\includegraphics[width=0.7\textwidth]{Images/battery_charging}
 \caption{Battery charging sequence}
 \label{fig:charger_sequence}
 \end{figure}
 
 \begin{itemize}
-\item \textbf{Shut-down:} If the input voltage is lower than 3.8V the charger is in the shut-down mode. Power consumption from the battery is 1uA.
+\item \textbf{Power-down:} If the input voltage is lower than 3.8V the charger is in the shut-down mode. Power consumption from the battery is $1\mu A A$.
 \item \textbf{Pre-charge:} When a voltage higher than 3.8V is detected at the input of the charger the charger checks the voltage across the battery and enters a pre-charge state if the battery voltage is lower than 2.8V. In this stage the maximum supplied current is 75mA. In cases where battery is deeply discharged and measures less that 1.5V the supply current is set to 150mA. 
 \item \textbf{Fast charge:} If the voltage is higher than 2.8V the charger enters a full current fast charge mode which continues until the battery voltage reaches 4.1V 
 \item \textbf{End-of-charge:} The charging current is reduced as the battery reaches its full capacity and once this current is less than 75mA an end-of-charge mode is initialized. 
+\item \textbf{Shut-down:} This mode will be initialized if the voltage on pin Vadjust drops down below 0.4V.
 \end{itemize}
 
 Capacitor C6 determines the time of all operation modes. The ratio between the fast charge mode to pre-charge and end-of-charge is always 1/6. Given the capacity of our battery is 2200 mAh time required for it to fully charge with current settings is 2.9 hours. Therefore a timeout of 3 hours for fast charge mode is sufficient. C6 capacitance is calculated from the following formula $Ct = tchg *  1uf / 1800$ and is equal to 0.1 uf. The pre-charge and end-of-charge modes timeout in 30 minutes. Time limit of the fast charge mode is required as a precaution in case the battery fails to reach end-of-state mode for any reason.
 
 
-\subsection{LDO regulator}
+\subsubsection{LDO regulator}
 The LDO regulator takes in the provided voltage by the battery and outputs a fixed value of 3.3V required to power all on-board devices. Decision to use this type of regulator was made from the fact that the difference between input and output voltage is very small. Therefore, using a traditional linear regulator in this case is not an option. Our chosen device has a maximum dropout voltage of 55mV at 100mA output current. This figure increases to 345mV at output current of 1A respectively. The latter dropout will never be achieved, as in the worst case scenario when all peripherals are operational the maximum current consumption will be \TODO{check:} datasheet GPS, ANT, Xbee SD card + MCU 9.6mA
  all peripherals combined will hardly ever pass the 100mA current consumption point.
  
@@ -55,16 +53,17 @@ To insure a stable power supply to all components organic solid capacitors with 
 
 
 \subsection{MCU}
-As was mentioned earlier the MCU used for the project is EFM32GG332 based on ARM Cortex M3 core with a 1024KB of Flash and capable of running at a 48MHz speed. The chip has several clock sources and different crystal oscillators are used to generate that clock. XT1 is a high speed oscillator (HFXTAL) rated at 48MHz and running in a fundamental mode. XT2 is a low frequency oscillator (LFXTAL) rated at 32.768KHz and is produced by MEMS processing technology. This oscillator is used for peripherals running in low energy modes and operates in fundamental mode as well. The MCU will not work with a high speed oscillator that is specified to operate in an overtone mode. To insure that the crystal operates correctly, it has to have a certain load capacitance, in our case for XT1 this is 18pF and for XT2 it is 7pF. 
+As was mentioned earlier the MCU used for the project is EFM32GG332 based on ARM Cortex M3 core with a 1024KB of Flash and capable of running at a 48MHz speed. The chip has several clock sources and different crystal oscillators are used to generate that clock. XT1 is a high speed oscillator (HFXTAL) rated at 48MHz and running in a fundamental mode \TODO{}see Appendix\_MCU\_decoupl\_osc\_reset.pdf. 
+
+XT2 is a low frequency oscillator (LFXTAL) rated at 32.768KHz and is produced by MEMS processing technology. This oscillator is used for peripherals running in low energy modes and operates in fundamental mode as well. The MCU will not work with a high speed oscillator that is specified to operate in an overtone mode. To insure that the crystal operates correctly, it has to have a certain load capacitance, in our case for XT1 this is 18pF and for XT2 it is 7pF. 
 
 In case there is a need to reset the MCU it can be done by using the S1 global reset button. Capacitor C14 is used in parallel with the switch to implement a hardware de-bounce function. 
 
 A standard approach for decoupling is used. One large capacitor C2 rated at 150uF is used for the whole system with 0.1uF C7-C12 capacitors used to decouple separate power pins. In our design we are not using ADC of the MCU; therefore it was not necessary to separate the digital and analog power domains. Separation is usually done to ensure better isolation and noise suppression between the power domains.
 
 
-For programming and debugging the custom made PCB a debug interface consisting of clock input (SWCLK), data in/out lines (SWDIO) and serial wire output (SWO) had to be exposed. An external development kit was used to program/debug the PCB. By supplying the power to the PCB from the development kit via VMCU pin it was possible to measure the current consumption of a target with an Energy Aware profiler.
+For programming and debugging the custom made PCB a debug interface consisting of clock input (SWCLK), data in/out lines (SWDIO) and serial wire output (SWO) had to be exposed, see \TODO{}see Appendix\_Debug\_Mic.pdf. An external development kit was used to program/debug the PCB. By supplying the power to the PCB from the development kit via VMCU pin it was possible to measure the current consumption of a target with an Energy Aware profiler.
 
-\TODO{Integrate with Monit Devs}
 
 \subsection{I2C devices}
 The TMP006 MEMS sensor from Texas Instruments was chosen for its ability to measure the temperature without the need of making a contact with an object. The measurement is done by allowing the thermopile to absorb the IR energy emitted from an object and based on the thermopiles voltage change determine its temperature.
@@ -74,46 +73,91 @@ Temperature sensor uses SMBus for transmitting transmit the data. The address of
 The I2C bus is shared with an accelerometer. As this is not the only mode the accelerometer can operate the I2C mode had to be set by pulling the CS pin high. By setting the SDO/ ALT ADDRESS pin to high the accelerometers address becomes 0x1D on the bus. No pins are left floating in order to prevent leakage currents. Hence the Reserved\_3 pin is connected to +3.3V and Reserved\_2 together with Reserved\_1 are grounded. Optionally they can be left floating. 
 The device can operate in several power supply modes. In this particular design it operates in a single supply mode, where VS is connected together with VDD/IO. Decoupling is performed for both of the pins using two 0.1uF ceramic capacitors. In addition to that a 22uF OS-CON is used at the VS pin to minimise the digital clocking noise.
 
-\subsubsection*{ZigBee}
-\TODO{}
+\subsection{RF devices}
+Despite the fact that Xbee has a lot of pins, the only connections that are required for it to be operational are VCC, GND, DOUT and DIN. Others are not used in this case. Xbee is connected to USART 0 of the MCU as it requires high baud rate communication.
 
+The GPS module on the other hand is connected to low energy UART (LEU0). By default its communication rate is set to 9600 baud. The GPS module requires two power supplies. VCC is the first one and is used for digital parts together with I/O. VBAT is the second one and is used for non-volatile back-up block. By default GPS does not have low energy mode that can be switched on demand, it does go into low energy mode automatically once it has acquired the satellite positions and collected the Almanac data. In normal operation mode GPS typically consumes 115mW of power which translates to 35mA of current draw from the battery. Nevertheless, this figure can rise up to 40mA. Power consumption drops to 75mW (22mA current draw from battery) once the GPS has finished with the cold start. This figure is still high. Power supply can be switched off for the VDD block if the navigation is not needed. This will enforce the GPS to enter the backup mode. The power then will be drawn from VBAT which is used for keep the collected satellite data in RAM. This will ensure a fast TTFF (time to first fix) once power on VDD is re-applied again. Power draw in this mode is in the region of 15uW (4.54uA).
+The PPS (pulse-per-second) output is not used in the design as it is only required for timing purposes. For decoupling purposes a 0.1uF ceramic capacitors are used for both power pins with an addition of 22uF OS-CON for the VCC.
 
-\subsubsection*{ANT}
-\TODO{}
+ANT module is connected to low energy UART 1 (LEU1). Baud rate selection is made by setting the dedicated BR1-BR3 pins either low or high. In the system the pins are pulled down which gives us the speed of 4800 baud. 
 
-\subsubsection*{GPS}
-This module requires two power supplies, the first one VCC is used for digital parts and I/O and the second one VBAT is used for non-volatile back-up block. By default GPS does not have low energy mode that can be switched on demand, it does go into low energy mode automatically once it has acquired the satellite positions and collected the Almanac data. In normal operation mode GPS typically consumes 115mW of power which translates to 35mA of current draw from the battery. Nevertheless, this figure can rise up to 40mA. Power consumption drops to 75mW (22mA current draw from battery) once the GPS has finished with the cold start. This figure is still high. Power supply can be switched off for the VDD block if the navigation is not needed. This will enforce the GPS to enter the backup mode. The power then will be drawn from VBAT which is used for keep the collected satellite data in RAM. This will ensure a fast TTFF (time to first fix) once power on VDD is re-applied again. Power draw in this mode is in the region of 15uW (4.54uA).
+When not in use Xbee, GPS and ANT modules can be completely shut off to save more energy. This is done by means of P-channel mosfet. N-channel mosfet is not acceptable in this case, because the devices are ground referenced. By default these modules are ON and setting the correct mosfet high will shut-off the power to the device. Shutting down both power supplies for the GPS will trigger the loss of all stored satellite data in the non-volatile block. Therefore, once the GPS becomes operational it will have to go through the cold start again and use a lot of energy.
 
-The PPS (pulse-per-second) output is not used in the design as it is only required for timing purposes. 
-
-For decoupling purposes a 0.1uF ceramic capacitors are used for both power pins with an addition of 22uF OS-CON for the VCC.
-
-\subsubsection*{MEMS Microphone}
-\TODO{}
+\subsection{Microphone}
+MEMS microphone is connected to the USART1 of the MCU. There is a possibility of using two microphones in a stereo configuration. Nevertheless, in this design only one channel was used. The L/R pin that is responsible for channel selection was grounded indicating that Left channel is used only. SD pin requires an external pull-up resistor. To our advantage MCU has an integrated one, therefore this one was used instead of an external one.
 
 
 \section{Layout}
-\TODO{}
-
+The PCB layout was made not only for the final board, but for several breakout boards as well. The accelerometer and MEMS microphone both have a specific pad. Therefore, the breakout boards were custom made for them. This enabled us to speedup the prototyping process and use these devices prior to the assembled PCB. The accelerometer breakout board is not used for the final product, but the microphone board is as it is mounted to the head of a stethoscope. PCB layout for the microphone can be seen in Appendix \ref{fig:pcb_layout_mic}. The layout of the final board is shown in  Appendix \ref{fig:pcb_layout_bottom} and Appendix \ref{fig:pcb_layout_top}. It is a 2-layer board, therefore a layout for both top and bottom is provided.
+The final component placement can be seen in figure \ref{fig:board_layout}. 
 
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=\textwidth]{Images/board_layout}
-\caption{PCB board layout}
+\caption{Main component placement on a PCB}
 \label{fig:board_layout}
 \end{figure}
 
 When positioning the components on the PCB some considerations had to taken into account. These are going to be discussed step by step starting with the power conditioning circuitry. 
 
-The pass transistor Q1 used in the Charger generates a lot of heat, according to the calculation it dissipates \TODO{calculate} of power. In order to keep a low profile board the PCB itself acts as a heatsink. The pad of the transistor that draws away the heat from the crystal cannot be connected to the largest copper area of the board - GND, as the pad is internally connected to Vdd. Therefore a dedicated area was left for that purpose and thermally isolated from the neighbouring components. This also prevents the shortening of their lifespan. Multiple vias are used to connect the upper layer of copper with the bottom one making the heat dissipation more efficient. In case of overheating the NTC1 should tell the charger to decrease the current passing through the transistor lowering the power dissipation. Hence, the NTC1 was placed as close as possible to the transistor and was surrounded by the copper heatsink.
+The pass transistor Q1 used in the Charger generates a lot of heat, according to the calculation:
+\begin{flalign}
+P_{Diss}(W) = I_{MAX} x (V_{ADAPTER(MAX)} - V_{PROTECT} - V_{RS} - V_{BAT}) 
+\end{flalign}
+
+When 750mA of current ($I_{MAX}$) is flowing through it and the input voltage (VADAPTER(MAX)) can take the maximum value of 9V Q1 dissipates 4.38W of power. In order to keep a low profile board the PCB itself acts as a heatsink. The pad of the transistor that draws away the heat from the crystal cannot be connected to the largest copper area of the board - GND, as the pad is internally connected to Vdd. Therefore a dedicated area was left for that purpose and thermally isolated from the neighbouring components. 
+
+This also prevents the shortening of their lifespan. Multiple vias are used to connect the upper layer of copper with the bottom one making the heat dissipation more efficient. In case of overheating the NTC1 should tell the charger to decrease the current passing through the transistor lowering the power dissipation. Hence, the NTC1 was placed as close as possible to the transistor and was surrounded by the copper heatsink.
+
 
 The LDO regulator has a SOIC package with an exposed pad underneath it. This is done to dissipate the generated heat directly into the board. The pad is internally connected to GND and in this case it was unnecessary to make dedicated heatsink area for this chip. As with the Multiple vias connect the upper and bottom layers of the PCB to promote better heat transfer.
 
-Temperature sensor used in the project is one of the kind \TODO{}
+The LDO regulator has a SOIC package with an exposed pad underneath it. This is done to dissipate the generated heat directly into the board. The pad is internally connected to GND and in this case it was unnecessary to make dedicated heatsink area for this chip. As with the previous heatsink design multiple vias connect the upper and bottom layers of the PCB to promote better heat transfer.
 
-The most practical way of placing the MCU is to put it in the center of the PCB. This enables the usage of short trace connections to the peripherals located on the sides of the board.
+TMP006 temperature sensor used in the project is one of the kind and has to have a specific board layout in order to function correctly. The TMP006 is affected by the IR energy from below the sensor as it is affected by the IR energy coming from objects that are in its field of view. In case the temperature of the sensor is the same as the PCB there will be no energy transfer between them and the sensor will function without errors. Nevertheless, if there is a difference between the PCB temperature and the die temperature it will cause the heat energy to be conducted through the thin layer of air and this will introduce offset to the voltage readings making the temperature calculations incorrect.  In order to avoid this several factors had to be addressed:
 
-Decoupling capacitors are placed as close to the component power pins as possible. This applies to all ICs and modules used on the board without any exceptions.
+\begin{itemize}
+\item Thermal time constant matching of the PCB to the temperature sensor
+\item Thermal isolation of the TMP006 from any heat sources
+\end{itemize}
+
+Difference in thermal time constants can generate temperature mismatches between the PCB and TMP006 die until the temperatures stabilize. In order to avoid this and bring the constants close to each other a small copper fill under the temperature sensor is placed and connected to GND (see figure \ref{fig:constant_matching}). An island of copper surrounds the the sensor and helps with the constant matching as well. Without the copper fill the temperature between the sensor and PCB will never achieve equilibrium, unless the system was in equilibrium for an extended period already. 
+
+\begin{figure}
+\centering
+\includegraphics[width=0.4\textwidth]{Images/constant_matching}
+\caption{Constant matching}
+\label{fig:constant_matching}
+\end{figure}
+
+The second factor addresses the thermal isolation problem. The sensor has to be isolated from devices that act as a heat source, this includes any active component placed near it. When the device becomes operational it dissipates a certain amount of heat into the ground plane, this in turn raises the temperature of the TMP006 as GND is common and could cause the same problems as with the thermal time constant mismatch. To address this issue the sensor and the copper island was isolated by low k material (see figure \ref{fig:thermal_barrier}. In this case the PCB material is used as an insulator.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.7\textwidth]{Images/temp_barrier}
+\caption{Thermal barrier}
+\label{fig:thermal_barrier}
+\end{figure}
+
+This isolation prevents the unwanted thermal interaction with other devices. Moving the device away from any source of heat would be the best solution. This way any drastic temperature changes would be invisible the temperature sensor.
+
+Accelerometer has a mechanical issue that has to be addressed. In order to prevent any PCB vibrations being visible to the accelerometer it had to be mounted close to the PCB hard mounting point. 
+
+Several modules have integrated antennas in them, these are ANT, Xbee and GPS. No special PCB placement is required for them other than taking mechanical considerations into account. Any device containing metal should be kept away from the field of view of the integrated antenna to avoid signal scattering and reflections. Otherwise this could lead to an effective loss of signal radiation resulting in the reduction of the transmission range. Hence, modules were placed on the edges of the PCB and the GND plane was removed from the antennas field of view. 
+
+\begin{figure}
+\centering
+\includegraphics[width=0.5\textwidth]{Images/voltage_noise.jpg}
+\caption{Measured voltage noise}
+\label{fig:voltage_noise}
+\end{figure}
+
+The most practical way of placing the MCU is to put it in the center of the PCB. This enables the usage of short trace connections to the peripherals located on the sides of the board. Decoupling capacitors are placed as close to the component power pins as possible. This applies to all ICs and modules used on the board without any exceptions. By doing this the voltage noise can be dropped to a very low figure. In the system the measured noise was 4mV, as it can be seen in figure \ref{fig:voltage_noise}
+
+Oscillators are placed as close to the MCU as possible to avoid any additional trace capacitance and delay, which would change the generated frequency. 
+
+Taking all these considerations in mind the board was routed manually as this ensures the correct placement of the tracks and special zones needed for components. A good layout will always result in a proper functionality of the PCB and will reduce the probability of redesign.
+
 
 \subsection{Soldering}
 Soldering of components was done using several tools. This included a hot plate for reflow process and conventional tools for SMD components. Temperature sensor and an accelerometer were attached to the PCB using solder reflow as it was impossible to do solder them using conventional tools. An appropriate thermal profile had to be followed to prevent damage to the components. Both ICs have a peak soldering temperature of 260C but a slightly different thermal profiles, figure \ref{fig:temp_profile_optimal}(a) and figure  \ref{fig:temp_profile_optimal}(b) show the thermal profiles for temperature sensor and accelerometer respectively. 
@@ -138,3 +182,24 @@ Ideally It should take no longer than 7 minutes to achieve the peak point from a
 \end{figure}
 
 It did increase the risk of damaging both of the components. Nevertheless, after the reflow they functioned as expected.
+
+
+\section{Case design}
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.5\textwidth]{Images/case_inside.jpg}
+\caption{Exposed System in a case}
+\label{fig:case_monitor}
+\end{figure}
+Several options for the case have been considered, including the usage of rapid prototyping facilities to make a custom case to fit the PCB. Due to high cost of the material used in production and limitations set on our budget it was decided to exclude this option. Case for the PCB was ordered through Maplin online store and rapid prototyping facilities were used to make a custom part that would attach the MEMS microphone board to the head of a stethoscope instead. Case is made of plastic, which is not the best solution, considering the horse might damage it while rolling around. The optimal solution would be to use a metal case, this would prevent it from being damaged in the harsh exploitation environment. Nevertheless, this is not an option, as metal would act as a shield for RF signals either completely blocking them or diminishing to an unacceptable level. 
+
+The head of the stethoscope was then integrated into the case and isolated to ensure a decent level of splash proofness, as depicted in figure \ref{fig:case_monitor}.
+
+The Complete encapsulated system is shown in figure \ref{fig:complete_monitor}. The stethoscope head protrudes slightly from the case enabling a better contact with the horse under test. The case is certified to be splash proof according to IP54. This way the PCB might be protected even in rainy weather. 
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.4\textwidth]{Images/case_closed.jpg}
+\caption{Completed encapsulated system}
+\label{fig:complete_monitor}
+\end{figure}

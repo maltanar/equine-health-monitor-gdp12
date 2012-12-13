@@ -7,9 +7,12 @@
 				,paper=a4			
 				,fontsize=11pt
 				,abstract=true		% center headline of abstract section								
-				%,chapterprefix=on
+				,chapterprefix=on
+				,pointlessnumbers
 				]{scrreprt}			% Document class: Koma Report
 \usepackage{scrhack}	%Fixes problems when using Koma in combination with Hyperref, Listing und Float
+\setkomafont{chapterprefix}{\LARGE}
+\setkomafont{chapter}{\Huge}
 \usepackage[nouppercase,headsepline,plainfootsepline]{scrpage2}
 % load your personal praemble
 \input{praemble}
@@ -64,6 +67,9 @@
 \input{Content/hardware_subsystems.tex}
 \input{Content/system_software.tex}
 \input{Content/pcb_design.tex}
+\input{Content/testing.tex}
+\input{Content/results.tex}
+\input{Content/conclusions.tex}
 \input{Content/future_work.tex}
 \input{Content/project_management.tex}
 \clearpage

@@ -2,7 +2,11 @@
 
 
 \section{Project Brief}
-The goal of this project is to design a system consisting of a battery powered monitoring device that can be attached to a horse in order to monitor different vital signs, and an accompanying base station infrastructure to allow simultaneous monitoring of multiple horses. The proposed system collects data which could enable the users to detect health problems without physical examination. The data could be used to detect lameness and other diseases such as grass sickness, which has a 95\% mortality rate without an early diagnosis \TODO{citation}. 
+The goal of this project is to design a scalable system for remote monitoring of equine vital signs. The system consists of battery powered monitoring devices that can be attached to a horse in order to monitor different vital signs, and an accompanying base station to allow simultaneous monitoring of multiple horses. 
+
+The proposed system acts as a data collection device that can be used to build a database with horse's vital signs and gut sounds that can serve as a basis for causal research in the field of grass sickness disease, which has more than 95\% mortality rate without an early diagnosis\cite{robinson2009current}. The data can also be used to diagnose other horse related problems such as lameness.
+
+In the future the system can be extended to detect health problems autonomously without physical examination.
 
 In order to keep the complexity and power consumption of the sensor devices at a minimum, they communicate over a low power wireless connection with a base station that collects and the data, making it available for the user via a web server.
 
@@ -10,10 +14,10 @@ The system could also be used on human subjects or other mammals, though at its 
 
 
 \section{Objectives}
-The system is aimed at long-term monitoring which is why long battery life is of high importance for the monitoring devices. Therefore low power consumption is one of the main concerns for design of the monitoring device.
+The system is aimed at long-term monitoring which is why long battery life is of high importance for the monitoring devices. It is inconvenient to change or recharge batteries on the monitoring device often, especially if a large number of animals will be monitored. Therefore low power consumption is one of the main concerns for the design of the monitoring device.
 
-The monitoring device will be attached to horses for long periods of time. Hence it should be small in size, suitable for attaching onto a horse and encapsulated in a splash-proof case to be protected from possible water damage due to the outdoors environment.
+The monitoring device is intended to be attached to horses for long periods of time. Hence it should be small in size, suitable for attaching onto a horse and encapsulated in a splash-proof case to be protected from possible water damage due to the outdoors environment.
 
-Scalability is another goal of the project. It should be possible to use the system in scenarios where it is desirable to monitor multiple horses simultaneously. Taking into account time and resource constraints for the project, a small amount of scalability (no more than ten horses simultaneously monitored) should be feasible RFC.
+Scalability is another goal of the project. It should be possible to use the system in scenarios where it is desirable to monitor multiple horses simultaneously. 
 
-The collected data should be presented in a way that it would be easy to access for users. A web server is an ideal solution since a wide range of devices has web access.   
+Finally, the collected data should be presented in a way that it would be easy to access for users. A web server is an ideal solution since a wide range of devices has web access.   
