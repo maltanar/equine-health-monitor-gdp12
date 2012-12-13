@@ -23,6 +23,7 @@ The choice of object-oriented paradigm (OOP) and C++ may be considered unusual f
 
 
 \subsection{Low Energy Periodic Sampling, Sensor Interface and Drivers}
+\label{sec:port_configuration}
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{Images/sampling_comparison}
@@ -70,7 +71,7 @@ We now discuss our definition of low energy periodic sampling for the monitoring
 \label{tab:power_phases} 
 \end{table}
 
-This energy saving scheme can be applied to any sensor or peripheral that supports sleep mode. As we chose all only sleep-supporting sensors for our implementation, we were able to identify a set of properties and functions common to all sensors which forms the Sensor base class. The properties and methods defined in the class are listed in section \ref{list:sensor_interface}. 
+This energy saving scheme can be applied to any sensor or peripheral that supports sleep mode. As we chose all only sleep-supporting sensors for our implementation, we were able to identify a set of properties and functions common to all sensors which forms the Sensor base class.
 
 To summarize, the \textit{setSleepState} function is used to put the sensor to sleep and wake it up, the \textit{sampleSensorData} acquires data from the sensor into internal buffers, and \textit{readSensorData} gives access to the data in the internal buffers wrapped in a \textit{SensorMessage} structure (described in section \ref{sec:message_types}). Individual sensors drivers are derived from this base class and implement the common methods in their specific way, as described in chapter \ref{chap:hardware_subsystems} 
 
