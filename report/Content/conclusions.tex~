@@ -42,7 +42,7 @@ To be more specific in terms of our design, there are pin compatible replacement
 
 Replacing the XBees with alternative devices doesn’t require modifications to the system design, and because of the Object Oriented design of the software system and well defined interfaces the changes that are required in the software stack are limited to a clearly defined scope.
 
-An audio compression scheme is then recommended if the system is required to perform audio recordings often and/or send this data over the wireless connection. Such a scheme was not implemented in this project mainly due to the short amount of time available for development and that a deeper knowledge of the signals is required for effective compression, but this could be implemented in an improved version of the system.
+An audio compression scheme is then recommended if the system is required to perform audio recordings often and/or send this data over the wireless connection. Such a scheme was not implemented in the project mainly the short amount of time available for development and that a deeper knowledge of the signals is required but could be implemented in an improved version of the system.
 
 \subsection{Scope of C++ development}
 Notwithstanding the advantages of using C++ for developing such a system as discussed in section \ref{sec:dev_paradigm}, the team sometimes took writing C++ wrappers to lower levels of hardware than necessary and eventually realized this is ineffective both performance- and time-wise. Creating C++ wrappers for MCU peripherals should be avoided unless a built and tested library is already in place.
