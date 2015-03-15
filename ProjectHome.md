@@ -1,0 +1,1 @@
+An embedded Equine Health Monitor project, made for the Group Design Project at University of Southampton and the Energy Micro EFM32 Design Contest
